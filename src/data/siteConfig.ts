@@ -50,7 +50,7 @@ export const SITE_CONFIG = {
   },
   ziyarat: {
     videoUrl: "/assets/videos/homepage/ziyarat-section/ziyarat.mp4",
-    calligraphy: "/assets/images/homepage/ziyarat-section/Ziyarat-Calligraphy.png", 
+    calligraphy: "/assets/images/homepage/ziyarat-section/ziyarat-calligraphy.png", 
     title: "Walking in the Footsteps of Prophets",
     subtitle: "A Pilgrimage of Peace Reflection",
     description: "Explore the historical sites (Ziyarat) that defined the history of Islam. From Cave Hira to Mount Uhud.",
