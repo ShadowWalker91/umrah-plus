@@ -44,42 +44,21 @@ const NAV_ITEMS = [
       { label: "Book Your Trip", href: "/book-your-trip" }
     ]
   },
-  
-  // --- NEW ITEM: VIDEO GALLERY ---
   { label: "Video Gallery", href: "/video-gallery" },
 
+  // --- UPDATED PACKAGES STRUCTURE (Corrected Links) ---
   { 
     label: "Packages", 
-    href: "/packages",
-    // Level 2 (5 Items)
+    href: "#", // Parent triggers dropdown
     submenu: [
-      { 
-        label: "Umrah", 
-        href: "#",
-        submenu: Array(6).fill(null).map((_, i) => ({ label: `Umrah Package ${i+1}`, href: "#" }))
-      },
-      { 
-        label: "Umrah Plus", 
-        href: "#",
-        submenu: Array(6).fill(null).map((_, i) => ({ label: `Plus Package ${i+1}`, href: "#" }))
-      },
-      { 
-        label: "Ziyarat", 
-        href: "#",
-        submenu: Array(6).fill(null).map((_, i) => ({ label: `Ziyarat Package ${i+1}`, href: "#" }))
-      },
-      { 
-        label: "Transportation", 
-        href: "#",
-        submenu: Array(6).fill(null).map((_, i) => ({ label: `Transport Option ${i+1}`, href: "#" }))
-      },
-      { 
-        label: "Explore Saudi", 
-        href: "#",
-        submenu: Array(6).fill(null).map((_, i) => ({ label: `Saudi Tour ${i+1}`, href: "#" }))
-      }
+      { label: "Umrah Packages", href: "/packages/umrah-packages" },
+      { label: "Umrah Plus Packages", href: "/packages/umrah-plus-packages" },
+      { label: "Ziyarat Packages", href: "/packages/ziyarat-packages" }, 
+      { label: "Transportation Packages", href: "/packages/transportation-packages" },
+      { label: "Explore Saudi Packages", href: "/packages/explore-saudi-packages" }
     ]
   },
+
   { 
     label: "Explore Saudi", 
     href: "/explore",
@@ -137,7 +116,7 @@ export default function Header() {
       <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-8 xl:px-12">
         <div className="flex justify-between items-center">
           
-          {/* LOGO - Left Aligned */}
+          {/* LOGO */}
           <Link href="/" className="relative h-12 w-48 md:h-14 md:w-60 flex items-center z-50 mr-auto">
             <Image 
               src={SITE_CONFIG.header.logo}
@@ -148,7 +127,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* DESKTOP MENU - Right Aligned (Added ml-auto to parent container logic or kept flex-between) */}
+          {/* DESKTOP MENU */}
           <nav className="hidden xl:flex items-center gap-6 2xl:gap-8 ml-auto">
             {NAV_ITEMS.map((item, index) => {
               const hasDropdown = item.submenu && item.submenu.length > 0;
@@ -193,7 +172,7 @@ export default function Header() {
                                   {hasNested && <ChevronLeft size={14} />}
                                 </Link>
 
-                                {/* LEVEL 3 DROPDOWN */}
+                                {/* LEVEL 3 DROPDOWN (If needed) */}
                                 {hasNested && (
                                   <div className="absolute right-full top-0 pr-1 opacity-0 invisible group-hover/nested:opacity-100 group-hover/nested:visible transition-all duration-200 transform translate-x-2 group-hover/nested:translate-x-0 z-50">
                                      <div className="w-56 bg-[#1a1a1a] border border-white/10 rounded-md shadow-2xl overflow-hidden">
@@ -205,7 +184,7 @@ export default function Header() {
                                               href={nestedItem.href}
                                               className="block px-5 py-3 text-sm text-gray-300 hover:text-[#F9C344] hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
                                            >
-                                             {nestedItem.label}
+                                              {nestedItem.label}
                                            </Link>
                                          ))}
                                        </div>
