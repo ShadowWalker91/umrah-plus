@@ -60,10 +60,10 @@ export default function ItineraryAccordion({ items }: Props) {
                   {/* Image Section (Left on Desktop) */}
                   <div className="w-full md:w-1/3 shrink-0">
                     <div className="relative h-48 w-full rounded-lg overflow-hidden border border-white/10 bg-black/50">
-                      {item.image ? (
+                      {item.images ? (
                         /* Using a generic placeholder if image fails or for now */
                         <Image 
-                          src={item.image} 
+                          src={item.images[0]} 
                           alt={item.title}
                           fill
                           className="object-cover"
