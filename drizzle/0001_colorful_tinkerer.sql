@@ -1,0 +1,1 @@
+ALTER TABLE "explore_package_vehicles" ALTER COLUMN "vehicleId" SET DATA TYPE uuid;
