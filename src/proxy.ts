@@ -8,12 +8,12 @@ export default auth((req) => {
 
   // 1. If trying to access Admin Panel but NOT logged in
   if (isOnAdminPanel && !isOnLoginPage && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/admin/login", req.url))
+    return NextResponse.redirect(new URL("/admin/login", req.nextUrl))
   }
 
   // 2. If already logged in and tries to go to Login Page
   if (isOnLoginPage && isLoggedIn) {
-    return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+    return NextResponse.redirect(new URL("/admin/dashboard", req.nextUrl))
   }
 
   return NextResponse.next()

@@ -5,7 +5,7 @@ import HeroSection from '@/components/home/HeroSection';
 import MadinahSection from '@/components/home/MadinahSection';
 import ZiyaratSection from '@/components/home/ZiyaratSection';
 import TransportSection from '@/components/home/TransportSection';
-import ExploreSection from '@/components/home/ExploreSection';
+import UmrahPlusSection from '@/components/home/UmrahPlusSection';
 import PackagesSection from '@/components/home/PackagesSection';
 import Footer from '@/components/Footer';
 
@@ -81,9 +81,9 @@ export default function Home() {
       {/* --- Page Sections --- */}
       <HeroSection scrollToNext={() => scrollTo('section-2', 2)} />
       <MadinahSection />
-      <ZiyaratSection />
       <TransportSection />
-      <ExploreSection />
+      <ZiyaratSection />
+      <UmrahPlusSection />
       <PackagesSection />
       
       {/* Footer is Section 7 */}

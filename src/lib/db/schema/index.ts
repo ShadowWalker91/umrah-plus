@@ -8,3 +8,4 @@ export * from './ziyarat';
 export * from './explorePackages';
 export * from './cities';
 export * from './umrahPackages';
+export * from './bookings';

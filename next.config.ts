@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  transpilePackages: ['motion'],
   images: {
     remotePatterns: [
       {
@@ -9,7 +11,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com', 
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -21,6 +24,15 @@ const nextConfig: NextConfig = {
         hostname: 'img.youtube.com',
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/ziyarat-packages',
+        destination: '/packages/ziyarat-packages',
+        permanent: true,
+      },
+    ];
   },
 };
 

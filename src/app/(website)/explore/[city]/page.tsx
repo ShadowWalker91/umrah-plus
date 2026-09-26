@@ -37,8 +37,24 @@ export default function ExploreCityPage() {
         const response = await getAdminExplorePackages();
         
         if (response.success && response.data) {
-          // Filter to ensure only packages for this specific city are displayed
-          const filteredPackages = response.data.filter((pkg: any) => pkg.citySlug === citySlug);
+          // Filter to ensure only packages for this specific city are displayed and format properly
+          const filteredPackages: CityPackage[] = response.data
+            .filter((pkg: any) => pkg.citySlug?.toLowerCase() === citySlug)
+            .map((pkg: any) => ({
+              id: pkg.id,
+              title: pkg.title,
+              durationDays: pkg.durationDays,
+              description: pkg.description,
+              destinations: pkg.destinations || [],
+              includes: pkg.includes || [],
+              citySlug: pkg.citySlug,
+              vehicleOptions: (pkg.vehicleOptions || []).map((opt: any) => ({
+                id: opt.vehicle?.id || opt.vehicleId || String(opt.id || Math.random()),
+                name: opt.vehicle?.name || 'Standard Vehicle',
+                basePrice: opt.basePrice,
+                capacity: opt.vehicle?.capacity || 4,
+              })),
+            }));
           setCityPackages(filteredPackages);
         }
       } catch (error) {

@@ -9,14 +9,13 @@ import { sendContactEmail } from '@/app/actions/sendContactEmail';
 const OFFICES = [
   {
     id: 1,
-    country: "Saudi Arabia",
-    city: "KSA (Head office)",
-    address: "Building Number 59, Second Floor, Umar Ibn Abdulaziz Road, Malaz Area, Riyadh, Saudi Arabia",
-    phone: "+966 11 812 8181 | +966 58 1118 720",
-    email: "info@abctksa.com",
+    country: "Riyadh, KSA",
+    city: "Global Headquarters",
+    address: "Building Number 2687, Second Floor, Omar bin Abdul Aziz Road, Al Malaz Dist. Riyadh 12831, Saudi Arabia Malaz Area, Riyadh",
+    phone: "+966 11 812 8181",
+    email: "hello@umrahplus.me",
     lat: 24.6653, 
     lng: 46.7327,
-    // Tighter left offset to prevent clipping on the left edge
     lineData: {
       path: "M 0 0 L 0 -80 L -200 -80",
       elbowX: 0, elbowY: -80, 
@@ -26,31 +25,13 @@ const OFFICES = [
   },
   {
     id: 2,
-    country: "United Arab Emirates",
-    city: "Dubai",
-    address: "Office Suite: 206, DBC Building, AlKhabaisi, Dubai-UAE",
-    phone: "+971 4 585 7184 | +971 50 781 3880",
-    email: "info@abtravel-ae.com",
-    lat: 25.2677, 
-    lng: 55.3341,
-    // Tighter right offset to prevent clipping on the right edge
-    lineData: {
-      path: "M 0 0 L 0 -130 L 160 -130",
-      elbowX: 0, elbowY: -130, 
-      endX: 160, endY: -130,
-      labelStyle: { left: '172px', top: '-130px', transform: 'translateY(-50%)' }
-    }
-  },
-  {
-    id: 3,
-    country: "Qatar",
-    city: "Doha",
-    address: "Bldg No.: 54 | Zone: 17 | St. No. 830, Al Maarif Al Rufaa | Doha",
-    phone: "+974 4146 7300 | +974 7734 3300",
-    email: "info@abtransport-qatar.com",
+    country: "Doha, Qatar",
+    city: "Qatar Operations",
+    address: "110, Bldg-100, Zone-26, Old Airport Road- Doha, Qatar",
+    phone: "+974 3133 4450",
+    email: "hello@umrahplus.me",
     lat: 25.2854, 
     lng: 51.5310,
-    // Safely positioned in upper center-right
     lineData: {
       path: "M 0 0 L 0 -200 L 70 -200",
       elbowX: 0, elbowY: -200, 
@@ -59,15 +40,30 @@ const OFFICES = [
     }
   },
   {
+    id: 3,
+    country: "Dubai, UAE",
+    city: "UAE Operations",
+    address: "Suite 206, DBC Building, Al Khabaisi, Deira, Dubai",
+    phone: "+971 4 585 7184",
+    email: "hello@umrahplus.me",
+    lat: 25.2677, 
+    lng: 55.3341,
+    lineData: {
+      path: "M 0 0 L 0 -130 L 160 -130",
+      elbowX: 0, elbowY: -130, 
+      endX: 160, endY: -130,
+      labelStyle: { left: '172px', top: '-130px', transform: 'translateY(-50%)' }
+    }
+  },
+  {
     id: 4,
-    country: "United Arab Emirates",
-    city: "Abu Dhabi",
-    address: "Office - 3 Building C57, ME10, Muhammad Bin Zayed City, Abu Dhabi, UAE",
-    phone: "+971 2 634 1902 | +971 50 918 0556",
-    email: "info@abmiddleeast.com",
-    lat: 24.3312, 
-    lng: 54.5369,
-    // Tighter right offset down towards the bottom edge
+    country: "Chennai, India",
+    city: "India Operations",
+    address: "No. 138 to 148, B304, Jawaharlal Nehru Road (Inner Ring Road Highways), 7th Avenue (N104), Anna Nagar West (N104), Chennai, Tamil Nadu, India, 600040",
+    phone: "+91 866 767 0301",
+    email: "hello@umrahplus.me",
+    lat: 13.0827, 
+    lng: 80.2707,
     lineData: {
       path: "M 0 0 L 0 100 L 160 100",
       elbowX: 0, elbowY: 100,
@@ -241,26 +237,36 @@ export default function ContactPage() {
         {/* RIGHT: OFFICE LOCATIONS */}
         <div className="flex flex-col justify-center space-y-4 md:space-y-6">
           {OFFICES.map((office) => (
-            <div key={office.id} className="group bg-[#1a1a1a] border border-white/10 hover:border-[#F9C344] transition-all p-5 md:p-6 rounded-xl flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
-              
+            <div 
+              key={office.id} 
+              className="group bg-[#1a1a1a] border border-white/10 hover:border-[#F9C344]/80 transition-all p-5 md:p-6 rounded-2xl flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center shadow-lg"
+            >
               <div className="bg-black/50 p-4 rounded-full border border-white/5 group-hover:bg-[#F9C344]/10 transition-colors hidden sm:block">
-                <MapPin size={28} className="text-[#F9C344]" />
+                <MapPin size={26} className="text-[#F9C344]" />
               </div>
               
-              <div className="flex-1 space-y-2">
-                <h4 className="text-xl font-serif font-bold text-white">{office.country}</h4>
-                <p className="text-sm text-[#F9C344] font-medium tracking-wide uppercase">{office.city}</p>
-                <p className="text-gray-400 text-sm leading-relaxed">{office.address}</p>
+              <div className="flex-1 space-y-1.5">
+                <h4 className="text-xl font-serif font-bold text-white tracking-wide">{office.country}</h4>
+                <p className="text-xs font-bold tracking-widest uppercase text-[#F9C344]">
+                  {office.city}
+                </p>
+                <p className="text-gray-400 text-xs md:text-sm leading-relaxed">{office.address}</p>
                 
-                <div className="pt-2 flex flex-col 2xl:flex-row gap-3 2xl:gap-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                  <a 
+                    href={`tel:${office.phone.replace(/[^0-9+]/g, '')}`}
+                    className="flex items-center gap-2 text-xs font-semibold text-gray-300 hover:text-[#F9C344] transition-colors"
+                  >
                     <Phone size={14} className="text-[#F9C344] flex-shrink-0"/> 
                     <span className="truncate">{office.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                  </a>
+                  <a 
+                    href={`mailto:${office.email}`}
+                    className="flex items-center gap-2 text-xs font-semibold text-gray-300 hover:text-[#F9C344] transition-colors"
+                  >
                     <Mail size={14} className="text-[#F9C344] flex-shrink-0"/> 
                     <span className="truncate">{office.email}</span>
-                  </div>
+                  </a>
                 </div>
               </div>
 

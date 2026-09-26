@@ -19,7 +19,8 @@ import {
   Package,
   ChevronDown,
   ChevronRight,
-  Landmark // ✅ Icon for Ziyarat
+  Landmark, // ✅ Icon for Ziyarat
+  CalendarCheck // ✅ Icon for Bookings
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -34,6 +35,8 @@ export default function Sidebar() {
 
   const mainLinks = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    { label: 'Bookings', href: '/admin/bookings', icon: CalendarCheck },
+    { label: 'Transport Rates & Fleet', href: '/admin/transport', icon: Car },
     { label: 'Ziyarat Locations', href: '/admin/ziyarat', icon: Landmark }, 
   ]
 

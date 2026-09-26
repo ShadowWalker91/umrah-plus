@@ -9,8 +9,9 @@ export type CityPackage = {
   id: string;
   title: string;
   durationDays: number;
-  destinations: string[];
+  destinations?: string[] | null;
   description: string;
-  vehicleOptions: VehicleOption[];
-  includes: string[];
+  vehicleOptions?: VehicleOption[] | null;
+  includes?: string[] | null;
+  citySlug?: string;
 };

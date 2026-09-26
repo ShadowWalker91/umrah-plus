@@ -8,11 +8,20 @@ export default function MadinahSection() {
   const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.error("Madinah video autoplay prevented:", error);
-      });
-    }
+    const playVideo = async () => {
+      if (videoRef.current) {
+        try {
+          await videoRef.current.play();
+        } catch (error: any) {
+          // Ignore AbortError / NotAllowedError caused when browser pauses background media to save power or before user gesture
+          if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
+            console.error("Madinah video autoplay prevented:", error);
+          }
+        }
+      }
+    };
+
+    playVideo();
   }, []);
 
   return (

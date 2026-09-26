@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, Calendar, Clock, Search, Bus } from 'lucide-react';
 import { SITE_CONFIG } from '@/data/siteConfig';
+import DateInputField from '@/components/booking-engine/DateInputField';
 
 export default function TransportSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -16,6 +17,7 @@ export default function TransportSection() {
   const [dropoff, setDropoff] = useState("");
   const [showPickupList, setShowPickupList] = useState(false);
   const [showDropoffList, setShowDropoffList] = useState(false);
+  const [travelDate, setTravelDate] = useState("");
 
   // 1. FETCH LOCATIONS
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function TransportSection() {
   };
 
   return (
-    <section id="section-4" className="snap-section h-screen w-full relative flex items-center justify-center overflow-hidden snap-start bg-zinc-900">
+    <section id="section-3" className="snap-section h-screen w-full relative flex items-center justify-center overflow-hidden snap-start bg-zinc-900">
       
       {/* 1. BACKGROUND VIDEO */}
       {!videoError && (
@@ -207,17 +209,26 @@ export default function TransportSection() {
               {/* DATE & TIME GRID */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider"><Calendar size={12} className="text-[#F9C344]"/> Date</label>
-                  <input 
-                    type="date" 
-                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#F9C344] outline-none transition text-sm [color-scheme:dark]" 
+                  <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider">
+                    <Calendar size={12} className="text-[#F9C344]"/> Date
+                  </label>
+                  <DateInputField
+                    value={travelDate}
+                    onChange={setTravelDate}
+                    placeholder="DD.MM.YYYY"
+                    className="p-3 bg-black/40 border-white/10"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider"><Clock size={12} className="text-[#F9C344]"/> Time</label>
+                <div 
+                  onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch {} }}
+                  className="space-y-1.5 cursor-pointer"
+                >
+                  <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider cursor-pointer"><Clock size={12} className="text-[#F9C344]"/> Time</label>
                   <input 
                     type="time" 
-                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#F9C344] outline-none transition text-sm [color-scheme:dark]" 
+                    onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch {} }}
+                    onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch {} }}
+                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#F9C344] outline-none transition text-sm cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]" 
                   />
                 </div>
               </div>

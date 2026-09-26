@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { SITE_CONFIG } from '@/data/siteConfig';
+import SearchWidget from '@/components/SearchWidget';
 
 interface HeroSectionProps {
   scrollToNext: () => void;
@@ -13,11 +14,20 @@ export default function HeroSection({ scrollToNext }: HeroSectionProps) {
   const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.error("Autoplay prevented:", error);
-      });
-    }
+    const playVideo = async () => {
+      if (videoRef.current) {
+        try {
+          await videoRef.current.play();
+        } catch (error: any) {
+          // Ignore AbortError / NotAllowedError caused when browser pauses background media to save power or before user gesture
+          if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
+            console.error("Hero video autoplay prevented:", error);
+          }
+        }
+      }
+    };
+
+    playVideo();
   }, []);
 
   return (
@@ -60,45 +70,20 @@ export default function HeroSection({ scrollToNext }: HeroSectionProps) {
       </div>
 
       {/* 4. MAIN CONTENT */}
-      {/* Mobile: pt-32 pushes content down. Desktop: pb-16 aligns bottom. */}
-      <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between pt-32 pb-20 lg:pb-16 text-center lg:text-left">
+      {/* Responsive layout: on mobile sits in bottom third; on tablet centered with safe right clearance; on desktop aligns bottom-left lifted upward */}
+      <div className="relative z-20 w-full pl-5 pr-14 sm:pl-8 sm:pr-16 md:pl-10 md:pr-18 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-end lg:justify-between pb-20 sm:pb-24 md:pb-28 lg:pb-28 xl:pb-32 text-center lg:text-left">
         
-        {/* Left Side: Text */}
-        <div className="w-full lg:w-1/2 space-y-3 md:space-y-4">
-          
-          {/* Subtitle */}
-          <h3 className="text-[#F9C344] font-serif text-lg md:text-xl lg:text-2xl tracking-[0.15em] font-light">
-            {SITE_CONFIG.hero.subtitle}
-          </h3>
-          
-          {/* Main Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans font-bold leading-tight text-white drop-shadow-lg mx-auto lg:mx-0 max-w-lg lg:max-w-2xl">
-            {SITE_CONFIG.hero.title}
-          </h1>
-          
-          {/* Quote Block */}
-          <div className="border-l-2 border-[#F9C344] pl-4 max-w-md md:max-w-lg mt-2 mx-auto lg:mx-0 text-left">
-            <p className="text-gray-300 text-xs md:text-sm leading-relaxed italic font-light opacity-90">
-              "{SITE_CONFIG.hero.quote}"
-            </p>
-            <span className="text-[#F9C344] text-[10px] md:text-xs font-bold block mt-1 tracking-widest uppercase">
-              {SITE_CONFIG.hero.quoteSource}
-            </span>
-          </div>
-
-          <div className="pt-6">
-            <button className="bg-[#F9C344] text-black px-6 py-3 md:px-8 md:py-3.5 rounded-full font-bold text-xs md:text-sm uppercase tracking-widest hover:bg-white hover:scale-105 transition-all duration-300 shadow-lg">
-              Find Hotel In Makkah
-            </button>
-          </div>
+        {/* Left Side: Booking Widget */}
+        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+          <SearchWidget />
         </div>
 
-        {/* Right Side: Pilgrims Image (Hidden on very small mobile to save space, visible on tablet+) */}
-        <div className="hidden md:block w-[40%] lg:w-[35%] relative pointer-events-none mt-8 lg:mt-0">
+        {/* Right Side: Pilgrims Image (Visible on lg+ desktop to keep mobile and tablet focused and uncluttered) */}
+        <div className="hidden lg:block w-[38%] xl:w-[35%] relative pointer-events-none self-end">
            <img 
              src={SITE_CONFIG.hero.image} 
              alt="Pilgrims" 
-             className="w-full h-auto object-contain drop-shadow-2xl transform translate-y-4 lg:translate-y-8" 
+             className="w-full h-auto object-contain drop-shadow-2xl transform translate-y-6 xl:translate-y-8" 
            />
         </div>
 

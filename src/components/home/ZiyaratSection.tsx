@@ -14,8 +14,8 @@ export default function ZiyaratSection() {
         try {
           await videoRef.current.play();
         } catch (error: any) {
-          // Ignore 'AbortError' which happens when browser pauses background video to save power
-          if (error.name !== 'AbortError') {
+          // Ignore 'AbortError' / 'NotAllowedError' which happens when browser pauses background video to save power
+          if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
             console.error("Ziyarat video autoplay prevented:", error);
           }
         }
@@ -26,7 +26,7 @@ export default function ZiyaratSection() {
   }, []);
 
   return (
-    <section id="section-3" className="snap-section h-screen w-full relative flex items-end justify-center overflow-hidden snap-start">
+    <section id="section-4" className="snap-section h-screen w-full relative flex items-end justify-center overflow-hidden snap-start">
       
       {/* 1. BACKGROUND VIDEO */}
       {!videoError && (

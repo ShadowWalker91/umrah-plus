@@ -21,8 +21,8 @@ export const SITE_CONFIG = {
         ]
       },
       
+      { label: "Umrah Plus", href: "#section-5" },
       { label: "Packages", href: "#section-6" },
-      { label: "Explore Saudi", href: "#section-5" },
     ],
     cta: {
       label: "Book Packages",
