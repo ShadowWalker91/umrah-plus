@@ -1,0 +1,214 @@
+{
+  "vehicles": [
+    {
+      "id": "sedan",
+      "name": "Standard Sedan",
+      "category": "Economy / Executive",
+      "capacity": 3,
+      "luggage": 2,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/1-Lexus-300H.webp",
+      "description": "Comfortable Lexus or Camry sedan ideal for solo pilgrims, couples, or small families with standard luggage.",
+      "fixedRoutes": {
+        "p1": 800,
+        "p2": 1100,
+        "p3": 800,
+        "p4": 1350
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 275,
+        "Makkah ↔ Jeddah": 250,
+        "Makkah / Jeddah → Madinah": 450,
+        "Jeddah Airport ↔ Madinah": 475,
+        "Jeddah Airport ↔ Jeddah City": 250,
+        "Jeddah City → Jeddah Airport": 225,
+        "Madinah Airport → Madinah Hotel": 150,
+        "Madinah Hotel → Madinah Airport": 125,
+        "Makkah ↔ Masjid Ayesha (Return)": 150
+      }
+    },
+    {
+      "id": "staria",
+      "name": "Hyundai Staria",
+      "category": "Family MPV",
+      "capacity": 5,
+      "luggage": 4,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/3-hyundai.webp",
+      "description": "Modern ergonomic multi-purpose vehicle offering generous legroom and ample trunk space for families.",
+      "fixedRoutes": {
+        "p1": 1025,
+        "p2": 1450,
+        "p3": 990,
+        "p4": 1750
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 375,
+        "Makkah ↔ Jeddah": 325,
+        "Makkah / Jeddah → Madinah": 575,
+        "Jeddah Airport ↔ Madinah": 625,
+        "Jeddah Airport ↔ Jeddah City": 325,
+        "Jeddah City → Jeddah Airport": 310,
+        "Madinah Airport → Madinah Hotel": 185,
+        "Madinah Hotel → Madinah Airport": 150,
+        "Makkah ↔ Masjid Ayesha (Return)": 200
+      }
+    },
+    {
+      "id": "hiace",
+      "name": "Toyota Hiace",
+      "category": "Family Van",
+      "capacity": 8,
+      "luggage": 7,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/4-hiace.webp",
+      "description": "High-roof passenger van providing comfortable seating for up to 8 pilgrims with substantial luggage capacity.",
+      "fixedRoutes": {
+        "p1": 1250,
+        "p2": 1650,
+        "p3": 1280,
+        "p4": 1975
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 395,
+        "Makkah ↔ Jeddah": 350,
+        "Makkah / Jeddah → Madinah": 650,
+        "Jeddah Airport ↔ Madinah": 725,
+        "Jeddah Airport ↔ Jeddah City": 350,
+        "Jeddah City → Jeddah Airport": 320,
+        "Madinah Airport → Madinah Hotel": 350,
+        "Madinah Hotel → Madinah Airport": 225,
+        "Makkah ↔ Masjid Ayesha (Return)": 250
+      }
+    },
+    {
+      "id": "gmc",
+      "name": "GMC Yukon / Luxury SUV",
+      "category": "VIP Luxury SUV",
+      "capacity": 5,
+      "luggage": 5,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/2-gmc.webp",
+      "description": "Prestigious full-size luxury SUV with plush leather seating, rear climate control, and elite VIP styling.",
+      "fixedRoutes": {
+        "p1": 1480,
+        "p2": 2075,
+        "p3": 1490,
+        "p4": 2475
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 450,
+        "Makkah ↔ Jeddah": 425,
+        "Makkah / Jeddah → Madinah": 850,
+        "Jeddah Airport ↔ Madinah": 890,
+        "Jeddah Airport ↔ Jeddah City": 410,
+        "Jeddah City → Jeddah Airport": 355,
+        "Madinah Airport → Madinah Hotel": 295,
+        "Madinah Hotel → Madinah Airport": 250,
+        "Makkah ↔ Masjid Ayesha (Return)": 300
+      }
+    },
+    {
+      "id": "coaster",
+      "name": "Toyota Coaster",
+      "category": "Minibus",
+      "capacity": 15,
+      "luggage": 12,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/5-coaster.webp",
+      "description": "Reliable 15-passenger minibus with high ceiling and dedicated luggage bay, tailored for medium Umrah groups.",
+      "fixedRoutes": {
+        "p1": 1825,
+        "p2": 2375,
+        "p3": 1795,
+        "p4": 2950
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 625,
+        "Makkah ↔ Jeddah": 575,
+        "Makkah / Jeddah → Madinah": 890,
+        "Jeddah Airport ↔ Madinah": 975,
+        "Jeddah Airport ↔ Jeddah City": 525,
+        "Jeddah City → Jeddah Airport": 475,
+        "Madinah Airport → Madinah Hotel": 375,
+        "Madinah Hotel → Madinah Airport": 375,
+        "Makkah ↔ Masjid Ayesha (Return)": 400
+      }
+    },
+    {
+      "id": "bus",
+      "name": "VIP Luxury Coach",
+      "category": "Coach Bus",
+      "capacity": 49,
+      "luggage": 45,
+      "image": "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/6-bus.webp",
+      "description": "Grand touring coach equipped with panoramic windows, reclining executive seats, and microphone PA system.",
+      "fixedRoutes": {
+        "p1": 3200,
+        "p2": 4200,
+        "p3": 3100,
+        "p4": 4900
+      },
+      "pointToPoint": {
+        "Jeddah ↔ Makkah": 805,
+        "Makkah ↔ Jeddah": 780,
+        "Makkah / Jeddah → Madinah": 1500,
+        "Jeddah Airport ↔ Madinah": 1600,
+        "Jeddah Airport ↔ Jeddah City": 750,
+        "Jeddah City → Jeddah Airport": 700,
+        "Madinah Airport → Madinah Hotel": 650,
+        "Madinah Hotel → Madinah Airport": 650,
+        "Makkah ↔ Masjid Ayesha (Return)": 600
+      }
+    }
+  ],
+  "fixedRoutesList": [
+    {
+      "id": "p1",
+      "name": "Round Trip Package 01",
+      "fullRoute": "Jeddah Airport ➔ Makkah ➔ Madinah ➔ Madinah Airport",
+      "legs": [
+        { "id": "l1", "from": "Jeddah Airport", "to": "Makkah Hotel", "label": "Arrival: JED Airport ➔ Makkah Hotel" },
+        { "id": "l2", "from": "Makkah Hotel", "to": "Madinah Hotel", "label": "Intercity: Makkah Hotel ➔ Madinah Hotel" },
+        { "id": "l3", "from": "Madinah Hotel", "to": "Madinah Airport", "label": "Departure: Madinah Hotel ➔ MED Airport" }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Round Trip Package 02",
+      "fullRoute": "Jeddah Airport ➔ Makkah ➔ Madinah ➔ Jeddah Airport",
+      "legs": [
+        { "id": "l1", "from": "Jeddah Airport", "to": "Makkah Hotel", "label": "Arrival: JED Airport ➔ Makkah Hotel" },
+        { "id": "l2", "from": "Makkah Hotel", "to": "Madinah Hotel", "label": "Intercity: Makkah Hotel ➔ Madinah Hotel" },
+        { "id": "l3", "from": "Madinah Hotel", "to": "Jeddah Airport", "label": "Departure: Madinah Hotel ➔ JED Airport" }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Round Trip Package 03",
+      "fullRoute": "Madinah Airport ➔ Madinah ➔ Makkah ➔ Jeddah Airport",
+      "legs": [
+        { "id": "l1", "from": "Madinah Airport", "to": "Madinah Hotel", "label": "Arrival: MED Airport ➔ Madinah Hotel" },
+        { "id": "l2", "from": "Madinah Hotel", "to": "Makkah Hotel", "label": "Intercity: Madinah Hotel ➔ Makkah Hotel" },
+        { "id": "l3", "from": "Makkah Hotel", "to": "Jeddah Airport", "label": "Departure: Makkah Hotel ➔ JED Airport" }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Round Trip Package 04",
+      "fullRoute": "Jeddah Airport ➔ Makkah ➔ Madinah ➔ Makkah ➔ Jeddah Airport",
+      "legs": [
+        { "id": "l1", "from": "Jeddah Airport", "to": "Makkah Hotel", "label": "Arrival: JED Airport ➔ Makkah Hotel" },
+        { "id": "l2", "from": "Makkah Hotel", "to": "Madinah Hotel", "label": "Intercity: Makkah Hotel ➔ Madinah Hotel" },
+        { "id": "l3", "from": "Madinah Hotel", "to": "Makkah Hotel", "label": "Return: Madinah Hotel ➔ Makkah Hotel" },
+        { "id": "l4", "from": "Makkah Hotel", "to": "Jeddah Airport", "label": "Departure: Makkah Hotel ➔ JED Airport" }
+      ]
+    }
+  ],
+  "pointToPointRoutesList": [
+    "Jeddah ↔ Makkah",
+    "Makkah ↔ Jeddah",
+    "Makkah / Jeddah → Madinah",
+    "Jeddah Airport ↔ Madinah",
+    "Jeddah Airport ↔ Jeddah City",
+    "Jeddah City → Jeddah Airport",
+    "Madinah Airport → Madinah Hotel",
+    "Madinah Hotel → Madinah Airport",
+    "Makkah ↔ Masjid Ayesha (Return)"
+  ]
+}
