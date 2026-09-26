@@ -73,7 +73,7 @@ export default function ZiyaratSection() {
         
         {/* Left Side: Booking Widget */}
         <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
-          <SearchWidget />
+          <SearchWidget activeService="Ziyarat" />
         </div>
         {/* Left Side: Text Content */}
         {/* <div className="w-full lg:w-1/2 space-y-3 md:space-y-4"> */}

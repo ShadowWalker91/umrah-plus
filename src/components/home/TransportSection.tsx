@@ -139,7 +139,7 @@ export default function TransportSection() {
 
           {/* Left Side: Booking Widget */}
           <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
-            <SearchWidget />
+            <SearchWidget activeService="Transport" />
           </div>
 
           {/* LEFT: CAR IMAGE */}

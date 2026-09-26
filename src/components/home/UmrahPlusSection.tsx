@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Building2, 
   Compass, 
@@ -64,12 +65,14 @@ const PILLARS: Pillar[] = [
 ];
 
 export default function UmrahPlusSection() {
-  const [activePillar, setActivePillar] = useState<number>(0);
+  // -1 means no pillar is expanded: the bottom strip only ever shows the
+  // pillar titles and taglines until one of them is hovered or tapped.
+  const [activePillar, setActivePillar] = useState<number>(-1);
 
   return (
     <section 
       id="section-5" 
-      className="snap-section h-screen w-full relative flex flex-col justify-between overflow-hidden snap-start bg-[#0a0b0e] text-white pt-24 md:pt-28 lg:pt-32 pb-6 md:pb-8 px-4 sm:px-6 md:px-10 lg:px-14"
+      className="snap-section h-screen w-full relative flex flex-col overflow-hidden snap-start bg-[#0a0b0e] text-white pt-24 md:pt-28 lg:pt-32 pb-6 md:pb-8 px-4 sm:px-6 md:px-10 lg:px-14"
     >
       {/* 1. ATMOSPHERIC BACKGROUND */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -110,70 +113,121 @@ export default function UmrahPlusSection() {
       
 
       {/* Left Side: Booking Widget */}
-        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
-          <SearchWidget />
-        </div>
+      {/* No bottom margin needed any more: the tab callout and the calendar /
+          guest popovers are all absolutely positioned, so they overlay the
+          content above instead of stealing vertical space from the section. */}
+      <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 md:mt-32 lg:mt-72 flex justify-center lg:justify-start">
+        <SearchWidget activeService="Umrah Plus" />
+      </div>
 
-      {/* 3. THREE SIGNATURE PILLARS (Interactive Grid) */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 lg:gap-6 my-auto">
+      {/* 3. THREE SIGNATURE PILLARS (Interactive Grid)
+          Pinned to the bottom of the section. Each column is its own positioning
+          context, so the expanded card is placed with `bottom-full` and lands
+          exactly above the title + tagline it belongs to. */}
+      <div className="relative z-40 w-full max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-5 lg:gap-6 mt-auto pt-6">
         {PILLARS.map((pillar, idx) => {
           const Icon = pillar.icon;
           const isActive = activePillar === idx;
 
           return (
-            <div 
+            <div
               key={pillar.id}
               onMouseEnter={() => setActivePillar(idx)}
-              className={`group relative rounded-2xl p-4 md:p-5 lg:p-6 transition-all duration-500 cursor-pointer overflow-hidden border flex flex-col justify-between ${
-                isActive 
-                  ? 'bg-gradient-to-b from-[#181920]/95 to-[#121318]/95 border-[#F9C344]/60 shadow-[0_10px_35px_-10px_rgba(249,195,68,0.25)] -translate-y-1' 
-                  : 'bg-[#14151b]/80 border-white/10 hover:border-white/20 hover:bg-[#181922]/90'
-              }`}
+              onMouseLeave={() => setActivePillar((current) => (current === idx ? -1 : current))}
+              onClick={() => setActivePillar((current) => (current === idx ? -1 : idx))}
+              role="button"
+              tabIndex={0}
+              onFocus={() => setActivePillar(idx)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setActivePillar((current) => (current === idx ? -1 : idx));
+                }
+              }}
+              aria-expanded={isActive}
+              className="group relative flex flex-col justify-end cursor-pointer outline-none"
             >
-              {/* Pillar Subtle Background Glow */}
-              <div 
-                className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl transition-opacity duration-500 pointer-events-none ${
-                  isActive ? 'bg-[#F9C344]/20 opacity-100' : 'opacity-0'
-                }`} 
-              />
+              {/* Transparent bridge covering the gap between the strip and the
+                  expanded card, so the pointer never leaves the column while
+                  travelling upwards and the card cannot flicker shut. */}
+              <div className="absolute bottom-full inset-x-0 h-3" aria-hidden="true" />
 
-              {/* Card Top: Icon & Badge */}
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className={`text-[10px] md:text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
-                    isActive 
-                      ? 'bg-[#F9C344]/15 text-[#F9C344] border-[#F9C344]/40' 
-                      : 'bg-white/5 text-gray-400 border-white/10'
-                  }`}>
-                    {pillar.badge}
-                  </span>
-                  <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                    isActive ? 'bg-[#F9C344] text-black shadow-lg shadow-[#F9C344]/30' : 'bg-white/10 text-[#F9C344]'
-                  }`}>
-                    <Icon size={20} />
+              <AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    key={pillar.id}
+                    initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 14, scale: 0.98 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    className="absolute z-50 bottom-full left-0 right-0 mb-3 rounded-2xl p-4 md:p-5 lg:p-6 overflow-hidden border flex flex-col justify-between bg-gradient-to-b from-[#181920]/95 to-[#121318]/95 border-[#F9C344]/60 shadow-[0_10px_35px_-10px_rgba(249,195,68,0.25)] backdrop-blur-xl"
+                  >
+                    {/* Pillar Subtle Background Glow */}
+                    <div
+                      className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl bg-[#F9C344]/20 opacity-100 pointer-events-none"
+                    />
+
+                    {/* Card Top: Icon & Badge */}
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="text-[10px] md:text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-[#F9C344]/15 text-[#F9C344] border-[#F9C344]/40">
+                          {pillar.badge}
+                        </span>
+                        <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-colors duration-300 bg-[#F9C344] text-black shadow-lg shadow-[#F9C344]/30">
+                          <Icon size={20} />
+                        </div>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-[#F9C344] transition-colors">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-[11px] md:text-xs text-amber-200/80 font-medium mb-2">
+                        {pillar.tagline}
+                      </p>
+
+                      <p className="text-xs md:text-sm text-gray-300 font-light leading-relaxed mb-4">
+                        {pillar.description}
+                      </p>
+                    </div>
+
+                    {/* Card Bottom: Feature Bullets */}
+                    <div className="space-y-1.5 pt-3 border-t border-white/10 mt-auto">
+                      {pillar.features.map((feat, fIdx) => (
+                        <div key={fIdx} className="flex items-center gap-2 text-[11px] md:text-xs text-gray-300">
+                          <CheckCircle2 size={13} className="shrink-0 text-[#F9C344]" />
+                          <span className="truncate">{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Bottom Strip: Title + Tagline Only */}
+              <div
+                className={`relative z-10 rounded-2xl border px-3.5 py-3 md:px-4 transition-all duration-300 ${
+                  isActive
+                    ? 'bg-[#181920]/90 border-[#F9C344]/50 -translate-y-0.5'
+                    : 'bg-[#14151b]/70 border-white/10 group-hover:border-white/25 group-hover:bg-[#181922]/80'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-8 h-8 md:w-9 md:h-9 rounded-lg shrink-0 flex items-center justify-center transition-colors duration-300 ${
+                      isActive ? 'bg-[#F9C344] text-black shadow-md shadow-[#F9C344]/30' : 'bg-white/10 text-[#F9C344]'
+                    }`}
+                  >
+                    <Icon size={16} />
+                  </div>
+                  <div className="min-w-0 text-left">
+                    <h3 className="text-sm sm:text-base font-serif font-bold text-white leading-tight truncate transition-colors group-hover:text-[#F9C344]">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-[10px] md:text-[11px] text-amber-200/80 font-medium truncate">
+                      {pillar.tagline}
+                    </p>
                   </div>
                 </div>
-
-                <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-white group-hover:text-[#F9C344] transition-colors">
-                  {pillar.title}
-                </h3>
-                <p className="text-[11px] md:text-xs text-amber-200/80 font-medium mb-2">
-                  {pillar.tagline}
-                </p>
-
-                <p className="text-xs md:text-sm text-gray-300 font-light leading-relaxed mb-4 line-clamp-3 md:line-clamp-none">
-                  {pillar.description}
-                </p>
-              </div>
-
-              {/* Card Bottom: Feature Bullets */}
-              <div className="space-y-1.5 pt-3 border-t border-white/10 mt-auto">
-                {pillar.features.map((feat, fIdx) => (
-                  <div key={fIdx} className="flex items-center gap-2 text-[11px] md:text-xs text-gray-300">
-                    <CheckCircle2 size={13} className={`shrink-0 ${isActive ? 'text-[#F9C344]' : 'text-gray-400'}`} />
-                    <span className="truncate">{feat}</span>
-                  </div>
-                ))}
               </div>
             </div>
           );

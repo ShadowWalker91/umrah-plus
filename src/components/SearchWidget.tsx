@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Calendar as CalendarIcon,
@@ -24,6 +24,15 @@ import { DayPicker, DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 
 type ServiceType = 'Umrah' | 'Transport' | 'Umrah Plus' | 'Ziyarat';
+
+export interface SearchWidgetProps {
+  /**
+   * Tab that should be active by default for this instance of the widget.
+   * It is re-applied whenever the owning section scrolls into view,
+   * unless the visitor has already picked a tab inside that section.
+   */
+  activeService?: ServiceType;
+}
 
 interface ServiceTab {
   id: ServiceType;
@@ -70,11 +79,15 @@ const FLOW_DETAILS: Record<ServiceType, {
   }
 };
 
-export default function SearchWidget() {
+export default function SearchWidget({ activeService }: SearchWidgetProps = {}) {
   const router = useRouter();
 
+  // Unique layoutId per instance — several widgets are mounted on the homepage
+  // and a shared layoutId makes the gold pill jump between them.
+  const pillLayoutId = `activeTabPill${useId()}`;
+
   // Active Service Tab (Sequence: Umrah -> Transport -> Ziyarat -> Umrah Plus)
-  const [activeTab, setActiveTab] = useState<ServiceType>('Umrah');
+  const [activeTab, setActiveTab] = useState<ServiceType>(activeService ?? 'Umrah');
   const [hoveredTab, setHoveredTab] = useState<ServiceType | null>(null);
 
   // Dates state
@@ -100,6 +113,34 @@ export default function SearchWidget() {
   const transportGuestsRef = useRef<HTMLDivElement>(null);
   const ziyaratGuestsRef = useRef<HTMLDivElement>(null);
   const ziyaratCitiesRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const visitorPickedTab = useRef(false);
+
+  // Hover open/close with a small debounce so travelling between a tab and the
+  // callout above it never produces a flicker, and so nothing shifts in flow.
+  const openCallout = useCallback((tab: ServiceType) => {
+    if (hoverCloseTimer.current) {
+      clearTimeout(hoverCloseTimer.current);
+      hoverCloseTimer.current = null;
+    }
+    setHoveredTab(tab);
+  }, []);
+
+  const scheduleCloseCallout = useCallback(() => {
+    if (hoverCloseTimer.current) clearTimeout(hoverCloseTimer.current);
+    hoverCloseTimer.current = setTimeout(() => {
+      setHoveredTab(null);
+      hoverCloseTimer.current = null;
+    }, 140);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (hoverCloseTimer.current) clearTimeout(hoverCloseTimer.current);
+    },
+    []
+  );
 
   const toggleZiyaratCity = (city: string) => {
     setZiyaratCities((prev) =>
@@ -143,6 +184,36 @@ export default function SearchWidget() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Keep the active tab in step with the section the visitor is scrolling to.
+  // The observer watches the closest <section> ancestor through a thin band across
+  // the middle of the viewport, which matches the snap-scroll position.
+  // A tab chosen by the visitor inside the current section is never overridden;
+  // leaving and re-entering the section restores its own default tab.
+  useEffect(() => {
+    if (!activeService) return;
+
+    const node = rootRef.current;
+    if (!node) return;
+
+    const target = node.closest('section') ?? node;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const isNowVisible = entries.some((entry) => entry.isIntersecting);
+        if (!isNowVisible) return;
+        if (visitorPickedTab.current) {
+          visitorPickedTab.current = false;
+          return;
+        }
+        setActiveTab((prev) => (prev === activeService ? prev : activeService));
+      },
+      { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [activeService]);
 
   // Format date display for range or single date in dd.mm.yyyy format
   const getDisplayDateInfo = () => {
@@ -213,63 +284,76 @@ export default function SearchWidget() {
 
   return (
     <motion.div
+      ref={rootRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.6 }}
       className="w-full max-w-full md:max-w-2xl lg:max-w-5xl mx-auto lg:mx-0 flex flex-col gap-2.5 select-none"
     >
-      {/* Flow Information Callout Box (Displayed on Hover Only) */}
-      <AnimatePresence>
-        {hoveredTab && (
-          <motion.div
-            key={hoveredTab}
-            initial={{ opacity: 0, y: -6, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="relative w-fit max-w-full bg-[#12141a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex flex-col gap-1.5 mb-0.5 pointer-events-none"
-          >
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#c5a059]/20 text-[#c5a059] border border-[#c5a059]/30">
-                <Sparkles className="w-3 h-3 text-[#c5a059]" />
-                {FLOW_DETAILS[hoveredTab].badge}
-              </span>
-            </div>
-
-            <p className="text-xs text-gray-300 font-light leading-relaxed max-w-xl">
-              {FLOW_DETAILS[hoveredTab].description}
-            </p>
-
-            <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-              {FLOW_DETAILS[hoveredTab].features.map((feat, idx) => (
-                <span
-                  key={idx}
-                  className="text-[10px] text-gray-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md flex items-center gap-1.5"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
-                  {feat}
-                </span>
-              ))}
-            </div>
-
-            {/* Downward Pointer Tail */}
-            <div
-              className={`absolute -bottom-1.5 w-3 h-3 bg-[#12141a] border-r border-b border-white/10 transform rotate-45 transition-all duration-300 ${
-                hoveredTab === 'Umrah'
-                  ? 'left-8 sm:left-10'
-                  : hoveredTab === 'Transport'
-                  ? 'left-24 sm:left-32'
-                  : hoveredTab === 'Ziyarat'
-                  ? 'left-40 sm:left-56'
-                  : 'left-56 sm:left-80'
-              }`}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 1. Service Type Selector Tabs (Sequence: Umrah -> Transport -> Ziyarat -> Umrah Plus) */}
-      <div className="flex items-center gap-1 sm:gap-1.5 p-1.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-2xl w-fit max-w-full overflow-x-auto scrollbar-none shadow-xl">
+      {/* `relative` anchors the callout below, so the callout can be taken out of
+          normal flow entirely. Nothing moves when a tab is hovered, which is what
+          used to cause the flicker: the callout used to insert itself above the
+          tabs, pushing them out from under the cursor. */}
+      <div className="relative z-20">
+        {/* Flow Information Callout Box (Displayed on Hover Only) */}
+        <AnimatePresence>
+          {hoveredTab && (
+            <motion.div
+              key={hoveredTab}
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              onMouseEnter={() => openCallout(hoveredTab)}
+              onMouseLeave={scheduleCloseCallout}
+              className="absolute z-30 bottom-full left-0 mb-2 w-fit max-w-[min(42rem,calc(100vw-3rem))] bg-[#12141a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex flex-col gap-1.5"
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#c5a059]/20 text-[#c5a059] border border-[#c5a059]/30">
+                  <Sparkles className="w-3 h-3 text-[#c5a059]" />
+                  {FLOW_DETAILS[hoveredTab].badge}
+                </span>
+              </div>
+
+              <p className="text-xs text-gray-300 font-light leading-relaxed">
+                {FLOW_DETAILS[hoveredTab].description}
+              </p>
+
+              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                {FLOW_DETAILS[hoveredTab].features.map((feat, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[10px] text-gray-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md flex items-center gap-1.5"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
+                    {feat}
+                  </span>
+                ))}
+              </div>
+
+              {/* Downward Pointer Tail */}
+              <div
+                className={`absolute -bottom-1.5 w-3 h-3 bg-[#12141a] border-r border-b border-white/10 transform rotate-45 transition-all duration-300 ${
+                  hoveredTab === 'Umrah'
+                    ? 'left-8 sm:left-10'
+                    : hoveredTab === 'Transport'
+                    ? 'left-24 sm:left-32'
+                    : hoveredTab === 'Ziyarat'
+                    ? 'left-40 sm:left-56'
+                    : 'left-56 sm:left-80'
+                }`}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div
+          role="tablist"
+          aria-label="Service type"
+          className="flex items-center gap-1 sm:gap-1.5 p-1.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-2xl w-fit max-w-full overflow-x-auto scrollbar-none shadow-xl"
+          onMouseLeave={scheduleCloseCallout}
+        >
         {SERVICE_TABS.map((tab) => {
           const isSelected = activeTab === tab.id;
 
@@ -277,9 +361,14 @@ export default function SearchWidget() {
             <button
               key={tab.id}
               type="button"
-              onMouseEnter={() => setHoveredTab(tab.id)}
-              onMouseLeave={() => setHoveredTab(null)}
+              aria-selected={isSelected}
+              role="tab"
+              onMouseEnter={() => openCallout(tab.id)}
+              onFocus={() => openCallout(tab.id)}
+              onMouseLeave={scheduleCloseCallout}
+              onBlur={scheduleCloseCallout}
               onClick={() => {
+                visitorPickedTab.current = true;
                 setActiveTab(tab.id);
                 setIsCalendarOpen(false);
                 setIsTransportGuestsOpen(false);
@@ -292,7 +381,7 @@ export default function SearchWidget() {
             >
               {isSelected && (
                 <motion.div
-                  layoutId="activeTabPill"
+                  layoutId={pillLayoutId}
                   className="absolute inset-0 bg-[#c5a059] rounded-xl shadow-[0_2px_12px_rgba(197,160,89,0.35)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
@@ -301,12 +390,15 @@ export default function SearchWidget() {
             </button>
           );
         })}
+        </div>
       </div>
 
       {/* 2. Main Booking Input Fields Bar */}
+      {/* z-30 (above the z-20 tab bar) so the calendar and guest popovers are
+          never painted over by the service tabs. */}
       <form
         onSubmit={handleSearch}
-        className="bg-[#12141a]/90 backdrop-blur-2xl p-2 sm:p-2.5 rounded-2xl border border-white/10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-stretch gap-2 w-full"
+        className="relative z-30 bg-[#12141a]/90 backdrop-blur-2xl p-2 sm:p-2.5 rounded-2xl border border-white/10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-stretch gap-2 w-full"
       >
         {/* =========================================
             A. UMRAH & UMRAH PLUS FIELDS (Date Calendar)
