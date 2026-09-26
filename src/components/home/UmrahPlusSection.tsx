@@ -13,6 +13,7 @@ import {
   Crown,
   MapPin
 } from 'lucide-react';
+import SearchWidget from '../SearchWidget';
 
 interface Pillar {
   id: string;
@@ -47,7 +48,7 @@ const PILLARS: Pillar[] = [
     features: ['Tri-City Heritage Coverage', 'Cave Hira, Uhud & Quba', 'Dedicated Historical Route Guide'],
     image: '/assets/images/ziyarat/MakkahZiyaratCover.webp',
     icon: Compass,
-    accentColor: '#E6B325',
+    accentColor: '#F9C344',
   },
   {
     id: 'fleet',
@@ -92,20 +93,26 @@ export default function UmrahPlusSection() {
 
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-white leading-tight">
           What is{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F9C344] via-amber-200 to-[#F9C344] drop-shadow-md">
+          <span className="text-[#F9C344] drop-shadow-md">
             Umrah Plus
           </span>
           ?
         </h2>
 
-        <p className="mt-2 md:mt-3 text-xs sm:text-sm md:text-base text-gray-300 font-light max-w-3xl mx-auto leading-relaxed">
+        {/* <p className="mt-2 md:mt-3 text-xs sm:text-sm md:text-base text-gray-300 font-light max-w-3xl mx-auto leading-relaxed">
           Standard Umrah fulfills the sacred rites. <strong className="text-white font-medium">Umrah Plus</strong> elevates 
           your devotion into an effortless, spiritually enriched odyssey by seamlessly integrating 
           <span className="text-[#F9C344]"> Luxury Haram Stays</span>, 
           <span className="text-[#F9C344]"> Sacred Historic Ziyarat</span>, and 
           <span className="text-[#F9C344]"> Dedicated VIP Fleet Chauffeurs</span>.
-        </p>
+        </p> */}
       </div>
+      
+
+      {/* Left Side: Booking Widget */}
+        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+          <SearchWidget />
+        </div>
 
       {/* 3. THREE SIGNATURE PILLARS (Interactive Grid) */}
       <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 lg:gap-6 my-auto">
@@ -174,10 +181,10 @@ export default function UmrahPlusSection() {
       </div>
 
       {/* 4. THE "PLUS EQUATION" & ACTION CTAs */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto shrink-0 flex flex-col md:flex-row items-center justify-between gap-4 pt-3 pb-1 border-t border-white/10">
+      {/* <div className="relative z-10 w-full max-w-6xl mx-auto shrink-0 flex flex-col md:flex-row items-center justify-between gap-4 pt-3 pb-1 border-t border-white/10"> */}
         
         {/* The Plus Equation Pill */}
-        <div className="hidden lg:flex items-center gap-2.5 text-xs text-gray-300 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+        {/* <div className="hidden lg:flex items-center gap-2.5 text-xs text-gray-300 bg-white/5 px-4 py-2 rounded-full border border-white/10">
           <span className="text-white font-medium">Umrah Rites</span>
           <span className="text-[#F9C344] font-bold">+</span>
           <span className="text-white font-medium">Haram Stays</span>
@@ -187,10 +194,10 @@ export default function UmrahPlusSection() {
           <span className="text-white font-medium">VIP Fleet</span>
           <span className="text-[#F9C344] font-bold">=</span>
           <span className="text-[#F9C344] font-bold uppercase tracking-wider">Umrah Plus</span>
-        </div>
+        </div> */}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+        {/* <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
           <Link
             href="/ziyarat"
             className="px-4 py-2.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold tracking-wider uppercase transition-all duration-300 hover:border-white/40"
@@ -205,9 +212,9 @@ export default function UmrahPlusSection() {
             <span>Customize Umrah Plus</span>
             <ArrowRight size={14} />
           </Link>
-        </div>
+        </div> */}
 
-      </div>
+      {/* </div> */}
     </section>
   );
 }

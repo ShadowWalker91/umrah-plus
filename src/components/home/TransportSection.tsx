@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MapPin, Calendar, Clock, Search, Bus } from 'lucide-react';
 import { SITE_CONFIG } from '@/data/siteConfig';
 import DateInputField from '@/components/booking-engine/DateInputField';
+import SearchWidget from '../SearchWidget';
 
 export default function TransportSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -120,7 +121,7 @@ export default function TransportSection() {
 
       {/* 2. MAIN CONTENT */}
       {/* ADDED: pt-32 md:pt-40 to prevent overlap with sticky menu */}
-      <div className="relative z-20 w-full px-6 lg:px-12 h-full flex flex-col justify-center pt-32 md:pt-40 pb-12">
+      <div className="snap-section relative z-20 w-full px-6 lg:px-12 h-full flex flex-col justify-center pt-32 md:pt-40 pb-12">
         
         {/* HEADER TEXT - No Subtitle, Yellow Title, White Description */}
         <div className="text-center mb-8 md:mb-12">
@@ -133,10 +134,16 @@ export default function TransportSection() {
         </div>
 
         {/* CONTENT GRID */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-7xl mx-auto w-full flex-1">
+        <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-center lg:pb-10 text-center lg:text-left">
           
+
+          {/* Left Side: Booking Widget */}
+          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+            <SearchWidget />
+          </div>
+
           {/* LEFT: CAR IMAGE */}
-          <div className="hidden lg:block relative h-[500px] w-full animate-fade-in-up">
+          <div className="hidden lg:block relative h-[500px] max-w-[500px] w-full animate-fade-in-up">
             <img 
               src={SITE_CONFIG.transportation.image} 
               alt="Luxury Fleet" 
@@ -145,15 +152,15 @@ export default function TransportSection() {
           </div>
 
           {/* RIGHT: BOOKING FORM */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto lg:mx-0">
+          {/* <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto lg:mx-0">
             <h3 className="text-2xl font-bold mb-6 text-white font-serif flex items-center gap-2">
               Book Your Ride <span className="text-[#F9C344] text-sm font-sans font-normal tracking-wide bg-[#F9C344]/10 px-2 py-1 rounded">Best Rates</span>
-            </h3>
+            </h3> */}
             
-            <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+            {/* <form className="space-y-5" onSubmit={(e) => e.preventDefault()}> */}
               
               {/* PICKUP INPUT */}
-              <div className="relative">
+              {/* <div className="relative">
                 <label className="text-xs uppercase text-gray-400 flex items-center gap-2 mb-1.5 font-bold tracking-wider">
                   <MapPin size={12} className="text-[#F9C344]"/> Pickup Location
                 </label>
@@ -168,7 +175,7 @@ export default function TransportSection() {
                 />
                 
                 {/* Pickup Suggestions */}
-                {showPickupList && (
+                {/* {showPickupList && (
                   <div className="absolute z-50 top-full left-0 w-full bg-[#1a1a1a] border border-white/10 rounded-lg mt-1 shadow-xl max-h-48 overflow-y-auto">
                     {isLoading ? (
                       <div className="px-4 py-3 text-gray-500 text-sm">Loading locations...</div>
@@ -176,11 +183,11 @@ export default function TransportSection() {
                       getSuggestions(pickup).map((loc) => renderDropdownItem(loc, 'pickup'))
                     )}
                   </div>
-                )}
-              </div>
+                )} */}
+              {/* </div> */} 
 
               {/* DROPOFF INPUT */}
-              <div className="relative">
+              {/* <div className="relative">
                 <label className="text-xs uppercase text-gray-400 flex items-center gap-2 mb-1.5 font-bold tracking-wider">
                   <MapPin size={12} className="text-[#F9C344]"/> Dropoff Location
                 </label>
@@ -195,7 +202,7 @@ export default function TransportSection() {
                 />
                 
                 {/* Dropoff Suggestions */}
-                {showDropoffList && (
+                {/* {showDropoffList && (
                   <div className="absolute z-50 top-full left-0 w-full bg-[#1a1a1a] border border-white/10 rounded-lg mt-1 shadow-xl max-h-48 overflow-y-auto">
                     {isLoading ? (
                       <div className="px-4 py-3 text-gray-500 text-sm">Loading locations...</div>
@@ -203,11 +210,11 @@ export default function TransportSection() {
                       getSuggestions(dropoff).map((loc) => renderDropdownItem(loc, 'dropoff'))
                     )}
                   </div>
-                )}
-              </div>
+                )} */}
+              {/* </div> */} 
 
               {/* DATE & TIME GRID */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider">
                     <Calendar size={12} className="text-[#F9C344]"/> Date
@@ -231,23 +238,23 @@ export default function TransportSection() {
                     className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#F9C344] outline-none transition text-sm cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]" 
                   />
                 </div>
-              </div>
+              </div> */}
 
-              <button className="w-full bg-[#F9C344] text-black font-bold py-4 rounded-lg hover:bg-white hover:scale-[1.02] transition-all mt-2 shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2">
+              {/* <button className="w-full bg-[#F9C344] text-black font-bold py-4 rounded-lg hover:bg-white hover:scale-[1.02] transition-all mt-2 shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2">
                 <Search size={18} /> Book Best Price & Vehicle
-              </button>
+              </button> */}
 
-            </form>
-          </div>
+            {/* </form> */}
+          {/* </div> */}
 
         </div>
 
         {/* BOTTOM PACKAGE BUTTONS */}
-        <div className="flex flex-col md:flex-row gap-4 justify-center mt-8 md:mt-12 w-full max-w-2xl mx-auto">
-          <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2">
+        <div className="flex flex-col md:flex-row gap-4 justify-center w-full max-w-2xl mx-auto">
+          <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2 cursor-pointer">
             <Calendar size={18} /> Flexible Umrah Packages
           </button>
-          <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2">
+          <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2 cursor-pointer">
             <Bus size={18} /> Fixed Transport Packages
           </button>
         </div>
