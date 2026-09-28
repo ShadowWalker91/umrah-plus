@@ -153,7 +153,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
       ? 4
       : isUmrahPlus
         ? 8
-        : (hasTransport ? 3 : 2);
+        : (hasTransport ? 5 : 2);
 
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -377,7 +377,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
         <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
           <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step 1 of 4 • Service Mode & Group Size
+            Step {step} of {totalSteps} • Service Mode & Group Size
           </span>
         </div>
 
@@ -1755,23 +1755,29 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   }
 
   // =============================================================
-  // REGULAR UMRAH - STEP 2: TRANSPORTATION (IF ADD-ON SELECTED)
+  // REGULAR UMRAH - TRANSPORT SEGMENT: STEP 2 (MODE & ROUTE),
+  // STEP 3 (FLEET), STEP 4 (TRANSFER LEG DATES & PICK-UP TIMINGS)
   // Only rendered if transport add-on was explicitly selected in regular Umrah
   // =============================================================
-  const isTransportationStep = (!isZiyarat && !isUmrahPlus && hasTransport && step === 2);
+  const isTransportationStep = (!isZiyarat && !isUmrahPlus && hasTransport && step >= 2 && step <= 4);
 
   if (isTransportationStep) {
-    const availableVehicles = VEHICLES.filter(v => v.capacity >= state.passengerCount);
+    const transportStepLabel = step === 2
+      ? 'Transportation'
+      : step === 3
+        ? 'Choose Private Vehicle & Fleet Setup'
+        : 'Transfer Leg Dates & Pick-Up Timings';
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
         <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
           <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Transportation
+            Step {step} of {totalSteps} • {transportStepLabel}
           </span>
         </div>
 
-        {/* Skip Transportation Option Banner */}
+        {/* Skip Transportation Option Banner (Step 2 only) */}
+        {step === 2 && (
         <div className={`border rounded-2xl p-4 sm:p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${state.skipTransport
             ? 'bg-[#c5a059]/10 border-[#c5a059]/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]'
             : 'bg-[#0c0d10] border-white/5 hover:border-white/20'
@@ -1813,13 +1819,15 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
             {state.skipTransport ? 'Transport Skipped ✓' : 'Skip Transportation ➔'}
           </button>
         </div>
+        )}
 
         {/* ========================================================= */}
         {/* UNIFIED TRANSPORTATION ENGINE FOR UMRAH & UMRAH PLUS FLOW */}
         {/* ========================================================= */}
         {!state.skipTransport && (
           <div className="space-y-8">
-            {/* 1. CHOOSE TRANSPORT BOOKING MODE */}
+            {/* 1. CHOOSE TRANSPORT BOOKING MODE (Step 2 only) */}
+            {step === 2 && (
             <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6">
               <label className="block text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-3">
                 Choose Transport Booking Mode *
@@ -1877,11 +1885,14 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 </div>
               </div>
             </div>
+            )}
 
-            {/* 2. ROUTE & LOCATION DETAILS */}
-            {state.transportMode === 'fixed' ? (
+            {/* 2. ROUTE PACKAGE / ROUTE COMBINATION (Step 2) & LEG SCHEDULE (Step 4) */}
+            {(step === 2 || step === 4) && (state.transportMode === 'fixed' ? (
               /* A: FIXED ROUTE CIRCUIT PACKAGES */
               <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 space-y-6">
+                {step === 2 && (
+                <>
                 <div>
                   <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-1">
                     Select Pilgrimage Route Package *
@@ -1921,9 +1932,12 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     );
                   })}
                 </div>
+                </>
+                )}
 
-                {/* Circuit Stops Timings */}
-                <div className="border-t border-white/10 pt-5 space-y-4">
+                {/* Circuit Stops Timings (Step 4 only) */}
+                {step === 4 && (
+                <div className="space-y-4">
                   <h4 className="text-xs uppercase tracking-widest text-white font-bold flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#c5a059]" />
                     Transfer Leg Dates & Pick-Up Timings
@@ -1965,10 +1979,12 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     ))}
                   </div>
                 </div>
+                )}
               </div>
             ) : (
               /* B: POINT-TO-POINT ROUTE & GOOGLE PLACES */
               <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 space-y-6">
+                {step === 2 && (
                 <div>
                   <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-2">
                     Standard Transfer Route Combination *
@@ -1993,9 +2009,11 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     })}
                   </div>
                 </div>
+                )}
 
-                {/* Google Places Autocomplete: Pickup & Drop-off */}
-                <div className="border-t border-white/10 pt-5 space-y-4">
+                {/* Google Places Autocomplete: Pickup & Drop-off (Step 4 only) */}
+                {step === 4 && (
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#c5a059]" />
@@ -2070,10 +2088,13 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     </div>
                   </div>
                 </div>
+                )}
               </div>
+            )
             )}
 
-            {/* 3. CHOOSE PRIVATE VEHICLE & FLEET SETUP */}
+            {/* 3. CHOOSE PRIVATE VEHICLE & FLEET SETUP (Step 3 only) */}
+            {step === 3 && (
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -2201,6 +2222,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 })}
               </div>
             </div>
+            )}
           </div>
         )}
       </motion.div>

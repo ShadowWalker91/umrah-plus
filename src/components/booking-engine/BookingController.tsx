@@ -369,14 +369,16 @@ export default function BookingController({
       ? bookingState.selectedUpsells.includes('transport')
       : !bookingState.skipTransport);
 
-  // In Transport Flow: 5 Steps (1: Party & Mode, 2: Route, 3: Vehicle, 4: Schedule & Locations, 5: Lead Details)
+  // Transport Flow: 5 Steps (1: Party & Mode, 2: Route, 3: Vehicle, 4: Schedule & Locations, 5: Lead Details)
+  // Regular Umrah with transport add-on: 5 Steps (1: Stay & Guests, 2: Mode & Route,
+  // 3: Fleet Setup, 4: Transfer Leg Dates & Pick-Up Timings, 5: Lead Details) — otherwise 2 Steps.
   const totalSteps = isTransport
     ? 5
     : isZiyarat
       ? 4
       : isUmrahPlus
         ? 8
-        : (hasTransport ? 3 : 2);
+        : (hasTransport ? 5 : 2);
 
   // Auto-sync vehicle quantity and calculated price based on total guests and chosen car capacity
   useEffect(() => {
@@ -780,6 +782,72 @@ export default function BookingController({
       return;
     }
 
+    // Regular Umrah: step-per-screen validation for the transport segment & lead details
+    if (isRegularUmrah) {
+      if (hasTransport && currentStep === 2) {
+        if (bookingState.transportMode === 'fixed') {
+          if (!bookingState.fixedRouteId) {
+            alert("Please select a fixed route package.");
+            return;
+          }
+        } else {
+          if (!bookingState.pointToPointRoute) {
+            alert("Please select a transfer route combination.");
+            return;
+          }
+        }
+      } else if (hasTransport && currentStep === 3) {
+        if (!bookingState.transportVehicleId) {
+          updateState({ transportVehicleId: 'sedan', selectedVehicle: 'sedan' });
+        }
+      } else if (hasTransport && currentStep === 4) {
+        if (bookingState.transportMode === 'fixed') {
+          const missingDateLeg = bookingState.fixedRouteLegs.find(l => !l.date);
+          if (missingDateLeg) {
+            alert(`Please select travel date for "${missingDateLeg.label}".`);
+            return;
+          }
+        } else {
+          if (!bookingState.pointToPointPickupLocation.trim()) {
+            alert("Please enter a pickup location.");
+            return;
+          }
+          if (!bookingState.pointToPointDropoffLocation.trim()) {
+            alert("Please enter a drop-off location.");
+            return;
+          }
+          if (!bookingState.pointToPointPickupDate) {
+            alert("Please select a pickup date.");
+            return;
+          }
+        }
+      } else if (currentStep === totalSteps) {
+        if (!bookingState.leadDetails.fullName.trim()) {
+          alert("Please enter your full name.");
+          return;
+        }
+        if (!bookingState.leadDetails.nationality.trim()) {
+          alert("Please select your nationality.");
+          return;
+        }
+        if (!bookingState.leadDetails.phone.trim()) {
+          alert("Please enter your contact phone number.");
+          return;
+        }
+        if (!bookingState.leadDetails.email.trim()) {
+          alert("Please enter your email address.");
+          return;
+        }
+      }
+
+      if (currentStep < totalSteps) {
+        setCurrentStep(prev => prev + 1);
+      } else {
+        await handleSubmitInquiry();
+      }
+      return;
+    }
+
     if (currentStep < totalSteps) {
       setCurrentStep(prev => prev + 1);
     } else if (currentStep === totalSteps) {
@@ -1013,7 +1081,11 @@ export default function BookingController({
     }
     // Regular Umrah
     if (currentStep === 1) return 'Stay & Guests';
-    if (currentStep === 2 && hasTransport) return 'Transportation';
+    if (hasTransport) {
+      if (currentStep === 2) return 'Transportation';
+      if (currentStep === 3) return 'Choose Private Vehicle & Fleet Setup';
+      if (currentStep === 4) return 'Transfer Leg Dates & Pick-Up Timings';
+    }
     return 'Lead Passenger Details';
   };
 
@@ -1046,8 +1118,8 @@ export default function BookingController({
               Back
             </button>
 
-            {/* Skip Transport button on Step 2 (Regular Umrah only) */}
-            {(currentStep === 2 && isRegularUmrah && hasTransport) && (
+            {/* Skip Transport button on transport steps 2–4 (Regular Umrah only) */}
+            {(isRegularUmrah && hasTransport && currentStep >= 2 && currentStep <= 4) && (
               <button
                 type="button"
                 onClick={handleSkipTransport}

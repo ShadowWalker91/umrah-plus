@@ -72,7 +72,7 @@ export default function ZiyaratSection() {
       <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-start pt-32 pb-20 lg:pb-16 text-center lg:text-left">
         
         {/* Left Side: Booking Widget */}
-        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+        <div className="w-full md:max-w-2xl lg:max-w-none z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
           <SearchWidget activeService="Ziyarat" />
         </div>
         {/* Left Side: Text Content */}

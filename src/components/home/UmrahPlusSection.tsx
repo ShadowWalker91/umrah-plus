@@ -116,7 +116,7 @@ export default function UmrahPlusSection() {
       {/* No bottom margin needed any more: the tab callout and the calendar /
           guest popovers are all absolutely positioned, so they overlay the
           content above instead of stealing vertical space from the section. */}
-      <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 md:mt-32 lg:mt-72 flex justify-center lg:justify-start">
+      <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 md:mt-32 lg:mt-52 flex justify-center lg:justify-start">
         <SearchWidget activeService="Umrah Plus" />
       </div>
 

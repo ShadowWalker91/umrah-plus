@@ -138,12 +138,12 @@ export default function TransportSection() {
           
 
           {/* Left Side: Booking Widget */}
-          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[80%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
             <SearchWidget activeService="Transport" />
           </div>
 
           {/* LEFT: CAR IMAGE */}
-          <div className="hidden lg:block relative h-[500px] max-w-[500px] w-full animate-fade-in-up">
+          <div className="hidden lg:block relative h-[500px] xl:max-w-[350px] lg:max-w-[150px] w-full animate-fade-in-up">
             <img 
               src={SITE_CONFIG.transportation.image} 
               alt="Luxury Fleet" 
