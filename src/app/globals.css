@@ -550,6 +550,21 @@ body.overflow-hidden {
     pointer-events: none;
 }
 
+/* A z-index on the popup alone only competes inside its own stacking context,
+   so it can still be covered by sibling city columns or the sticky Trip Summary
+   panel. Raise the whole ancestor chain while the popup is open. */
+
+/* 1. Beat the sibling city columns (their route lists sit at z-20) */
+[id^="col-"]:has(.z-node:hover) {
+    z-index: 100;
+}
+
+/* 2. Beat the sticky Trip Summary sidebar (z auto) while hovering, but stay
+      under the fixed site header (z-50) and the add-ons drawer (z-100/101) */
+.booking-panel:has(.z-node:hover) {
+    z-index: 40;
+}
+
 .z-node:hover .info-popup {
     opacity: 1;
     visibility: visible;
@@ -871,4 +886,4 @@ body.overflow-hidden {
         transform: translateX(-50%) translateY(10px) !important;
         width: min(290px, 85vw) !important;
     }
-}
+}

@@ -14,7 +14,7 @@ import {
   Minus,
   Plus,
   MapPin,
-  Check,
+  // Check, // unused while city checkboxes are hidden
   Sparkles,
   Info,
   X
@@ -103,7 +103,9 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
   const [isTransportGuestsOpen, setIsTransportGuestsOpen] = useState(false);
 
   // Ziyarat Specific State
-  const [ziyaratCities, setZiyaratCities] = useState<string[]>(['Makkah', 'Madinah', 'Taif']);
+  // City selection is disabled for now — cities are display-only info.
+  // const [ziyaratCities, setZiyaratCities] = useState<string[]>(['Makkah', 'Madinah', 'Taif']);
+  const ziyaratCities = ['Makkah', 'Madinah', 'Taif'];
   const [isZiyaratCitiesOpen, setIsZiyaratCitiesOpen] = useState(false);
   const [ziyaratPersons, setZiyaratPersons] = useState<number>(2);
   const [isZiyaratGuestsOpen, setIsZiyaratGuestsOpen] = useState(false);
@@ -142,11 +144,12 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
     []
   );
 
-  const toggleZiyaratCity = (city: string) => {
-    setZiyaratCities((prev) =>
-      prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
-    );
-  };
+  // City selection disabled for now — re-enable with the state above when needed.
+  // const toggleZiyaratCity = (city: string) => {
+  //   setZiyaratCities((prev) =>
+  //     prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
+  //   );
+  // };
 
   // Today reference at midnight to strictly disable past dates
   const today = useMemo(() => {
@@ -268,14 +271,10 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
     }
 
     if (activeTab === 'Ziyarat') {
-      if (ziyaratCities.length === 0) {
-        setIsZiyaratCitiesOpen(true);
-        return;
-      }
+      // Cities are picked on the booking page itself, so they are not sent here.
       const params = new URLSearchParams({
         type: 'Ziyarat',
-        passengers: ziyaratPersons.toString(),
-        cities: ziyaratCities.join(',')
+        passengers: ziyaratPersons.toString()
       });
       router.push(`/booking?${params.toString()}`);
       return;
@@ -722,7 +721,7 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
         ========================================= */}
         {activeTab === 'Ziyarat' && (
           <>
-            {/* 1. Cities Multi-Select Checkbox Dropdown */}
+            {/* 1. Cities Dropdown (display-only for now) */}
             <div
               ref={ziyaratCitiesRef}
               className="flex-1 bg-[#1a1c22] rounded-xl px-4 py-3 sm:px-5 md:px-5 md:py-3.5 flex items-center border border-white/5 relative z-50 cursor-pointer hover:border-white/15 transition-all"
@@ -742,7 +741,7 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
               </div>
               <ChevronDown className={`text-gray-400 w-4 h-4 ml-2 shrink-0 transition-transform duration-200 ${isZiyaratCitiesOpen ? 'rotate-180 text-[#c5a059]' : ''}`} />
 
-              {/* Cities Checkbox Popover */}
+              {/* Cities Popover (info only) */}
               <AnimatePresence>
                 {isZiyaratCitiesOpen && (
                   <motion.div
@@ -758,51 +757,30 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
                         Select Cities
                       </span>
                       <span className="text-[11px] text-gray-400">
-                        {ziyaratCities.length} selected
+                        {ziyaratCities.length} Cities
                       </span>
                     </div>
 
+                    {/* City list — selection (checkboxes / click-to-toggle) is
+                        commented out for now, rows are shown for info only. */}
                     <div className="space-y-2">
                       {[
                         { name: 'Makkah', desc: 'Sacred Sites & Holy Landmarks' },
                         { name: 'Madinah', desc: 'City of the Prophet ﷺ' },
                         { name: 'Taif', desc: 'Historic Valley & Mountain Sites' }
-                      ].map((c) => {
-                        const isChecked = ziyaratCities.includes(c.name);
-                        return (
-                          <div
-                            key={c.name}
-                            onClick={() => toggleZiyaratCity(c.name)}
-                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border transition-all cursor-pointer ${
-                              isChecked
-                                ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-white'
-                                : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10 hover:border-white/15'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={() => {}} // handled by click on container
-                                className="sr-only"
-                              />
-                              <div
-                                className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                                  isChecked
-                                    ? 'bg-[#c5a059] border-[#c5a059] text-black shadow-[0_0_10px_rgba(197,160,89,0.4)]'
-                                    : 'border-white/30 bg-black/40'
-                                }`}
-                              >
-                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3] text-black" />}
-                              </div>
-                              <span className="text-sm font-semibold tracking-wide">{c.name}</span>
-                            </div>
-                            <span className="text-[11px] text-gray-400 font-light truncate max-w-[130px]">
-                              {c.desc}
-                            </span>
+                      ].map((c) => (
+                        <div
+                          key={c.name}
+                          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl border transition-all cursor-default bg-white/5 border-white/5 text-gray-300"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-semibold tracking-wide">{c.name}</span>
                           </div>
-                        );
-                      })}
+                          <span className="text-[11px] text-gray-400 font-light truncate max-w-[130px]">
+                            {c.desc}
+                          </span>
+                        </div>
+                      ))}
                     </div>
 
                     <button

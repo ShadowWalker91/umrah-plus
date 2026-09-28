@@ -263,6 +263,9 @@ export default function BookingController({
     ? Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)))
     : 5;
 
+  // Ziyarat visitors pick their cities on this page, so when the widget sends no
+  // `cities` param the flow starts with nothing pre-selected (regular Umrah /
+  // Umrah Plus keep their original defaults).
   const parsedCitiesList = initialCities && initialCities.length > 0
     ? initialCities.map(c => {
         const lower = c.toLowerCase().trim();
@@ -271,13 +274,13 @@ export default function BookingController({
         if (lower.startsWith('taif')) return 'taif';
         return lower;
       })
-    : ['mak', 'mad'];
+    : (isZiyarat ? [] : ['mak', 'mad']);
 
   const defaultZiyaratRoutes: string[] = [];
   if (parsedCitiesList.includes('mak')) defaultZiyaratRoutes.push('mak-1');
   if (parsedCitiesList.includes('mad')) defaultZiyaratRoutes.push('mad-1');
   if (parsedCitiesList.includes('taif')) defaultZiyaratRoutes.push('taif-1');
-  if (defaultZiyaratRoutes.length === 0) defaultZiyaratRoutes.push('mak-1');
+  if (defaultZiyaratRoutes.length === 0 && !isZiyarat) defaultZiyaratRoutes.push('mak-1');
 
   const [bookingState, setBookingState] = useState<BookingState>({
     adultsCount: initialAdults,
@@ -358,6 +361,26 @@ export default function BookingController({
     ? [...bookingState.selectedZiyaratCitiesList]
     : ['mak']
   ).sort((a, b) => cityOrder.indexOf(a) - cityOrder.indexOf(b));
+
+  // Reflect the cities chosen on the Ziyarat booking page in the URL
+  // (?type=Ziyarat&passengers=2&cities=Makkah%2CMadinah%2CTaif) using a shallow
+  // history update so the server components are not re-rendered.
+  useEffect(() => {
+    if (!isZiyarat) return;
+    const cityNameById: Record<string, string> = { mak: 'Makkah', mad: 'Madinah', taif: 'Taif' };
+    const nextValue = (['mak', 'mad', 'taif'] as const)
+      .filter(id => bookingState.selectedZiyaratCitiesList.includes(id))
+      .map(id => cityNameById[id])
+      .join(',');
+
+    const params = new URLSearchParams(window.location.search);
+    if ((params.get('cities') || '') === nextValue) return;
+    if (nextValue) params.set('cities', nextValue);
+    else params.delete('cities');
+
+    const query = params.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
+  }, [isZiyarat, bookingState.selectedZiyaratCitiesList]);
 
   const isRegularUmrah = !isZiyarat && !isUmrahPlus && !isTransport;
   const isSimpleUmrah = isRegularUmrah;
@@ -1094,7 +1117,7 @@ export default function BookingController({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex-1 bg-[#1a1c22] p-6 md:p-10 rounded-2xl shadow-xl border border-white/5 relative"
+        className="booking-panel flex-1 bg-[#1a1c22] p-6 md:p-10 rounded-2xl shadow-xl border border-white/5 relative"
       >
         <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
 

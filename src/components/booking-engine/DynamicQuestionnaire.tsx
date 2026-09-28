@@ -902,14 +902,15 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
         ? state.selectedZiyaratRoutes.filter(id => id !== routeId)
         : [...state.selectedZiyaratRoutes, routeId];
 
-      const rObj = ZIYARAT_ROUTES.find(r => r.id === routeId);
-      let updatedCities = [...(state.selectedZiyaratCitiesList || [])];
-      if (rObj && !updatedCities.includes(rObj.cityId)) {
-        updatedCities.push(rObj.cityId);
-      }
+      // Cities stay in sync with the routes: a city is only selected while at
+      // least one of its routes is checked (keeps the URL/summary accurate).
+      const updatedCities = (['mak', 'mad', 'taif'] as const).filter(cityId =>
+        updatedRoutes.some(rId => ZIYARAT_ROUTES.find(r => r.id === rId)?.cityId === cityId)
+      );
+
       updateState({
         selectedZiyaratRoutes: updatedRoutes,
-        selectedZiyaratCitiesList: updatedCities
+        selectedZiyaratCitiesList: [...updatedCities]
       });
     };
 
@@ -998,6 +999,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   const isChecked = state.selectedZiyaratRoutes.includes(rId);
                   const isExpanded = state.expandedZiyaratRoute === rId;
                   const priceEntry = ZIYARAT_PRICES[rId];
+                  const fareNum = getZiyaratRouteFare(rId, state.selectedVehicle || 'sedan');
+                  const routeFare = fareNum !== null
+                    ? `SAR ${fareNum}`
+                    : (priceEntry?.custom ? 'Custom' : null);
                   const typeClass = city.id === 'mak' ? 'branch-mak' : (city.id === 'taif' ? 'branch-taif' : 'branch-mad');
 
                   return (
@@ -1042,18 +1047,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           </div>
                         </div>
 
-                        {/* Price Tag & Downward Expand Button */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {priceEntry?.custom ? (
-                            <span className="text-[10px] font-bold text-[#f9e8a2] bg-black/40 border border-[#d4af37]/30 px-2 py-0.5 rounded uppercase">
-                              Custom
-                            </span>
-                          ) : priceEntry?.startingFrom ? (
-                            <span className="text-[10px] font-bold text-[#f9e8a2] bg-black/40 border border-[#d4af37]/30 px-2 py-0.5 rounded uppercase whitespace-nowrap">
-                              Starting from SAR {priceEntry.startingFrom}
-                            </span>
-                          ) : null}
-
+                        {/* Route Fare (same pricing logic as the Selected Ziyarat Routes
+                            panel) stacked above the Downward Expand Button */}
+                        <div className="flex flex-col items-end gap-3 shrink-0">
                           <button
                             type="button"
                             onClick={(e) => toggleExpandRoute(e, rId)}
@@ -1067,6 +1063,11 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                             </svg>
                           </button>
+                                                    {routeFare && (
+                              <span className="text-[10px] font-bold text-[#f9e8a2] bg-black/40 border border-[#d4af37]/30 px-1 py-0.5 rounded uppercase whitespace-nowrap shadow-[0_0_8px_rgba(212,175,55,0.15)]">
+                                {routeFare}
+                              </span>
+                            )}
                         </div>
                       </div>
 

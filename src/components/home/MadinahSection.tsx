@@ -74,7 +74,7 @@ export default function MadinahSection() {
         
 
         {/* Left Side: Booking Widget */}
-        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+        <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 md:mt-32 lg:mt-52 flex justify-center lg:justify-start">
           <SearchWidget />
         </div>
         {/* Left Side: Text Content */}
