@@ -45,7 +45,10 @@ import {
   ZIYARAT_SITES,
   ZIYARAT_FLEET,
   ZIYARAT_PRICES,
-  getZiyaratRouteFare
+  getZiyaratRouteFare,
+  getZiyaratGroupPax,
+  getRequiredFleetCount,
+  getZiyaratAllocatedQuantity
 } from '@/data/ziyaratBuilderData';
 import { COUNTRIES } from '@/data/countriesData';
 
@@ -145,7 +148,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
     ? !state.skipTransport
     : (isRegularUmrah
       ? state.selectedUpsells.includes('transport')
-      : !state.skipTransport);
+      : (!isZiyarat && !state.skipTransport));
 
   const totalSteps = isTransport
     ? 5
@@ -568,19 +571,20 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
           </span>
         </div>
 
-        {/* Unified Tabbed Route Selection Container with Tab Feel & Same Body Content */}
-        <div className="bg-[#0c0d10] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-          {/* Tab Navigation Header */}
-          <div className="p-3 sm:p-4 bg-[#14161d] border-b border-white/10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 p-1.5 bg-black/40 rounded-xl border border-white/5">
+        {/* Tabbed Route Selection: the active tab merges seamlessly into the
+            gold-bordered options panel below (connected-tab pattern) */}
+        <div className="bg-[#0c0d10] rounded-2xl shadow-[0_0_50px_rgba(197,160,89,0.10)] overflow-hidden">
+          {/* Tab row — pulled down 2px to overlap the panel's top border;
+              on mobile stack so the ACTIVE tab is always the one touching the panel */}
+          <div className={`${isFixed ? 'flex flex-col-reverse' : 'flex flex-col'} gap-2 sm:grid sm:grid-cols-2 sm:gap-3 relative z-10 -mb-[2px]`}>
               {/* Tab 1: Fixed Route Packages */}
               <button
                 type="button"
                 onClick={() => updateState({ transportMode: 'fixed' })}
-                className={`relative px-4 py-3 sm:py-3.5 rounded-xl text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer ${
+                className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${
                   isFixed
-                    ? 'bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                    : 'border-white/10 border-b-[#14161d] bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -607,10 +611,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               <button
                 type="button"
                 onClick={() => updateState({ transportMode: 'pointToPoint' })}
-                className={`relative px-4 py-3 sm:py-3.5 rounded-xl text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer ${
+                className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${
                   !isFixed
-                    ? 'bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                    : 'border-white/10 border-b-[#14161d] bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -632,11 +636,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   Single Leg
                 </span>
               </button>
-            </div>
           </div>
 
-          {/* Unified Body Content */}
-          <div className="p-5 sm:p-6">
+          {/* Body Content — gold boundary continues seamlessly from the active tab */}
+          <div className="border-2 border-[#c5a059] rounded-b-2xl bg-[#0c0d10] p-5 sm:p-6 shadow-[0_0_35px_rgba(197,160,89,0.12)]">
             <AnimatePresence mode="wait">
               {isFixed ? (
                 <motion.div
@@ -887,7 +890,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // ZIYARAT FLOW - STEP 1 (Or Step 5 in Umrah Plus): CHOOSE SACRED ROUTES (HORIZONTAL BUILDER)
   // Replicating media_1789907816882.html exactly
   // =============================================================
-  const isZiyaratRouteStep = (isZiyarat && step === 1) || (isUmrahPlus && step === 5);
+  const isZiyaratRouteStep = (isZiyarat && step === 1) || (isUmrahPlus && step === 4);
   if (isZiyaratRouteStep) {
     const ZIYARAT_BUILDER_CITIES = [
       { id: "mak", name: "Makkah", img: "https://media-public.canva.com/MtqFQ/MAGLyYMtqFQ/1/s.jpg", routes: ['mak-1', 'mak-all'] },
@@ -999,9 +1002,11 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   const isChecked = state.selectedZiyaratRoutes.includes(rId);
                   const isExpanded = state.expandedZiyaratRoute === rId;
                   const priceEntry = ZIYARAT_PRICES[rId];
-                  const fareNum = getZiyaratRouteFare(rId, state.selectedVehicle || 'sedan');
+                  const selectedFleetId = state.selectedVehicle || 'sedan';
+                  const fleetQty = getZiyaratAllocatedQuantity(selectedFleetId, isUmrahPlus, state.adultsCount, state.childrenCount, state.passengerCount);
+                  const fareNum = getZiyaratRouteFare(rId, selectedFleetId);
                   const routeFare = fareNum !== null
-                    ? `SAR ${fareNum}`
+                    ? `SAR ${fareNum * fleetQty}`
                     : (priceEntry?.custom ? 'Custom' : null);
                   const typeClass = city.id === 'mak' ? 'branch-mak' : (city.id === 'taif' ? 'branch-taif' : 'branch-mad');
 
@@ -1137,7 +1142,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // =============================================================
   // ZIYARAT FLOW - STEP 2 (Or Step 6 in Umrah Plus): SELECT YOUR PREMIUM FLEET
   // =============================================================
-  const isZiyaratFleetStep = (isZiyarat && step === 2) || (isUmrahPlus && step === 6);
+  const isZiyaratFleetStep = (isZiyarat && step === 2) || (isUmrahPlus && step === 5);
   if (isZiyaratFleetStep) {
     const BUILDER_FLEET = [
       { id: 'sedan', name: "Sedan Camry", pax: 2, img: "https://media.chromedata.com/MediaGallery/media/MjkzOTU4Xk1lZGlhIEdhbGxlcnk/LMd-9QmYj0RCGAoxWsfyPWl1t1lqVvBOWhYclhW_GkmTSoPJtmjQooeAQy-4AZvqC80rpio2ZaQZSeYea8gHA1JZAMeve7Gpm0P4JEYia9pYaK5dPRINNtNjTzOlaxeUIZI61loFi1vRgiIl4fJLEecm6T2z3C4NeT12INl11yM/cc_2026TOC022075593_01_640_218.png" },
@@ -1148,8 +1153,14 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
       { id: 'bus49', name: "49 Seater Bus", pax: 49, img: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/07/6-bus.webp" }
     ];
 
-    const currentPax = state.passengerCount || state.adultsCount || 2;
+    const totalPax = getZiyaratGroupPax(isUmrahPlus, state.adultsCount, state.childrenCount, state.passengerCount);
     const activeVehicleId = state.selectedVehicle || 'sedan';
+    const activeVehicle = BUILDER_FLEET.find(v => v.id === activeVehicleId) || BUILDER_FLEET[0];
+    const activeQty = getRequiredFleetCount(totalPax, activeVehicle.pax);
+    const pricedRoutesTotal = (state.selectedZiyaratRoutes || []).reduce((sum, rId) => {
+      const fare = getZiyaratRouteFare(rId, activeVehicle.id);
+      return sum + (fare || 0);
+    }, 0);
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
@@ -1161,22 +1172,19 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {BUILDER_FLEET.map(v => {
-            const isDisabled = false;
-            const isActive = activeVehicleId === v.id && !isDisabled;
+            const isActive = activeVehicleId === v.id;
+            const requiredCars = getRequiredFleetCount(totalPax, v.pax);
+            const needsMultiple = totalPax > v.pax;
 
             return (
               <div
                 key={v.id}
                 onClick={() => {
-                  if (!isDisabled) {
-                    updateState({ selectedVehicle: v.id });
-                  }
+                  updateState({ selectedVehicle: v.id });
                 }}
-                className={`rounded-2xl border p-5 flex flex-col items-center justify-between text-center transition-all cursor-pointer relative ${isDisabled
-                    ? 'opacity-30 grayscale cursor-not-allowed bg-[#0c0d10] border-white/5'
-                    : isActive
-                      ? 'border-[#c5a059] bg-[#1e293b]/95 shadow-[0_10px_30px_rgba(212,175,55,0.3)] ring-2 ring-[#c5a059] scale-[1.02]'
-                      : 'border-white/10 bg-[#131c2a]/85 hover:border-[#c5a059]/50 hover:-translate-y-1 hover:shadow-xl'
+                className={`rounded-2xl border p-5 flex flex-col items-center justify-between text-center transition-all cursor-pointer relative ${isActive
+                    ? 'border-[#c5a059] bg-[#1e293b]/95 shadow-[0_10px_30px_rgba(212,175,55,0.3)] ring-2 ring-[#c5a059] scale-[1.02]'
+                    : 'border-white/10 bg-[#131c2a]/85 hover:border-[#c5a059]/50 hover:-translate-y-1 hover:shadow-xl'
                   }`}
               >
                 <div className="w-full h-24 flex items-center justify-center mb-3">
@@ -1191,13 +1199,49 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 <span className="text-xs text-[#c5a059] bg-[#c5a059]/10 px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider mb-3">
                   Up to {v.pax} Passengers
                 </span>
-                <div className="mt-auto text-[11px] font-bold uppercase tracking-wider">
-                  {isActive ? (
-                    <span className="text-[#c5a059]">✓ Selected Fleet</span>
-                  ) : isDisabled ? (
-                    <span className="text-gray-500">Capacity Exceeded</span>
+
+                {/* Capacity fit & fleet allocation (same model as the transport fleet step) */}
+                <div className="mt-auto w-full pt-1 space-y-2">
+                  {needsMultiple ? (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-[11px] text-amber-300 flex items-center justify-between text-left">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span>{totalPax} guests exceed 1 car ({v.pax} pax).</span>
+                      </div>
+                      <span className="bg-amber-400 text-black font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
+                        {requiredCars}x Required
+                      </span>
+                    </div>
                   ) : (
-                    <span className="text-gray-400 hover:text-white">Click to Select</span>
+                    <div className="text-[11px] text-gray-400 flex items-center justify-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>1 car comfortably accommodates {totalPax} guest{totalPax > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+
+                  {isActive ? (
+                    <>
+                      <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-left">
+                        <span className="text-gray-400 font-medium">Allocated Vehicles:</span>
+                        <span className="font-bold text-[#c5a059] bg-[#c5a059]/10 border border-[#c5a059]/30 px-2.5 py-0.5 rounded-lg">
+                          {requiredCars}x {v.name}
+                        </span>
+                      </div>
+                      {pricedRoutesTotal > 0 && (
+                        <div className="flex items-baseline justify-between gap-x-2 text-left">
+                          <span className="text-[11px] text-gray-400 uppercase font-semibold min-w-0">
+                            {activeQty > 1 ? `${activeQty}x Route Fares Total:` : 'Route Fares Total:'}
+                          </span>
+                          <span className="text-lg font-bold text-[#c5a059] font-mono whitespace-nowrap shrink-0">
+                            SAR {pricedRoutesTotal * activeQty}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 hover:text-white text-center">
+                      Click to Select
+                    </div>
                   )}
                 </div>
               </div>
@@ -1211,7 +1255,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // =============================================================
   // ZIYARAT FLOW - STEP 3 (Or Step 7 in Umrah Plus): SCHEDULE ITINERARY DATES
   // =============================================================
-  const isZiyaratDateStep = (isZiyarat && step === 3) || (isUmrahPlus && step === 7);
+  const isZiyaratDateStep = (isZiyarat && step === 3) || (isUmrahPlus && step === 6);
   if (isZiyaratDateStep) {
     const todayStr = new Date().toISOString().split('T')[0];
 
@@ -1252,9 +1296,11 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 const curDate = state.selectedZiyaratRouteDates?.[rId] || '';
                 const isDateValid = Boolean(curDate && curDate >= todayStr);
                 const pEntry = ZIYARAT_PRICES[rId];
-                const fareNum = getZiyaratRouteFare(rId, state.selectedVehicle || 'sedan');
+                const selectedFleetId = state.selectedVehicle || 'sedan';
+                const fleetQty = getZiyaratAllocatedQuantity(selectedFleetId, isUmrahPlus, state.adultsCount, state.childrenCount, state.passengerCount);
+                const fareNum = getZiyaratRouteFare(rId, selectedFleetId);
                 const routeFare = fareNum !== null
-                  ? `SAR ${fareNum}`
+                  ? `SAR ${fareNum * fleetQty}`
                   : (pEntry?.custom ? 'Custom Plan' : '');
 
                 let cityBorder = 'border-l-emerald-500';
@@ -2235,7 +2281,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // =============================================================
   // STEP 4 (TRANSPORT & UMRAH PLUS): ROUTE SCHEDULE & PICKUP LOCATIONS
   // =============================================================
-  const isTransportScheduleStep = (isTransport && step === 4) || (isUmrahPlus && step === 4);
+  const isTransportScheduleStep = (isTransport && step === 4) || (isUmrahPlus && step === 7);
   if (isTransportScheduleStep) {
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>

@@ -121,7 +121,7 @@ export default function TransportSection() {
 
       {/* 2. MAIN CONTENT */}
       {/* ADDED: pt-32 md:pt-40 to prevent overlap with sticky menu */}
-      <div className="snap-section relative z-20 w-full px-6 lg:px-12 h-full flex flex-col justify-center pt-32 md:pt-40 pb-12">
+      <div className="snap-section relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col justify-center pt-32 md:pt-40 pb-12">
         
         {/* HEADER TEXT - No Subtitle, Yellow Title, White Description */}
         <div className="text-center mb-8 md:mb-12">
@@ -134,7 +134,7 @@ export default function TransportSection() {
         </div>
 
         {/* CONTENT GRID */}
-        <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col items-center lg:items-center justify-center lg:justify-center lg:pb-10 text-center lg:text-left">
+        <div className="relative z-20 w-full h-full flex flex-col items-center lg:items-center justify-center lg:justify-center lg:pb-10 text-center lg:text-left">
           
 
           {/* LEFT: CAR IMAGE */}
@@ -146,8 +146,8 @@ export default function TransportSection() {
             />
           </div>
           
-          {/* Left Side: Booking Widget */}
-          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[80%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+          {/* Booking Widget — full width, exactly like the other home sections */}
+          <div className="w-full z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
             <SearchWidget activeService="Transport" />
           </div>
 

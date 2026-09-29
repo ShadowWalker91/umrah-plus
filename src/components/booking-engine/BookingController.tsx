@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
@@ -9,7 +9,15 @@ import DynamicQuestionnaire from './DynamicQuestionnaire';
 import ItinerarySummary from './ItinerarySummary';
 import { sendBookingInquiry } from '@/app/actions/sendBookingInquiry';
 import { getTransportData, TransportVehicleConfig } from '@/app/actions/transportActions';
-import { ZIYARAT_ROUTES, ZIYARAT_FLEET, ZIYARAT_CITIES_DATA, ZIYARAT_PRICES, ZIYARAT_SITES } from '@/data/ziyaratBuilderData';
+import {
+  ZIYARAT_ROUTES,
+  ZIYARAT_FLEET,
+  ZIYARAT_CITIES_DATA,
+  ZIYARAT_PRICES,
+  ZIYARAT_SITES,
+  getZiyaratGroupPax,
+  getZiyaratAllocatedQuantity
+} from '@/data/ziyaratBuilderData';
 
 export const PACKAGES = [
   { id: 'p1', name: 'Round Trip Package 01', route: 'JED Airport ➔ Makkah ➔ Madinah ➔ MED Airport' },
@@ -386,11 +394,12 @@ export default function BookingController({
   const isSimpleUmrah = isRegularUmrah;
 
   // Transportation is optional: in Umrah Plus, Transport Flow is included by default unless skipped. In regular Umrah, added via add-ons.
+  // The Ziyarat flow has no transport segment at all, so hasTransport stays false for it.
   const hasTransport = isUmrahPlus
     ? !bookingState.skipTransport
     : (isRegularUmrah 
       ? bookingState.selectedUpsells.includes('transport')
-      : !bookingState.skipTransport);
+      : (!isZiyarat && !bookingState.skipTransport));
 
   // Transport Flow: 5 Steps (1: Party & Mode, 2: Route, 3: Vehicle, 4: Schedule & Locations, 5: Lead Details)
   // Regular Umrah with transport add-on: 5 Steps (1: Stay & Guests, 2: Mode & Route,
@@ -440,6 +449,43 @@ export default function BookingController({
     bookingState.transportMode,
     bookingState.vehicleQuantity,
     bookingState.calculatedTransportPrice
+  ]);
+
+  // Ziyarat & Umrah Plus premium-fleet auto-fit. Applied once per arrival at the
+  // fleet step (and re-armed whenever the group size changes) so the step never
+  // opens on an under-capacity vehicle: the selection is upgraded to the smallest
+  // vehicle that carries everyone. A deliberate downgrade made while ON the step
+  // is preserved — the fleet block then allocates the required vehicle count.
+  const fleetFitAppliedRef = useRef(false);
+  useEffect(() => {
+    fleetFitAppliedRef.current = false;
+  }, [bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount]);
+
+  useEffect(() => {
+    const onFleetStep = (isZiyarat && currentStep === 2) || (isUmrahPlus && currentStep === 5);
+    if (!onFleetStep || fleetFitAppliedRef.current) return;
+    fleetFitAppliedRef.current = true;
+
+    const groupPax = getZiyaratGroupPax(
+      isUmrahPlus,
+      bookingState.adultsCount,
+      bookingState.childrenCount,
+      bookingState.passengerCount
+    );
+    setBookingState(prev => {
+      const currentVehicle = ZIYARAT_FLEET.find(v => v.id === (prev.selectedVehicle || 'sedan'));
+      if (!currentVehicle || currentVehicle.capacity >= groupPax) return prev;
+      const suitable = ZIYARAT_FLEET.find(v => v.capacity >= groupPax);
+      if (!suitable || suitable.id === prev.selectedVehicle) return prev;
+      return { ...prev, selectedVehicle: suitable.id };
+    });
+  }, [
+    isZiyarat,
+    isUmrahPlus,
+    currentStep,
+    bookingState.adultsCount,
+    bookingState.childrenCount,
+    bookingState.passengerCount
   ]);
 
   const updateState = (updates: Partial<BookingState> | ((prev: BookingState) => Partial<BookingState>)) => {
@@ -501,8 +547,8 @@ export default function BookingController({
       // Advance straight to submission/lead details
       setCurrentStep(2);
     } else if (isUmrahPlus) {
-      // Advance directly to Ziyarat Flow (Step 5)
-      setCurrentStep(5);
+      // Advance directly to Ziyarat Flow (Step 4)
+      setCurrentStep(4);
     } else {
       setCurrentStep(prev => prev + 1);
     }
@@ -532,7 +578,11 @@ export default function BookingController({
       }
     }
     if (isUmrahPlus) {
-      if (currentStep === 5 && bookingState.skipTransport) {
+      if (currentStep === 8 && bookingState.skipTransport) {
+        setCurrentStep(6);
+        return;
+      }
+      if (currentStep === 4 && bookingState.skipTransport) {
         setCurrentStep(1);
         return;
       }
@@ -667,7 +717,7 @@ export default function BookingController({
       }
       return;
     } else if (isUmrahPlus) {
-      // Sequence: 1) Umrah (Step 1) -> 2) Transport (Steps 2, 3, 4) -> 3) Ziyarat (Steps 5, 6, 7) -> 4) Lead Details (Step 8)
+      // Sequence: 1) Umrah (Step 1) -> 2) Transport (Steps 2, 3) -> 3) Ziyarat (Steps 4, 5, 6) -> 4) Route Schedule & Pickup (Step 7) -> 5) Lead Details (Step 8)
       
       // Step 1: Stay & Guests (Umrah)
       if (currentStep === 1) {
@@ -679,9 +729,9 @@ export default function BookingController({
           alert("Madinah check-out date must be after check-in date.");
           return;
         }
-        // If transport skipped previously, advance to 5, otherwise 2
+        // If transport skipped previously, advance to 4, otherwise 2
         if (bookingState.skipTransport) {
-          setCurrentStep(5);
+          setCurrentStep(4);
           return;
         }
       }
@@ -712,8 +762,41 @@ export default function BookingController({
         }
       }
 
-      // Step 4: Route Schedule & Pickup Locations (Transport)
+      // Step 4: Select Ziyarat Routes (Ziyarat)
       else if (currentStep === 4) {
+        if (bookingState.selectedZiyaratRoutes.length === 0) {
+          alert("Please select at least one Ziyarat itinerary to proceed.");
+          return;
+        }
+      }
+
+      // Step 5: Select Premium Fleet (Ziyarat)
+      else if (currentStep === 5) {
+        if (!bookingState.selectedVehicle) {
+          updateState({ selectedVehicle: 'sedan' });
+        }
+      }
+
+      // Step 6: Schedule Itinerary Dates (Ziyarat)
+      else if (currentStep === 6) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        for (const rId of bookingState.selectedZiyaratRoutes) {
+          const rDate = bookingState.selectedZiyaratRouteDates?.[rId];
+          const rObj = ZIYARAT_ROUTES.find(r => r.id === rId);
+          const rName = rObj?.name || rId;
+          if (!rDate) {
+            alert(`Please select a scheduled travel date for "${rName}".`);
+            return;
+          }
+          if (rDate < todayStr) {
+            alert(`The scheduled date for "${rName}" cannot be in the past (${rDate}). Please select a valid upcoming date.`);
+            return;
+          }
+        }
+      }
+
+      // Step 7: Route Schedule & Pickup Locations (Transport)
+      else if (currentStep === 7) {
         if (!bookingState.skipTransport) {
           if (bookingState.transportMode === 'fixed') {
             const missingDateLeg = bookingState.fixedRouteLegs.find(l => !l.date);
@@ -734,39 +817,6 @@ export default function BookingController({
               alert("Please select a pickup date.");
               return;
             }
-          }
-        }
-      }
-
-      // Step 5: Select Ziyarat Routes (Ziyarat)
-      else if (currentStep === 5) {
-        if (bookingState.selectedZiyaratRoutes.length === 0) {
-          alert("Please select at least one Ziyarat itinerary to proceed.");
-          return;
-        }
-      }
-
-      // Step 6: Select Premium Fleet (Ziyarat)
-      else if (currentStep === 6) {
-        if (!bookingState.selectedVehicle) {
-          updateState({ selectedVehicle: 'sedan' });
-        }
-      }
-
-      // Step 7: Schedule Itinerary Dates (Ziyarat)
-      else if (currentStep === 7) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        for (const rId of bookingState.selectedZiyaratRoutes) {
-          const rDate = bookingState.selectedZiyaratRouteDates?.[rId];
-          const rObj = ZIYARAT_ROUTES.find(r => r.id === rId);
-          const rName = rObj?.name || rId;
-          if (!rDate) {
-            alert(`Please select a scheduled travel date for "${rName}".`);
-            return;
-          }
-          if (rDate < todayStr) {
-            alert(`The scheduled date for "${rName}" cannot be in the past (${rDate}). Please select a valid upcoming date.`);
-            return;
           }
         }
       }
@@ -792,7 +842,12 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        // Transport schedule (Step 7) is skipped entirely when transport was skipped
+        if (currentStep === 6 && bookingState.skipTransport) {
+          setCurrentStep(8);
+        } else {
+          setCurrentStep(prev => prev + 1);
+        }
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
@@ -972,13 +1027,14 @@ export default function BookingController({
         };
       } else if (isZiyarat) {
         const selectedVehId = bookingState.selectedVehicle || 'sedan';
+        const fleetQty = getZiyaratAllocatedQuantity(selectedVehId, isUmrahPlus, bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount);
         let totalZiyaratCost = 0;
         const mappedRoutes = bookingState.selectedZiyaratRoutes.map(rId => {
           const r = ZIYARAT_ROUTES.find(route => route.id === rId);
           const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
           const pEntry = (ZIYARAT_PRICES as any)?.[rId];
           const fare = (pEntry && !pEntry.custom && pEntry[selectedVehId]) ? pEntry[selectedVehId] : null;
-          if (fare) totalZiyaratCost += fare;
+          if (fare) totalZiyaratCost += fare * fleetQty;
           return {
             id: rId,
             name: r?.name || rId,
@@ -986,7 +1042,7 @@ export default function BookingController({
             duration: r?.duration || '',
             date: rDate,
             passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
-            price: fare,
+            price: fare ? fare * fleetQty : null,
             sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
           };
         });
@@ -1003,6 +1059,7 @@ export default function BookingController({
             selectedRoutes: mappedRoutes,
             vehicle: vehicleName,
             vehicleId: selectedVehId,
+            vehicleQuantity: fleetQty,
             passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
             totalEstimatedCost: totalZiyaratCost
           }
@@ -1034,29 +1091,37 @@ export default function BookingController({
           transportation: (bookingState.selectedUpsells.includes('transport') || (!bookingState.skipTransport && isUmrahPlus)) ? transportPayloadDetails : null,
           selectedUpsells: bookingState.selectedUpsells.map(id => UPSELLS.find(u => u.id === id)?.name || id),
           selectedZiyaratCities: isActuallyUmrahPlus ? bookingState.selectedZiyaratCities : [],
-          ...(isActuallyUmrahPlus ? {
-            ziyaratDetails: {
-              selectedRoutes: bookingState.selectedZiyaratRoutes.map(rId => {
-                const r = ZIYARAT_ROUTES.find(route => route.id === rId);
-                const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
-                const pEntry = (ZIYARAT_PRICES as any)?.[rId];
-                const fare = (pEntry && !pEntry.custom && pEntry[bookingState.selectedVehicle || 'sedan']) ? pEntry[bookingState.selectedVehicle || 'sedan'] : null;
-                return {
-                  id: rId,
-                  name: r?.name || rId,
-                  city: r?.cityName || '',
-                  duration: r?.duration || '',
-                  date: rDate,
-                  passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
-                  price: fare,
-                  sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
-                };
-              }),
-              vehicle: vehicleName,
-              vehicleId: bookingState.selectedVehicle || 'sedan',
-              passengers: bookingState.passengerCount || bookingState.adultsCount || 2
-            }
-          } : {
+          ...(isActuallyUmrahPlus ? (() => {
+            const upVehicleId = bookingState.selectedVehicle || 'sedan';
+            const upFleetQty = getZiyaratAllocatedQuantity(upVehicleId, isUmrahPlus, bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount);
+            const upMappedRoutes = bookingState.selectedZiyaratRoutes.map(rId => {
+              const r = ZIYARAT_ROUTES.find(route => route.id === rId);
+              const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
+              const pEntry = (ZIYARAT_PRICES as any)?.[rId];
+              const fare = (pEntry && !pEntry.custom && pEntry[upVehicleId]) ? pEntry[upVehicleId] : null;
+              return {
+                id: rId,
+                name: r?.name || rId,
+                city: r?.cityName || '',
+                duration: r?.duration || '',
+                date: rDate,
+                passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
+                price: fare ? fare * upFleetQty : null,
+                sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
+              };
+            });
+            const upTotalZiyaratCost = upMappedRoutes.reduce((sum, r) => sum + (r.price || 0), 0);
+            return {
+              ziyaratDetails: {
+                selectedRoutes: upMappedRoutes,
+                vehicle: vehicleName,
+                vehicleId: upVehicleId,
+                vehicleQuantity: upFleetQty,
+                passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
+                totalEstimatedCost: upTotalZiyaratCost
+              }
+            };
+          })() : {
             ziyaratDetails: null
           })
         };
@@ -1096,10 +1161,10 @@ export default function BookingController({
       if (currentStep === 1) return 'Stay & Guests';
       if (currentStep === 2) return bookingState.transportMode === 'pointToPoint' ? 'Transfer Route Selection' : 'Route Selection';
       if (currentStep === 3) return 'Private Vehicle & Fleet Setup';
-      if (currentStep === 4) return 'Route Schedule & Pickup Locations';
-      if (currentStep === 5) return 'Select Ziyarat Routes';
-      if (currentStep === 6) return 'Select Premium Fleet';
-      if (currentStep === 7) return 'Schedule Itinerary Dates';
+      if (currentStep === 4) return 'Select Ziyarat Routes';
+      if (currentStep === 5) return 'Select Premium Fleet';
+      if (currentStep === 6) return 'Schedule Itinerary Dates';
+      if (currentStep === 7) return 'Route Schedule & Pickup Locations';
       return 'Lead Passenger Details';
     }
     // Regular Umrah
