@@ -134,22 +134,23 @@ export default function TransportSection() {
         </div>
 
         {/* CONTENT GRID */}
-        <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-center lg:pb-10 text-center lg:text-left">
+        <div className="relative z-20 w-full px-6 md:px-12 lg:px-16 h-full flex flex-col items-center lg:items-center justify-center lg:justify-center lg:pb-10 text-center lg:text-left">
           
 
-          {/* Left Side: Booking Widget */}
-          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[80%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
-            <SearchWidget activeService="Transport" />
-          </div>
-
           {/* LEFT: CAR IMAGE */}
-          <div className="hidden lg:block relative h-[500px] xl:max-w-[350px] lg:max-w-[150px] w-full animate-fade-in-up">
+          <div className="hidden lg:block relative xl:max-w-[400px] lg:max-w-[150px] w-full animate-fade-in-up">
             <img 
               src={SITE_CONFIG.transportation.image} 
               alt="Luxury Fleet" 
               className="w-full h-full object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.15)]" 
             />
           </div>
+          
+          {/* Left Side: Booking Widget */}
+          <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[80%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+            <SearchWidget activeService="Transport" />
+          </div>
+
 
           {/* RIGHT: BOOKING FORM */}
           {/* <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto lg:mx-0">

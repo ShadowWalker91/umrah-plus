@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Business Infographic</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#121212',
+                            charcoal: '#262626',
+                            gold: '#d4af37',
+                            goldLight: '#fcf6ba',
+                            goldDark: '#aa7c11',
+                            cream: '#f4ebd8'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Luxury Gold Text Gradient */
+        .text-gold-gradient {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Background for the Infographic Container */
+        .bg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* Main Center Circle 3D Styling */
+        .center-circle {
+            background: radial-gradient(circle at 30% 30%, #2a2a2a 0%, #111 60%, #000 100%);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.9),
+                inset 0 0 0 2px rgba(212, 175, 55, 0.2), /* Subtle inner gold ring */
+                inset -10px -10px 20px rgba(0,0,0,0.8),
+                inset 10px 10px 20px rgba(255,255,255,0.05);
+            border: 1px solid #444;
+        }
+
+        /* Inner rings for main circle */
+        .center-circle::before {
+            content: '';
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.5); /* Outer gold ring */
+            pointer-events: none;
+        }
+        
+        .center-circle::after {
+            content: '';
+            position: absolute;
+            inset: -30px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15); /* Fainter outer ring */
+            pointer-events: none;
+        }
+
+        /* 3D Styling for Icon Nodes */
+        .node-circle {
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #f4ebd8 40%, #d5c39f 100%);
+            box-shadow: 
+                0 15px 25px rgba(0,0,0,0.6),
+                inset 0 0 10px rgba(255,255,255,0.8),
+                inset -5px -5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* Outer gold ring for nodes */
+        .node-circle::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fcf6ba, #b38728, #aa771c);
+            z-index: -1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Outer thin connection ring for nodes */
+        .node-circle::after {
+            content: '';
+            position: absolute;
+            inset: -18px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            pointer-events: none;
+        }
+
+        /* Custom Icon Gold Effect */
+        .icon-gold {
+            background: linear-gradient(135deg, #a67c00 0%, #e6c875 40%, #b38728 70%, #8a6300 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.3));
+        }
+
+        /* Scrollbar styling for mobile viewing */
+        .infographic-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        .infographic-wrapper::-webkit-scrollbar-track {
+            background: #111;
+        }
+        .infographic-wrapper::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-gray-200 antialiased font-sans">
+
+    <!-- Responsive Scroll Wrapper for Mobile -->
+    <div class="w-full max-w-7xl mx-auto overflow-x-auto infographic-wrapper p-4 md:p-8">
+        
+        <!-- Main Canvas (Fixed Aspect Ratio for precise absolute positioning) -->
+        <div class="relative w-[1000px] md:w-full min-w-[1000px] aspect-[1.6] bg-brand-black shadow-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-noise">
+            
+            <!-- Left Split Background (Dark Gray/Charcoal) -->
+            <div class="absolute left-0 top-0 bottom-0 w-[38%] bg-[#222222] border-r border-[#333]"></div>
+            
+            <!-- Right Split Background (Deep Black) -->
+            <div class="absolute right-0 top-0 bottom-0 w-[62%] bg-[#121212]"></div>
+
+            <!-- SVG Overlay for Connecting Lines -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 1000 625" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#8a6300" />
+                        <stop offset="50%" stop-color="#fcf6ba" />
+                        <stop offset="100%" stop-color="#b38728" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Center point: X=380, Y=312.5 -->
+                <!-- Top Node: X=620, Y=140 -->
+                <!-- Mid Node: X=670, Y=312.5 -->
+                <!-- Bot Node: X=620, Y=485 -->
+
+                <!-- Line to Top Node -->
+                <line x1="380" y1="312.5" x2="620" y2="140" stroke="url(#lineGrad)" stroke-width="1.5" opacity="0.6" />
+                
+                <!-- Line to Middle Node -->
+                <line x1="380" y1="312.5" x2="670" y2="312.5" stroke="url(#lineGrad)" stroke-width="1.5" opacity="0.6" />
+                
+                <!-- Line to Bottom Node -->
+                <line x1="380" y1="312.5" x2="620" y2="485" stroke="url(#lineGrad)" stroke-width="1.5" opacity="0.6" />
+
+                <!-- Small connecting dots at the end of lines (near the text) -->
+                <circle cx="690" cy="140" r="3" fill="#d4af37" />
+                <circle cx="740" cy="312.5" r="3" fill="#d4af37" />
+                <circle cx="690" cy="485" r="3" fill="#d4af37" />
+            </svg>
+
+            <!-- Main Central Circle -->
+            <div class="absolute top-[50%] left-[38%] w-[28%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full center-circle z-20 flex flex-col justify-center items-center group transition-transform duration-700 hover:scale-105 cursor-default">
+                <h1 class="text-gold-gradient font-serif font-bold text-4xl md:text-5xl lg:text-6xl tracking-wider mb-2 drop-shadow-lg">
+                    BUSINESS
+                </h1>
+                
+                <!-- Gold Dots -->
+                <div class="flex gap-3 my-2">
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-gradient-to-br from-[#fcf6ba] to-[#b38728] shadow-[0_2px_5px_rgba(0,0,0,0.8)]"></div>
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-gradient-to-br from-[#fcf6ba] to-[#b38728] shadow-[0_2px_5px_rgba(0,0,0,0.8)]"></div>
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-gradient-to-br from-[#fcf6ba] to-[#b38728] shadow-[0_2px_5px_rgba(0,0,0,0.8)]"></div>
+                </div>
+                
+                <h2 class="text-gold-gradient font-serif text-lg md:text-xl lg:text-2xl tracking-[0.2em] uppercase mt-2 opacity-90 font-light">
+                    INFOGRAPHIC
+                </h2>
+            </div>
+
+            <!-- NODE 1: Kaaba (Top) -->
+            <div class="absolute top-[22.4%] left-[62%] w-[12%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full node-circle z-30 flex justify-center items-center group cursor-pointer transition-transform duration-300 hover:scale-110">
+                <!-- Icon -->
+                <i class="fa-solid fa-kaaba text-4xl md:text-5xl lg:text-6xl icon-gold"></i>
+                
+                <!-- Hover Content -->
+                <div class="absolute left-[135%] top-1/2 -translate-y-1/2 w-64 md:w-80 opacity-0 -translate-x-8 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none flex items-start gap-3 bg-[#111111]/80 backdrop-blur-sm p-4 rounded-lg border border-[#333] shadow-2xl">
+                    <div class="mt-1.5 w-2 h-2 rounded-full bg-brand-gold shrink-0 shadow-[0_0_8px_rgba(212,175,55,0.8)]"></div>
+                    <div>
+                        <h3 class="text-brand-gold font-serif font-bold text-lg leading-tight mb-2 uppercase tracking-wide">Hajj & Umrah Logistics</h3>
+                        <p class="text-gray-300 font-sans text-xs md:text-sm leading-relaxed">Comprehensive pilgrimage services, inclusive of visa assistance, guide coordination, and group travel arrangements.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NODE 2: Desert and Mountains (Middle) -->
+            <div class="absolute top-[50%] left-[67%] w-[12%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full node-circle z-30 flex justify-center items-center group cursor-pointer transition-transform duration-300 hover:scale-110">
+                <!-- Icon -->
+                <i class="fa-solid fa-mountain-sun text-4xl md:text-5xl lg:text-6xl icon-gold"></i>
+                
+                <!-- Hover Content -->
+                <div class="absolute left-[135%] top-1/2 -translate-y-1/2 w-64 md:w-80 opacity-0 -translate-x-8 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none flex items-start gap-3 bg-[#111111]/80 backdrop-blur-sm p-4 rounded-lg border border-[#333] shadow-2xl">
+                    <div class="mt-1.5 w-2 h-2 rounded-full bg-brand-gold shrink-0 shadow-[0_0_8px_rgba(212,175,55,0.8)]"></div>
+                    <div>
+                        <h3 class="text-brand-gold font-serif font-bold text-lg leading-tight mb-2 uppercase tracking-wide">Regional Destination Mgmt.</h3>
+                        <p class="text-gray-300 font-sans text-xs md:text-sm leading-relaxed">Curated tours to desert landscapes and mountain regions, providing unique insights into local culture and heritage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NODE 3: Bus and Car (Bottom) -->
+            <div class="absolute top-[77.6%] left-[62%] w-[12%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full node-circle z-30 flex justify-center items-center group cursor-pointer transition-transform duration-300 hover:scale-110">
+                <!-- Icon (Combining Van and Car using absolute positioning inside flex) -->
+                <div class="relative w-full h-full flex justify-center items-center">
+                    <i class="fa-solid fa-van-shuttle text-3xl md:text-4xl lg:text-5xl icon-gold absolute -mt-4 -ml-2"></i>
+                    <i class="fa-solid fa-car text-xl md:text-2xl lg:text-3xl icon-gold absolute mt-4 ml-8"></i>
+                </div>
+                
+                <!-- Hover Content -->
+                <div class="absolute left-[135%] top-1/2 -translate-y-1/2 w-64 md:w-80 opacity-0 -translate-x-8 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-x-0 pointer-events-none flex items-start gap-3 bg-[#111111]/80 backdrop-blur-sm p-4 rounded-lg border border-[#333] shadow-2xl">
+                    <div class="mt-1.5 w-2 h-2 rounded-full bg-brand-gold shrink-0 shadow-[0_0_8px_rgba(212,175,55,0.8)]"></div>
+                    <div>
+                        <h3 class="text-brand-gold font-serif font-bold text-lg leading-tight mb-2 uppercase tracking-wide">Fleet & Mobility Solutions</h3>
+                        <p class="text-gray-300 font-sans text-xs md:text-sm leading-relaxed">Versatile transportation options with our modern fleet of luxury sedans, passenger vans, and large tour buses.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
