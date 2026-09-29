@@ -54,12 +54,18 @@
   | 03 (bottom) | `54% / 77.6%` | Pillar 3: Pure Peace of Mind — VIP Chauffeur Fleet | **CarFront** (lucide-react) |
 
   Node sizes: `80px → 96px (lg) → 104px (xl)` — larger than the old strip nodes, echoing
-  the reference's 12% circles. Anatomy: dark sphere (`linear-gradient(#1f2027 → #14151b)`),
-  `2px` gold border at **45%** (raised from 25% for contrast on the dark photo) plus a
+  the reference's 12% circles. Anatomy: the node circle is filled with the **extracted
+  3D sphere render** from `design-image.png` — the cream sphere + gold object (Kaaba /
+  mountains / bus+car) cropped at native resolution to
+  `public/assets/images/homepage/umrahplus-section/node{1,2,3}-*.png` (152×152,
+  cream flush to the crop edge so `rounded-full` + `object-cover` shows no dark ring)
+  inside an `overflow-hidden` layer, over the dark gradient as loading fallback; on top:
+  the `2px` gold border at **45%** (raised from 25% for contrast) plus a
   **thin orbit ring** (`-inset-9px`, `1px #F9C344/25`, brighter + glowing when active —
-  the reference's outer ring, gives the center node an always-visible silhouette), icon
-  well (`rounded-xl`, `bg-white/5`, gold icon), **step badge** (`01/02/03`) at the
-  top-right, staggered `float` bob (3.8s, 0.45s stagger). Connector furniture on the
+  the reference's outer ring, gives the center node an always-visible silhouette),
+  **step badge** (`01/02/03`) at the top-right, staggered `float` bob (3.8s, 0.45s
+  stagger). The old flat icon-well (dark circle + line icon) is gone from nodes — the
+  sphere *is* the icon (cards keep the line icons, see §4). Connector furniture on the
   right edge of every node:
   * a **stub line** (24px, `1.5px`, gold gradient, origin-left) runs from the circle
     edge to the card — hidden at rest (`scale-x-0`), scales in when the node is active
@@ -139,6 +145,11 @@ used** — dark theme confirmed by direction.
 | 03 | **CarFront** | `lucide-react` `<CarFront />` | VIP Chauffeur Fleet (Pillar 3) |
 
 Icons render gold at rest and **flip to solid black on a gold fill when active**.
+
+> **Nodes use different art:** the fan/timeline **node circles** show the extracted 3D
+> sphere renders (`node1-haram-stays.png` = Kaaba, `node2-ziyarat.png` = mountains,
+> `node3-fleet.png` = bus + car) cut from `design-image.png`; the line icons above remain
+> in the pillar **cards** (full + mini) where a small gold well still fits.
 
 ---
 

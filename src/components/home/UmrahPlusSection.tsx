@@ -7,23 +7,7 @@ import SearchWidget from '../SearchWidget';
 
 function KaabaIcon({ size = 20, className = '' }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M5.5 7.5h13v12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z" />
-      <path d="M5.5 7.5 7 4.5h10l1.5 3" />
-      <path d="M5.5 11h13" strokeWidth={2.6} />
-      <path d="M13.4 20.5v-6.2h3.1v6.2" fill="currentColor" stroke="none" />
-    </svg>
+    <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" className="iconify iconify--twemoji" preserveAspectRatio="xMidYMid meet" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M18 0L0 5v29l18 2l18-2V5z" fill="#000000"></path><path fill="#292F33" d="M18 36l18-2V5L18 0z"></path><path fill="#FFD983" d="M22.454 14.507v3.407l4.229.612V15.22zm7 1.181v3.239l3.299.478v-3.161zM18 13.756v3.513l1.683.244V14.04zm18 3.036l-.539-.091v3.096l.539.078z"></path><path fill="#FFAC33" d="M0 16.792v3.083l.539-.078v-3.096zm16.317-2.752v3.473L18 17.269v-3.513zm-13.07 2.204v3.161l3.299-.478v-3.239zm6.07-1.024v3.306l4.229-.612v-3.407z"></path><path fill="#FFD983" d="M21.389 15.131v-.042c0-.421-.143-.763-.32-.763c-.177 0-.32.342-.32.763v.042c-.208.217-.355.621-.355 1.103c0 .513.162.949.393 1.152c.064.195.163.33.282.33s.218-.135.282-.33c.231-.203.393-.639.393-1.152c-.001-.482-.147-.886-.355-1.103zm6.999 1.069v-.042c0-.421-.143-.763-.32-.763c-.177 0-.32.342-.32.763v.042c-.208.217-.355.621-.355 1.103c0 .513.162.949.393 1.152c.064.195.163.33.282.33s.218-.135.282-.33c.231-.203.393-.639.393-1.152c0-.481-.147-.885-.355-1.103zm6.017 1.03v-.039c0-.393-.134-.712-.299-.712c-.165 0-.299.319-.299.712v.039c-.194.203-.331.58-.331 1.03c0 .479.151.886.367 1.076c.059.182.152.308.263.308s.203-.126.263-.308c.215-.189.367-.597.367-1.076c0-.45-.136-.827-.331-1.03z"></path><path fill="#FFAC33" d="M14.611 15.131v-.042c0-.421.143-.763.32-.763s.32.342.32.763v.042c.208.217.355.621.355 1.103c0 .513-.162.949-.393 1.152c-.064.195-.163.33-.282.33s-.218-.135-.282-.33c-.231-.203-.393-.639-.393-1.152c.001-.482.147-.886.355-1.103zM7.612 16.2v-.042c0-.421.143-.763.32-.763s.32.342.32.763v.042c.208.217.355.621.355 1.103c0 .513-.162.949-.393 1.152c-.064.195-.163.33-.282.33s-.218-.135-.282-.33c-.231-.203-.393-.639-.393-1.152c0-.481.147-.885.355-1.103zm-6.017 1.03v-.039c0-.393.134-.712.299-.712s.299.319.299.712v.039c.194.203.331.58.331 1.03c0 .479-.151.886-.367 1.076c-.059.182-.152.308-.263.308s-.204-.127-.264-.308c-.215-.189-.367-.597-.367-1.076c.001-.45.137-.827.332-1.03zM0 11.146v3.5l18-3.268V7.614z"></path><path fill="#FFD983" d="M18 7.614v3.764l18 3.268v-3.5z"></path></g></svg>
   );
 }
 
@@ -79,6 +63,11 @@ const SPOKES = [
   'M300 350 L540 156.8',
   'M300 350 L590 350',
   'M300 350 L540 543.2',
+];
+const NODE_SPHERES = [
+  '/assets/images/homepage/umrahplus-section/node1-haram-stays.png',
+  '/assets/images/homepage/umrahplus-section/node2-ziyarat.png',
+  '/assets/images/homepage/umrahplus-section/node3-fleet.png',
 ];
 
 function Connectors({ active, showAll }: { active: number; showAll: boolean }) {
@@ -146,11 +135,10 @@ function Hub({ showAll, onEnter, onLeave }: { showAll: boolean; onEnter: () => v
       <div className="absolute inset-[-14px] rounded-full border border-[#F9C344]/25 cursor-pointer" />
 
       <div
-        className={`absolute inset-0 rounded-full overflow-hidden bg-gradient-to-br from-[#1c1d24] to-[#121318] border-[1.5px] flex items-center justify-center text-center transition-all duration-300 cursor-pointer ${
-          showAll
-            ? 'border-[#F9C344] shadow-[0_30px_70px_-18px_rgba(0,0,0,0.95),0_0_45px_rgba(249,195,68,0.35)] cursor-pointer'
-            : 'border-[#F9C344]/35 shadow-[0_30px_70px_-18px_rgba(0,0,0,0.95)] cursor-pointer'
-        }`}
+        className={`absolute inset-0 rounded-full overflow-hidden bg-gradient-to-br from-[#1c1d24] to-[#121318] border-[1.5px] flex items-center justify-center text-center transition-all duration-300 cursor-pointer ${showAll
+          ? 'border-[#F9C344] shadow-[0_30px_70px_-18px_rgba(0,0,0,0.95),0_0_45px_rgba(249,195,68,0.35)] cursor-pointer'
+          : 'border-[#F9C344]/35 shadow-[0_30px_70px_-18px_rgba(0,0,0,0.95)] cursor-pointer'
+          }`}
       >
         <div className="w-[74%] cursor-pointer">
           <h2 className="font-serif font-bold text-white leading-tight text-base xl:text-[35px]">
@@ -248,16 +236,14 @@ interface NodeProps {
 }
 
 function RadialNode({ pillar, index, isActive, showAll, onEnter, onLeave, onToggle }: NodeProps) {
-  const Icon = pillar.icon;
   const pos = NODE_POS[index];
   const lineOn = isActive || showAll;
 
   return (
     <div
       className={`group absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center rounded-full outline-none
-                 focus-visible:ring-2 focus-visible:ring-[#F9C344]/70 focus-visible:ring-offset-4 focus-visible:ring-offset-[#0a0b0e] ${
-                   isActive ? 'z-40' : 'z-30'
-                 }`}
+                 focus-visible:ring-2 focus-visible:ring-[#F9C344]/70 focus-visible:ring-offset-4 focus-visible:ring-offset-[#0a0b0e] ${isActive ? 'z-40' : 'z-30'
+        }`}
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       role="button"
       tabIndex={0}
@@ -287,15 +273,13 @@ function RadialNode({ pillar, index, isActive, showAll, onEnter, onLeave, onTogg
 
       <div className="absolute left-full top-1/2 -translate-y-1/2 w-6 origin-left pointer-events-none" aria-hidden="true">
         <div
-          className={`h-[1.5px] w-full rounded-full bg-gradient-to-r from-[#F9C344] to-[#F9C344]/50 transition-transform duration-[450ms] ease-out ${
-            lineOn ? 'scale-x-100' : 'scale-x-0'
-          }`}
+          className={`h-[1.5px] w-full rounded-full bg-gradient-to-r from-[#F9C344] to-[#F9C344]/50 transition-transform duration-[450ms] ease-out ${lineOn ? 'scale-x-100' : 'scale-x-0'
+            }`}
         />
       </div>
       <span
-        className={`absolute left-full -translate-x-1/2 -translate-y-1/2 top-1/2 w-[7px] h-[7px] rounded-full bg-[#F9C344] pointer-events-none transition-all duration-300 ${
-          lineOn ? 'scale-100 opacity-100 shadow-[0_0_8px_rgba(249,195,68,.8)]' : 'scale-0 opacity-0'
-        }`}
+        className={`absolute left-full -translate-x-1/2 -translate-y-1/2 top-1/2 w-[7px] h-[7px] rounded-full bg-[#F9C344] pointer-events-none transition-all duration-300 ${lineOn ? 'scale-100 opacity-100 shadow-[0_0_8px_rgba(249,195,68,.8)]' : 'scale-0 opacity-0'
+          }`}
         aria-hidden="true"
       />
 
@@ -305,35 +289,32 @@ function RadialNode({ pillar, index, isActive, showAll, onEnter, onLeave, onTogg
         transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: index * 0.45 }}
       >
         <div
-          className={`absolute -inset-[9px] rounded-full border pointer-events-none transition-all duration-300 ${
-            isActive
-              ? 'border-[#F9C344]/60 shadow-[0_0_16px_rgba(249,195,68,0.35)]'
-              : 'border-[#F9C344]/25'
-          }`}
+          className={`absolute -inset-[9px] rounded-full border pointer-events-none transition-all duration-300 ${isActive
+            ? 'border-[#F9C344]/60 shadow-[0_0_16px_rgba(249,195,68,0.35)]'
+            : 'border-[#F9C344]/25'
+            }`}
           aria-hidden="true"
         />
         <div
-          className={`relative w-20 h-20 lg:w-[96px] lg:h-[96px] xl:w-[104px] xl:h-[104px] rounded-full bg-gradient-to-b from-[#1f2027] to-[#14151b] border-2 flex items-center justify-center cursor-pointer transition-all duration-300 ${
-            isActive
-              ? 'border-[#F9C344] scale-110 shadow-[0_0_34px_rgba(249,195,68,0.45),0_14px_32px_-12px_rgba(0,0,0,0.95)]'
-              : 'border-[#F9C344]/45 shadow-[0_14px_32px_-12px_rgba(0,0,0,0.95)]'
-          }`}
-        >
-          <div
-            className={`w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-              isActive
-                ? 'bg-[#F9C344] text-black scale-105 shadow-[0_8px_20px_-6px_rgba(249,195,68,0.5)]'
-                : 'bg-white/5 text-[#F9C344]'
+          className={`relative w-20 h-20 lg:w-[96px] lg:h-[96px] xl:w-[104px] xl:h-[104px] rounded-full bg-gradient-to-b from-[#1f2027] to-[#14151b] border-2 cursor-pointer transition-all duration-300 ${isActive
+            ? 'border-[#F9C344] scale-110 shadow-[0_0_34px_rgba(249,195,68,0.45),0_14px_32px_-12px_rgba(0,0,0,0.95)]'
+            : 'border-[#F9C344]/45 shadow-[0_14px_32px_-12px_rgba(0,0,0,0.95)]'
             }`}
-          >
-            <Icon size={20} />
+        >
+          <div className="absolute inset-0 rounded-full overflow-hidden">
+            <img
+              src={NODE_SPHERES[index]}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              className="w-full h-full object-cover"
+            />
           </div>
           <span
-            className={`absolute top-0 right-0 translate-x-[35%] -translate-y-[35%] w-7 h-7 xl:w-8 xl:h-8 rounded-full text-[9px] xl:text-[10px] font-bold flex items-center justify-center z-20 transition-all duration-300 ${
-              isActive
-                ? 'bg-[#F9C344] border border-[#F9C344] text-black shadow-[0_6px_16px_-6px_rgba(249,195,68,0.55)]'
-                : 'bg-[#0a0b0e]/95 border border-[#F9C344]/50 text-[#c5a059] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.9)]'
-            }`}
+            className={`absolute top-0 right-0 translate-x-[35%] -translate-y-[35%] w-7 h-7 xl:w-8 xl:h-8 rounded-full text-[9px] xl:text-[10px] font-bold flex items-center justify-center z-20 transition-all duration-300 ${isActive
+              ? 'bg-[#F9C344] border border-[#F9C344] text-black shadow-[0_6px_16px_-6px_rgba(249,195,68,0.55)]'
+              : 'bg-[#0a0b0e]/95 border border-[#F9C344]/50 text-[#c5a059] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.9)]'
+              }`}
           >
             0{index + 1}
           </span>
@@ -341,9 +322,8 @@ function RadialNode({ pillar, index, isActive, showAll, onEnter, onLeave, onTogg
       </motion.div>
 
       <span
-        className={`absolute left-full ml-[18px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#F9C344] transition-all duration-300 ${
-          isActive ? 'shadow-[0_0_12px_2px_rgba(249,195,68,.9)] scale-125' : 'opacity-70'
-        }`}
+        className={`absolute left-full ml-[18px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#F9C344] transition-all duration-300 ${isActive ? 'shadow-[0_0_12px_2px_rgba(249,195,68,.9)] scale-125' : 'opacity-70'
+          }`}
         aria-hidden="true"
       />
     </div>
@@ -416,7 +396,7 @@ export default function UmrahPlusSection() {
               <span className="w-[7px] h-[7px] rounded-full bg-[#F9C344]" />
               <span className="w-[5px] h-[5px] rounded-full bg-[#F9C344]" />
             </div>
-            
+
           </div>
         </div>
 
@@ -425,7 +405,6 @@ export default function UmrahPlusSection() {
             <div className="absolute left-[31px] top-5 bottom-5 w-px bg-gradient-to-b from-[#F9C344]/45 via-[#F9C344]/25 to-transparent" />
 
             {PILLARS.map((pillar, idx) => {
-              const Icon = pillar.icon;
               const isActive = activePillar === idx;
 
               return (
@@ -446,26 +425,24 @@ export default function UmrahPlusSection() {
                 >
                   <div className="relative z-10 shrink-0">
                     <div
-                      className={`w-[62px] h-[62px] rounded-full bg-gradient-to-b from-[#1f2027] to-[#14151b] border-2 flex items-center justify-center transition-all duration-300 ${
-                        isActive
-                          ? 'border-[#F9C344] shadow-[0_0_26px_rgba(249,195,68,0.4)]'
-                          : 'border-[#F9C344]/25 shadow-[0_10px_24px_-10px_rgba(0,0,0,0.95)]'
-                      }`}
-                    >
-                      <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                          isActive ? 'bg-[#F9C344] text-black' : 'bg-white/5 text-[#F9C344]'
+                      className={`w-[62px] h-[62px] rounded-full overflow-hidden bg-gradient-to-b from-[#1f2027] to-[#14151b] border-2 transition-all duration-300 ${isActive
+                        ? 'border-[#F9C344] shadow-[0_0_26px_rgba(249,195,68,0.4)]'
+                        : 'border-[#F9C344]/25 shadow-[0_10px_24px_-10px_rgba(0,0,0,0.95)]'
                         }`}
-                      >
-                        <Icon size={18} />
-                      </div>
+                    >
+                      <img
+                        src={NODE_SPHERES[idx]}
+                        alt=""
+                        aria-hidden="true"
+                        draggable={false}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <span
-                      className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-1.5 py-px rounded-full text-[7.5px] font-semibold tracking-[.25em] transition-all duration-300 ${
-                        isActive
-                          ? 'bg-[#F9C344] text-black'
-                          : 'bg-[#0a0b0e] border border-[#F9C344]/30 text-[#c5a059]'
-                      }`}
+                      className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-1.5 py-px rounded-full text-[7.5px] font-semibold tracking-[.25em] transition-all duration-300 ${isActive
+                        ? 'bg-[#F9C344] text-black'
+                        : 'bg-[#0a0b0e] border border-[#F9C344]/30 text-[#c5a059]'
+                        }`}
                     >
                       0{idx + 1}
                     </span>
@@ -473,9 +450,8 @@ export default function UmrahPlusSection() {
 
                   <div className="min-w-0 flex-1 pt-1.5">
                     <h3
-                      className={`font-serif font-bold text-sm sm:text-base leading-tight transition-colors ${
-                        isActive ? 'text-[#F9C344]' : 'text-white'
-                      }`}
+                      className={`font-serif font-bold text-sm sm:text-base leading-tight transition-colors ${isActive ? 'text-[#F9C344]' : 'text-white'
+                        }`}
                     >
                       {pillar.title}
                     </h3>
