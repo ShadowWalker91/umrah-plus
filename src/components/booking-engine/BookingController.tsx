@@ -248,6 +248,23 @@ export default function BookingController({
   const [showAddonsDrawer, setShowAddonsDrawer] = useState(false);
   const [transportFleet, setTransportFleet] = useState<TransportVehicleConfig[]>([]);
 
+  const bookingPanelRef = useRef<HTMLDivElement>(null);
+  const skipInitialScroll = useRef(true);
+
+  // Each step screen re-enters from its top instead of inheriting the scroll
+  // depth of the previous step. The first render is skipped so landing on the
+  // page never hijacks the visitor's initial scroll position.
+  useEffect(() => {
+    if (skipInitialScroll.current) {
+      skipInitialScroll.current = false;
+      return;
+    }
+    const panel = bookingPanelRef.current;
+    if (!panel) return;
+    const top = panel.getBoundingClientRect().top + window.scrollY - 24;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+  }, [currentStep]);
+
   useEffect(() => {
     getTransportData().then(res => {
       if (res && res.vehicles?.length > 0) {
@@ -1180,6 +1197,7 @@ export default function BookingController({
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <motion.div
+        ref={bookingPanelRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="booking-panel flex-1 bg-[#1a1c22] p-6 md:p-10 rounded-2xl shadow-xl border border-white/5 relative"
