@@ -288,9 +288,9 @@ export default function BookingController({
     ? Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)))
     : 5;
 
-  // Ziyarat visitors pick their cities on this page, so when the widget sends no
-  // `cities` param the flow starts with nothing pre-selected (regular Umrah /
-  // Umrah Plus keep their original defaults).
+  // Ziyarat & Umrah Plus visitors pick their routes/cities on this page, so when
+  // the widget sends no `cities` param both flows start with nothing selected
+  // (regular Umrah / Transport keep their original defaults).
   const parsedCitiesList = initialCities && initialCities.length > 0
     ? initialCities.map(c => {
         const lower = c.toLowerCase().trim();
@@ -299,13 +299,12 @@ export default function BookingController({
         if (lower.startsWith('taif')) return 'taif';
         return lower;
       })
-    : (isZiyarat ? [] : ['mak', 'mad']);
+    : ((isZiyarat || isUmrahPlus) ? [] : ['mak', 'mad']);
 
   const defaultZiyaratRoutes: string[] = [];
   if (parsedCitiesList.includes('mak')) defaultZiyaratRoutes.push('mak-1');
   if (parsedCitiesList.includes('mad')) defaultZiyaratRoutes.push('mad-1');
   if (parsedCitiesList.includes('taif')) defaultZiyaratRoutes.push('taif-1');
-  if (defaultZiyaratRoutes.length === 0 && !isZiyarat) defaultZiyaratRoutes.push('mak-1');
 
   const [bookingState, setBookingState] = useState<BookingState>({
     adultsCount: initialAdults,
