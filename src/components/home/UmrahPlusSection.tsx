@@ -79,7 +79,14 @@ function Connectors({ active, showAll }: { active: number; showAll: boolean }) {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient
+          id="lineGrad"
+          gradientUnits="userSpaceOnUse"
+          x1="300"
+          y1="350"
+          x2="600"
+          y2="350"
+        >
           <stop offset="0%" stopColor="#aa7c11" />
           <stop offset="50%" stopColor="#F9C344" />
           <stop offset="100%" stopColor="#c5a059" />
