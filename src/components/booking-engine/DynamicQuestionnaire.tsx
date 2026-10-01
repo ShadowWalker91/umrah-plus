@@ -299,6 +299,62 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
       'Makkah ↔ Masjid Ayesha (Return)',
     ];
 
+  // =============================================================
+  // FLEET CAPACITY GUARD
+  // The fleet grids disable every vehicle that cannot carry the whole party
+  // (the largest vehicle stays selectable as the fallback), so an existing
+  // choice must never keep sitting on a disabled card when the party grows.
+  // =============================================================
+  const transportPartySize = (state.adultsCount || 1) + (state.childrenCount || 0);
+  useEffect(() => {
+    const onTransportFleetStep =
+      (isTransport && step === 3) ||
+      (isUmrahPlus && step === 3) ||
+      (!isZiyarat && !isUmrahPlus && hasTransport && step === 3);
+    if (!onTransportFleetStep) return;
+
+    const maxCapacity = Math.max(...activeVehicles.map(v => v.capacity || 0));
+    const fits = (v?: { capacity?: number }) => {
+      const cap = v?.capacity || 0;
+      return !!v && (transportPartySize <= cap || cap >= maxCapacity);
+    };
+
+    const currentId = state.transportVehicleId || state.selectedVehicle;
+    if (fits(activeVehicles.find(v => v.id === currentId))) return;
+
+    const suitable = activeVehicles
+      .filter(v => fits(v))
+      .sort((a, b) => (a.capacity || 0) - (b.capacity || 0))[0];
+    if (!suitable) return;
+
+    const requiredCars = Math.max(1, Math.ceil(transportPartySize / (suitable.capacity || 1)));
+    const basePrice = state.transportMode === 'fixed'
+      ? ((suitable as any).fixedRoutes?.[state.fixedRouteId] || (suitable as any).fixedRoutes?.['p1'] || 800)
+      : ((suitable as any).pointToPoint?.[state.pointToPointRoute] || (suitable as any).pointToPoint?.['Jeddah ↔ Makkah'] || 250);
+
+    updateState({
+      transportVehicleId: suitable.id,
+      ...(isRegularUmrah ? { selectedVehicle: suitable.id } : {}),
+      vehicleQuantity: requiredCars,
+      calculatedTransportPrice: basePrice * requiredCars
+    });
+  }, [
+    transportPartySize,
+    step,
+    isTransport,
+    isUmrahPlus,
+    isZiyarat,
+    isRegularUmrah,
+    hasTransport,
+    state.transportVehicleId,
+    state.selectedVehicle,
+    state.transportMode,
+    state.fixedRouteId,
+    state.pointToPointRoute,
+    activeVehicles,
+    updateState
+  ]);
+
   const handleSelectFixedCircuit = (pkgId: string) => {
     const pkg = FIXED_CIRCUITS.find(p => p.id === pkgId);
     if (!pkg) return;
@@ -395,8 +451,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               type="button"
               onClick={() => updateState({ transportMode: 'fixed' })}
               className={`p-6 rounded-2xl border text-left transition-all duration-300 relative flex flex-col justify-between cursor-pointer group ${state.transportMode === 'fixed'
-                  ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_25px_rgba(197,160,89,0.15)] ring-1 ring-[#c5a059]'
-                  : 'border-white/10 bg-[#12141a] hover:border-white/20 hover:bg-[#161820]'
+                ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_25px_rgba(197,160,89,0.15)] ring-1 ring-[#c5a059]'
+                : 'border-white/10 bg-[#12141a] hover:border-white/20 hover:bg-[#161820]'
                 }`}
             >
               <div className="flex items-start justify-between mb-4">
@@ -429,8 +485,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               type="button"
               onClick={() => updateState({ transportMode: 'pointToPoint' })}
               className={`p-6 rounded-2xl border text-left transition-all duration-300 relative flex flex-col justify-between cursor-pointer group ${state.transportMode === 'pointToPoint'
-                  ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_25px_rgba(197,160,89,0.15)] ring-1 ring-[#c5a059]'
-                  : 'border-white/10 bg-[#12141a] hover:border-white/20 hover:bg-[#161820]'
+                ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_25px_rgba(197,160,89,0.15)] ring-1 ring-[#c5a059]'
+                : 'border-white/10 bg-[#12141a] hover:border-white/20 hover:bg-[#161820]'
                 }`}
             >
               <div className="flex items-start justify-between mb-4">
@@ -577,65 +633,61 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
           {/* Tab row — pulled down 2px to overlap the panel's top border;
               on mobile stack so the ACTIVE tab is always the one touching the panel */}
           <div className={`${isFixed ? 'flex flex-col-reverse' : 'flex flex-col'} gap-2 sm:grid sm:grid-cols-2 sm:gap-3 relative z-10 -mb-[2px]`}>
-              {/* Tab 1: Fixed Route Packages */}
-              <button
-                type="button"
-                onClick={() => updateState({ transportMode: 'fixed' })}
-                className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${
-                  isFixed
-                    ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
-                    : 'border-white/10 border-b-[#14161d] bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
+            {/* Tab 1: Fixed Route Packages */}
+            <button
+              type="button"
+              onClick={() => updateState({ transportMode: 'fixed' })}
+              className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${isFixed
+                  ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                  : 'border-white/10 border-b-[#c5a059]/50 bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
                 }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-lg shrink-0 ${isFixed ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
-                    <Compass className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className={`text-xs sm:text-sm font-bold block ${isFixed ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
-                      Fixed Route Packages
-                    </span>
-                    <span className={`text-[10px] hidden sm:block ${isFixed ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
-                      All-inclusive airport-to-airport sequence
-                    </span>
-                  </div>
+            >
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-lg shrink-0 ${isFixed ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
+                  <Compass className="w-4 h-4" />
                 </div>
-                <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${
-                  isFixed ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
+                <div>
+                  <span className={`text-xs sm:text-sm font-bold block ${isFixed ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
+                    Fixed Route Packages
+                  </span>
+                  <span className={`text-[10px] hidden sm:block ${isFixed ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
+                    All-inclusive airport-to-airport sequence
+                  </span>
+                </div>
+              </div>
+              <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${isFixed ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
                 }`}>
-                  Full Route
-                </span>
-              </button>
+                Full Route
+              </span>
+            </button>
 
-              {/* Tab 2: Point-to-Point Transfer */}
-              <button
-                type="button"
-                onClick={() => updateState({ transportMode: 'pointToPoint' })}
-                className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${
-                  !isFixed
-                    ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
-                    : 'border-white/10 border-b-[#14161d] bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
+            {/* Tab 2: Point-to-Point Transfer */}
+            <button
+              type="button"
+              onClick={() => updateState({ transportMode: 'pointToPoint' })}
+              className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${!isFixed
+                  ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                  : 'border-white/10 border-b-[#c5a059]/50 bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
                 }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-lg shrink-0 ${!isFixed ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
-                    <Navigation className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className={`text-xs sm:text-sm font-bold block ${!isFixed ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
-                      Point-to-Point Transfer
-                    </span>
-                    <span className={`text-[10px] hidden sm:block ${!isFixed ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
-                      Direct single transfer between specific locations
-                    </span>
-                  </div>
+            >
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-lg shrink-0 ${!isFixed ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
+                  <Navigation className="w-4 h-4" />
                 </div>
-                <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${
-                  !isFixed ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
+                <div>
+                  <span className={`text-xs sm:text-sm font-bold block ${!isFixed ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
+                    Point-to-Point Transfer
+                  </span>
+                  <span className={`text-[10px] hidden sm:block ${!isFixed ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
+                    Direct single transfer between specific locations
+                  </span>
+                </div>
+              </div>
+              <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${!isFixed ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
                 }`}>
-                  Single Leg
-                </span>
-              </button>
+                Single Leg
+              </span>
+            </button>
           </div>
 
           {/* Body Content — gold boundary continues seamlessly from the active tab */}
@@ -666,17 +718,15 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           key={pkg.id}
                           type="button"
                           onClick={() => handleSelectFixedCircuit(pkg.id)}
-                          className={`p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                            isSelected
+                          className={`p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${isSelected
                               ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_20px_rgba(197,160,89,0.2)] ring-1 ring-[#c5a059]'
                               : 'border-white/10 bg-[#12141a] hover:border-white/25 hover:bg-[#161820]'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-[#c5a059] uppercase tracking-wider">{pkg.name}</span>
-                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                              isSelected ? 'bg-[#c5a059] text-black font-extrabold' : 'bg-white/10 text-gray-400'
-                            }`}>
+                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${isSelected ? 'bg-[#c5a059] text-black font-extrabold' : 'bg-white/10 text-gray-400'
+                              }`}>
                               {pkg.badge}
                             </span>
                           </div>
@@ -722,11 +772,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           key={rName}
                           type="button"
                           onClick={() => updateState({ pointToPointRoute: rName })}
-                          className={`p-3.5 rounded-xl border text-xs font-semibold text-left transition-all cursor-pointer flex items-center justify-between ${
-                            isSelected
+                          className={`p-3.5 rounded-xl border text-xs font-semibold text-left transition-all cursor-pointer flex items-center justify-between ${isSelected
                               ? 'border-[#c5a059] bg-[#c5a059]/15 text-[#c5a059] shadow-sm'
                               : 'border-white/10 bg-[#12141a] text-gray-300 hover:border-white/20 hover:text-white'
-                          }`}
+                            }`}
                         >
                           <span className="truncate">{rName}</span>
                           {isSelected && <Check className="w-3.5 h-3.5 text-[#c5a059] shrink-0" />}
@@ -785,14 +834,20 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
             const requiredCars = Math.max(1, Math.ceil(totalGuests / v.capacity));
             const needsMultiple = totalGuests > v.capacity;
             const cardTotalFare = basePrice * requiredCars;
+            const maxCapacity = Math.max(...activeVehicles.map(x => x.capacity || 0));
+            const isDisabled = needsMultiple && v.capacity < maxCapacity;
+            const showSelected = isSelected && !isDisabled;
 
             return (
               <div
                 key={v.id}
-                onClick={() => handleSelectVehicle(v)}
-                className={`rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 cursor-pointer group relative ${isSelected
-                    ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_30px_rgba(197,160,89,0.2)] ring-2 ring-[#c5a059]'
-                    : 'border-white/10 bg-[#12141a] hover:border-white/30 hover:bg-[#181a22]'
+                onClick={isDisabled ? undefined : () => handleSelectVehicle(v)}
+                className={`rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 group relative ${isDisabled
+                    ? 'border-white/5 bg-[#0c0d10] cursor-not-allowed'
+                    : `cursor-pointer ${showSelected
+                      ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_30px_rgba(197,160,89,0.2)] ring-2 ring-[#c5a059]'
+                      : 'border-white/10 bg-[#12141a] hover:border-white/30 hover:bg-[#181a22]'
+                    }`
                   }`}
               >
                 <div>
@@ -801,9 +856,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     <img
                       src={v.image}
                       alt={v.name}
-                      className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      className={`max-h-full max-w-full object-contain transition-transform duration-300 ${isDisabled ? 'opacity-45 saturate-50' : 'group-hover:scale-105'}`}
                     />
-                    <span className="absolute top-2.5 right-2.5 bg-black/80 text-[#c5a059] border border-[#c5a059]/30 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                    <span className={`absolute top-2.5 right-2.5 bg-black/80 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase border ${isDisabled ? 'text-gray-500 border-white/10' : 'text-[#c5a059] border-[#c5a059]/30'}`}>
                       {v.capacity} Guests / Car
                     </span>
                   </div>
@@ -811,14 +866,14 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   {/* Vehicle Header */}
                   <div className="flex items-start justify-between mb-1.5">
                     <div>
-                      <h4 className="text-base font-bold text-white group-hover:text-[#c5a059] transition-colors">
+                      <h4 className={`text-base font-bold transition-colors ${isDisabled ? 'text-gray-500' : 'text-white group-hover:text-[#c5a059]'}`}>
                         {v.name}
                       </h4>
-                      <span className="text-[11px] text-gray-400 font-medium">
+                      <span className={`text-[11px] font-medium ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`}>
                         {v.category}
                       </span>
                     </div>
-                    {isSelected && (
+                    {showSelected && (
                       <div className="w-6 h-6 rounded-full bg-[#c5a059] text-black flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 font-bold" />
                       </div>
@@ -826,13 +881,13 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   </div>
 
                   {/* Concise Specs Row without long descriptions */}
-                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 my-3 bg-white/5 px-3 py-2.5 rounded-xl border border-white/5">
+                  <div className={`grid grid-cols-2 gap-2 text-xs my-3 px-3 py-2.5 rounded-xl border ${isDisabled ? 'text-gray-500 bg-white/[0.02] border-white/5' : 'text-gray-300 bg-white/5 border-white/5'}`}>
                     <div className="flex items-center justify-center gap-1.5 font-medium">
-                      <Users className="w-4 h-4 text-[#c5a059] shrink-0" />
+                      <Users className={`w-4 h-4 shrink-0 ${isDisabled ? 'text-gray-600' : 'text-[#c5a059]'}`} />
                       <span className="truncate">{v.capacity} Pax / Car</span>
                     </div>
                     <div className="flex items-center justify-center gap-1.5 font-medium border-l border-white/10">
-                      <Briefcase className="w-4 h-4 text-[#c5a059] shrink-0" />
+                      <Briefcase className={`w-4 h-4 shrink-0 ${isDisabled ? 'text-gray-600' : 'text-[#c5a059]'}`} />
                       <span className="truncate">{v.luggage} Bags</span>
                     </div>
                   </div>
@@ -841,16 +896,26 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 {/* Pricing & Fleet Multiplier Box */}
                 <div className="pt-3 border-t border-white/10 mt-2">
                   <div className="flex items-baseline justify-between mb-1">
-                    <span className="text-[11px] text-gray-400 uppercase font-semibold">
+                    <span className={`text-[11px] uppercase font-semibold ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`}>
                       {requiredCars > 1 ? `${requiredCars}x Cars Total Fare:` : 'Total Fare:'}
                     </span>
-                    <span className="text-lg font-bold text-[#c5a059] font-mono">
+                    <span className={`text-lg font-bold font-mono ${isDisabled ? 'text-gray-500' : 'text-[#c5a059]'}`}>
                       AED {cardTotalFare}
                     </span>
                   </div>
 
                   {/* Capacity Multiplier Alert & Fleet allocation */}
-                  {needsMultiple ? (
+                  {isDisabled ? (
+                    <div className="mt-2.5 bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-gray-500 flex items-center justify-between">
+                      <div className="flex flex-col items-center gap-1.5 min-w-0">
+                        <Info className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                        <span>Needs a larger vehicle.</span>
+                        <span className="bg-white/10 text-gray-400 font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
+                          Limit Exceed — {v.capacity} Pax
+                        </span>
+                      </div>
+                    </div>
+                  ) : needsMultiple ? (
                     <div className="mt-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-xs text-amber-300 flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -868,7 +933,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   )}
 
                   {/* Selected allocation summary */}
-                  {isSelected && (
+                  {showSelected && (
                     <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs">
                       <span className="text-gray-400 font-medium">Allocated Vehicles:</span>
                       <span className="font-bold text-[#c5a059] bg-[#c5a059]/10 border border-[#c5a059]/30 px-2.5 py-1 rounded-lg">
@@ -1016,10 +1081,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       <div
                         onClick={(e) => toggleExpandRoute(e, rId)}
                         className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-2.5 cursor-pointer user-select-none shadow-md ${isChecked
-                            ? 'border-[#d4af37] bg-[#d4af37]/15 text-[#f9e8a2] shadow-[0_4px_15px_rgba(212,175,55,0.2)]'
-                            : isExpanded
-                              ? 'border-[#d4af37]/60 bg-[#152030] text-white shadow-md'
-                              : 'border-white/10 bg-[#131c2a] text-gray-300 hover:border-[#d4af37]/60 hover:text-white hover:-translate-y-0.5'
+                          ? 'border-[#d4af37] bg-[#d4af37]/15 text-[#f9e8a2] shadow-[0_4px_15px_rgba(212,175,55,0.2)]'
+                          : isExpanded
+                            ? 'border-[#d4af37]/60 bg-[#152030] text-white shadow-md'
+                            : 'border-white/10 bg-[#131c2a] text-gray-300 hover:border-[#d4af37]/60 hover:text-white hover:-translate-y-0.5'
                           }`}
                       >
                         {/* Checkbox (selects route only on checkbox click) & Route Name */}
@@ -1032,8 +1097,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           >
                             <div
                               className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${isChecked
-                                  ? 'bg-[#d4af37] border-[#d4af37] text-black font-bold text-xs shadow-[0_0_8px_rgba(212,175,55,0.4)]'
-                                  : 'border-gray-500 bg-transparent hover:border-[#d4af37]'
+                                ? 'bg-[#d4af37] border-[#d4af37] text-black font-bold text-xs shadow-[0_0_8px_rgba(212,175,55,0.4)]'
+                                : 'border-gray-500 bg-transparent hover:border-[#d4af37]'
                                 }`}
                             >
                               {isChecked && '✓'}
@@ -1060,19 +1125,19 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                             onClick={(e) => toggleExpandRoute(e, rId)}
                             title="Expand sacred sites"
                             className={`w-7 h-7 rounded-md flex items-center justify-center transition-all cursor-pointer ${isExpanded
-                                ? 'bg-[#d4af37] text-black font-bold shadow-[0_0_10px_rgba(212,175,55,0.5)] rotate-180'
-                                : 'bg-white/5 border border-[#d4af37]/30 text-[#f9e8a2] hover:bg-[#d4af37]/20 hover:scale-105'
+                              ? 'bg-[#d4af37] text-black font-bold shadow-[0_0_10px_rgba(212,175,55,0.5)] rotate-180'
+                              : 'bg-white/5 border border-[#d4af37]/30 text-[#f9e8a2] hover:bg-[#d4af37]/20 hover:scale-105'
                               }`}
                           >
                             <svg className="w-3.5 h-3.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                             </svg>
                           </button>
-                                                    {routeFare && (
-                              <span className="text-[10px] font-bold text-[#f9e8a2] bg-black/40 border border-[#d4af37]/30 px-1 py-0.5 rounded uppercase whitespace-nowrap shadow-[0_0_8px_rgba(212,175,55,0.15)]">
-                                {routeFare}
-                              </span>
-                            )}
+                          {routeFare && (
+                            <span className="text-[10px] font-bold text-[#f9e8a2] bg-black/40 border border-[#d4af37]/30 px-1 py-0.5 rounded uppercase whitespace-nowrap shadow-[0_0_8px_rgba(212,175,55,0.15)]">
+                              {routeFare}
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -1175,16 +1240,22 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
             const isActive = activeVehicleId === v.id;
             const requiredCars = getRequiredFleetCount(totalPax, v.pax);
             const needsMultiple = totalPax > v.pax;
+            const maxPax = Math.max(...BUILDER_FLEET.map(x => x.pax));
+            const isDisabled = needsMultiple && v.pax < maxPax;
+            const showActive = isActive && !isDisabled;
 
             return (
               <div
                 key={v.id}
-                onClick={() => {
+                onClick={isDisabled ? undefined : () => {
                   updateState({ selectedVehicle: v.id });
                 }}
-                className={`rounded-2xl border p-5 flex flex-col items-center justify-between text-center transition-all cursor-pointer relative ${isActive
-                    ? 'border-[#c5a059] bg-[#1e293b]/95 shadow-[0_10px_30px_rgba(212,175,55,0.3)] ring-2 ring-[#c5a059] scale-[1.02]'
-                    : 'border-white/10 bg-[#131c2a]/85 hover:border-[#c5a059]/50 hover:-translate-y-1 hover:shadow-xl'
+                className={`rounded-2xl border p-5 flex flex-col items-center justify-between text-center transition-all relative ${isDisabled
+                    ? 'border-white/5 bg-[#0b111b]/70 cursor-not-allowed'
+                    : `cursor-pointer ${showActive
+                      ? 'border-[#c5a059] bg-[#1e293b]/95 shadow-[0_10px_30px_rgba(212,175,55,0.3)] ring-2 ring-[#c5a059] scale-[1.02]'
+                      : 'border-white/10 bg-[#131c2a]/85 hover:border-[#c5a059]/50 hover:-translate-y-1 hover:shadow-xl'
+                    }`
                   }`}
               >
                 <div className="w-full h-24 flex items-center justify-center mb-3">
@@ -1192,17 +1263,27 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     src={v.img}
                     alt={v.name}
                     className={`max-w-[150px] max-h-[75px] object-contain transition-transform duration-300 ${v.id === 'bus49' ? 'scale-115' : ''
-                      }`}
+                      } ${isDisabled ? 'opacity-45 saturate-50' : ''}`}
                   />
                 </div>
-                <h5 className="font-bold text-white text-base mb-1">{v.name}</h5>
-                <span className="text-xs text-[#c5a059] bg-[#c5a059]/10 px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider mb-3">
+                <h5 className={`font-bold text-base mb-1 ${isDisabled ? 'text-gray-500' : 'text-white'}`}>{v.name}</h5>
+                <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider mb-3 ${isDisabled ? 'text-gray-500 bg-white/5' : 'text-[#c5a059] bg-[#c5a059]/10'}`}>
                   Up to {v.pax} Passengers
                 </span>
 
                 {/* Capacity fit & fleet allocation (same model as the transport fleet step) */}
                 <div className="mt-auto w-full pt-1 space-y-2">
-                  {needsMultiple ? (
+                  {isDisabled ? (
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-[11px] text-gray-500 flex items-center justify-between text-left">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Info className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                        <span>Needs a larger vehicle.</span>
+                      </div>
+                      <span className="bg-white/10 text-gray-400 font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
+                        Limit Exceed — {v.pax} Pax
+                      </span>
+                    </div>
+                  ) : needsMultiple ? (
                     <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-[11px] text-amber-300 flex items-center justify-between text-left">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -1219,7 +1300,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     </div>
                   )}
 
-                  {isActive ? (
+                  {showActive ? (
                     <>
                       <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-left">
                         <span className="text-gray-400 font-medium">Allocated Vehicles:</span>
@@ -1238,7 +1319,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                         </div>
                       )}
                     </>
-                  ) : (
+                  ) : isDisabled ? null : (
                     <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 hover:text-white text-center">
                       Click to Select
                     </div>
@@ -1311,8 +1392,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   <div
                     key={rId}
                     className={`p-4 rounded-xl border border-l-4 ${cityBorder} transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${isDateValid
-                        ? 'bg-[#131c2a]/90 border-white/10'
-                        : 'bg-[#1a1c22] border-[#c5a059]/60 shadow-[0_0_15px_rgba(197,160,89,0.12)] ring-1 ring-[#c5a059]/30'
+                      ? 'bg-[#131c2a]/90 border-white/10'
+                      : 'bg-[#1a1c22] border-[#c5a059]/60 shadow-[0_0_15px_rgba(197,160,89,0.12)] ring-1 ring-[#c5a059]/30'
                       }`}
                   >
                     <div className="flex-1 min-w-0">
@@ -1491,8 +1572,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     key={c.id}
                     onClick={() => updateState({ makkahHotelCategory: c.id })}
                     className={`py-3 px-2 rounded-xl border text-center transition-all flex items-center justify-center cursor-pointer ${isSelected
-                        ? 'border-[#c5a059] bg-[#c5a059]/15 text-[#c5a059] font-bold shadow-[0_0_15px_rgba(197,160,89,0.15)]'
-                        : 'border-white/5 bg-[#1a1c22] text-gray-300 hover:border-white/20'
+                      ? 'border-[#c5a059] bg-[#c5a059]/15 text-[#c5a059] font-bold shadow-[0_0_15px_rgba(197,160,89,0.15)]'
+                      : 'border-white/5 bg-[#1a1c22] text-gray-300 hover:border-white/20'
                       }`}
                   >
                     <span className="text-xs sm:text-sm font-medium whitespace-nowrap">{c.name}</span>
@@ -1634,8 +1715,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               type="button"
               onClick={() => updateState({ includeMadinah: !state.includeMadinah })}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${state.includeMadinah
-                  ? 'bg-[#c5a059] text-black shadow-[0_0_15px_rgba(197,160,89,0.3)]'
-                  : 'bg-[#1a1c22] text-gray-400 border border-white/10 hover:border-white/30'
+                ? 'bg-[#c5a059] text-black shadow-[0_0_15px_rgba(197,160,89,0.3)]'
+                : 'bg-[#1a1c22] text-gray-400 border border-white/10 hover:border-white/30'
                 }`}
             >
               {state.includeMadinah ? (
@@ -1664,8 +1745,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                         key={c.id}
                         onClick={() => updateState({ madinahHotelCategory: c.id })}
                         className={`py-3 px-2 rounded-xl border text-center transition-all flex items-center justify-center cursor-pointer ${isSelected
-                            ? 'border-[#c5a059] bg-[#c5a059]/15 text-[#c5a059] font-bold shadow-[0_0_15px_rgba(197,160,89,0.15)]'
-                            : 'border-white/5 bg-[#1a1c22] text-gray-300 hover:border-white/20'
+                          ? 'border-[#c5a059] bg-[#c5a059]/15 text-[#c5a059] font-bold shadow-[0_0_15px_rgba(197,160,89,0.15)]'
+                          : 'border-white/5 bg-[#1a1c22] text-gray-300 hover:border-white/20'
                           }`}
                       >
                         <span className="text-xs sm:text-sm font-medium whitespace-nowrap">{c.name}</span>
@@ -1825,47 +1906,47 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
         {/* Skip Transportation Option Banner (Step 2 only) */}
         {step === 2 && (
-        <div className={`border rounded-2xl p-4 sm:p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${state.skipTransport
+          <div className={`border rounded-2xl p-4 sm:p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${state.skipTransport
             ? 'bg-[#c5a059]/10 border-[#c5a059]/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]'
             : 'bg-[#0c0d10] border-white/5 hover:border-white/20'
-          }`}>
-          <div className="flex items-center gap-3.5">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${state.skipTransport
+            }`}>
+            <div className="flex items-center gap-3.5">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${state.skipTransport
                 ? 'bg-[#c5a059] text-black border-[#c5a059]'
                 : 'bg-[#1a1c22] text-[#c5a059] border-white/10'
-              }`}>
-              <Car className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h4 className="text-white font-bold text-sm">
-                  Private Chauffeur & Transfers (Optional)
-                </h4>
-                {state.skipTransport && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-[#c5a059] text-black px-2 py-0.5 rounded-md">
-                    Skipped
-                  </span>
-                )}
+                }`}>
+                <Car className="w-5 h-5" />
               </div>
-              <p className="text-xs text-gray-400 font-light mt-0.5">
-                {state.skipTransport
-                  ? 'Transportation is skipped. You can pick a vehicle below to re-add, or continue to next step.'
-                  : 'Arranging your own transport or high-speed train? You can skip this step with one click.'}
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-white font-bold text-sm">
+                    Private Chauffeur & Transfers (Optional)
+                  </h4>
+                  {state.skipTransport && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-[#c5a059] text-black px-2 py-0.5 rounded-md">
+                      Skipped
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 font-light mt-0.5">
+                  {state.skipTransport
+                    ? 'Transportation is skipped. You can pick a vehicle below to re-add, or continue to next step.'
+                    : 'Arranging your own transport or high-speed train? You can skip this step with one click.'}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={onSkipTransport}
-            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer shadow-md ${state.skipTransport
+            <button
+              type="button"
+              onClick={onSkipTransport}
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer shadow-md ${state.skipTransport
                 ? 'border-[#c5a059] bg-[#c5a059] text-black hover:bg-[#d4b57a]'
                 : 'border-[#c5a059]/40 bg-[#c5a059]/10 hover:bg-[#c5a059] text-[#c5a059] hover:text-black'
-              }`}
-          >
-            {state.skipTransport ? 'Transport Skipped ✓' : 'Skip Transportation ➔'}
-          </button>
-        </div>
+                }`}
+            >
+              {state.skipTransport ? 'Transport Skipped ✓' : 'Skip Transportation ➔'}
+            </button>
+          </div>
         )}
 
         {/* ========================================================= */}
@@ -1875,400 +1956,436 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
           <div className="space-y-8">
             {/* 1. CHOOSE TRANSPORT BOOKING MODE (Step 2 only) */}
             {step === 2 && (
-            <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6">
-              <label className="block text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-3">
+              <label className="block text-xs uppercase tracking-widest text-[#c5a059] font-bold">
                 Choose Transport Booking Mode *
               </label>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Mode 1: Fixed Route Circuit */}
-                <div
-                  onClick={() => updateState({ transportMode: 'fixed' })}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${state.transportMode === 'fixed'
-                      ? 'bg-[#c5a059]/10 border-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.15)]'
-                      : 'bg-[#1a1c22] border-white/5 hover:border-white/20'
-                    }`}
-                >
-                  <div className={`p-2.5 rounded-lg shrink-0 ${state.transportMode === 'fixed' ? 'bg-[#c5a059] text-black' : 'bg-white/5 text-[#c5a059]'}`}>
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-white font-bold text-sm">Full Pilgrimage Route</h4>
-                      <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${state.transportMode === 'fixed' ? 'bg-[#c5a059] text-black' : 'bg-white/10 text-gray-400'
-                        }`}>
-                        All Transfers
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">
-                      Complete pre-scheduled package: Airport arrival, Intercity transfers (Makkah & Madinah), and Departure.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Mode 2: Point-to-Point Transfer */}
-                <div
-                  onClick={() => updateState({ transportMode: 'pointToPoint' })}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${state.transportMode === 'pointToPoint'
-                      ? 'bg-[#c5a059]/10 border-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.15)]'
-                      : 'bg-[#1a1c22] border-white/5 hover:border-white/20'
-                    }`}
-                >
-                  <div className={`p-2.5 rounded-lg shrink-0 ${state.transportMode === 'pointToPoint' ? 'bg-[#c5a059] text-black' : 'bg-white/5 text-[#c5a059]'}`}>
-                    <Navigation className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-white font-bold text-sm">Point-to-Point Transfer</h4>
-                      <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${state.transportMode === 'pointToPoint' ? 'bg-[#c5a059] text-black' : 'bg-white/10 text-gray-400'
-                        }`}>
-                        Single Route
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">
-                      Direct single transfer with exact Google Maps autocomplete for hotel or airport pickup & drop-off.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
             )}
 
             {/* 2. ROUTE PACKAGE / ROUTE COMBINATION (Step 2) & LEG SCHEDULE (Step 4) */}
-            {(step === 2 || step === 4) && (state.transportMode === 'fixed' ? (
-              /* A: FIXED ROUTE CIRCUIT PACKAGES */
-              <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 space-y-6">
+            {(step === 2 || step === 4) && (
+              <div className={step === 2
+                ? 'bg-[#0c0d10] rounded-2xl shadow-[0_0_50px_rgba(197,160,89,0.10)] overflow-hidden'
+                : 'bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 space-y-6'
+              }>
+                {/* Tabbed booking mode: the active tab merges seamlessly into the
+                    gold-bordered options panel below (connected-tab pattern) */}
                 {step === 2 && (
-                <>
-                <div>
-                  <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-1">
-                    Select Pilgrimage Route Package *
-                  </label>
-                  <p className="text-xs text-gray-400">
-                    Choose the route package that matches your arrival and departure airports in Saudi Arabia.
-                  </p>
+                  <div className={`${state.transportMode === 'fixed' ? 'flex flex-col-reverse' : 'flex flex-col'} gap-2 sm:grid sm:grid-cols-2 sm:gap-3 relative z-10 -mb-[2px]`}>
+                    {/* Tab 1: Full Pilgrimage Route */}
+                    <button
+                      type="button"
+                      onClick={() => updateState({ transportMode: 'fixed' })}
+                      className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${state.transportMode === 'fixed'
+                          ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                          : 'border-white/10 border-b-[#c5a059]/50 bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`p-2 rounded-lg shrink-0 ${state.transportMode === 'fixed' ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
+                          <Compass className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className={`text-xs sm:text-sm font-bold block ${state.transportMode === 'fixed' ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
+                            Full Pilgrimage Route
+                          </span>
+                          <span className={`text-[10px] hidden sm:block ${state.transportMode === 'fixed' ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
+                            Airport arrival, intercity & departure transfers
+                          </span>
+                        </div>
+                      </div>
+                      <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${state.transportMode === 'fixed' ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
+                        }`}>
+                        All Transfers
+                      </span>
+                    </button>
+
+                    {/* Tab 2: Point-to-Point Transfer */}
+                    <button
+                      type="button"
+                      onClick={() => updateState({ transportMode: 'pointToPoint' })}
+                      className={`relative px-4 py-3 sm:py-3.5 rounded-t-2xl border-2 text-left transition-all duration-300 flex items-center justify-between gap-3 cursor-pointer ${state.transportMode === 'pointToPoint'
+                          ? 'border-[#c5a059] border-b-0 bg-[#c5a059] text-black shadow-[0_2px_15px_rgba(197,160,89,0.35)]'
+                          : 'border-white/10 border-b-[#c5a059]/50 bg-[#14161d] text-gray-300 hover:border-[#c5a059]/50 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`p-2 rounded-lg shrink-0 ${state.transportMode === 'pointToPoint' ? 'bg-black/20 text-black' : 'bg-white/5 text-[#c5a059]'}`}>
+                          <Navigation className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className={`text-xs sm:text-sm font-bold block ${state.transportMode === 'pointToPoint' ? 'text-black font-extrabold' : 'text-white font-semibold'}`}>
+                            Point-to-Point Transfer
+                          </span>
+                          <span className={`text-[10px] hidden sm:block ${state.transportMode === 'pointToPoint' ? 'text-black/80 font-medium' : 'text-gray-400 font-light'}`}>
+                            Direct single transfer with Google Maps pickup & drop-off
+                          </span>
+                        </div>
+                      </div>
+                      <span className={`text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${state.transportMode === 'pointToPoint' ? 'bg-black text-[#c5a059]' : 'bg-white/10 text-gray-400'
+                        }`}>
+                        Single Route
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Body — gold boundary continues seamlessly from the active tab */}
+                <div className={step === 2
+                  ? 'border-2 border-[#c5a059] rounded-b-2xl bg-[#0c0d10] p-5 sm:p-6 shadow-[0_0_35px_rgba(197,160,89,0.12)] space-y-6'
+                  : ''
+                }>
+                  {state.transportMode === 'fixed' ? (
+                    /* A: FIXED ROUTE CIRCUIT PACKAGES */
+                    <>
+                      {step === 2 && (
+                        <>
+                          <div>
+                            <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-1">
+                              Select Pilgrimage Route Package *
+                            </label>
+                            <p className="text-xs text-gray-400">
+                              Choose the route package that matches your arrival and departure airports in Saudi Arabia.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {FIXED_CIRCUITS.map(circuit => {
+                              const isSelected = state.fixedRouteId === circuit.id;
+                              return (
+                                <div
+                                  key={circuit.id}
+                                  onClick={() => handleSelectFixedCircuit(circuit.id)}
+                                  className={`p-4 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${isSelected
+                                    ? 'bg-[#c5a059]/10 border-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.15)]'
+                                    : 'bg-[#1a1c22] border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                  <div>
+                                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                                      <span className="text-[10px] uppercase font-bold text-black bg-[#c5a059] px-2 py-0.5 rounded tracking-wider">
+                                        {circuit.badge}
+                                      </span>
+                                      {isSelected && <Check className="w-4 h-4 text-[#c5a059]" />}
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-1">{circuit.title}</h4>
+                                    <p className="text-[11px] text-gray-400 leading-relaxed font-mono">{circuit.fullRoute}</p>
+                                  </div>
+                                  <div className="mt-3 pt-2 border-t border-white/10 text-[10px] text-gray-400 flex items-center justify-between">
+                                    <span>{circuit.stops.length} Transfer Legs</span>
+                                    <span className="text-[#c5a059] font-medium">{isSelected ? 'Active Selection' : 'Click to select'}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Circuit Stops Timings (Step 4 only) */}
+                      {step === 4 && (
+                        <div className="space-y-4">
+                          <h4 className="text-xs uppercase tracking-widest text-white font-bold flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-[#c5a059]" />
+                            Transfer Leg Dates & Pick-Up Timings
+                          </h4>
+
+                          <div className="space-y-3">
+                            {state.fixedRouteLegs.map((leg, idx) => (
+                              <div key={leg.id || idx} className="p-4 rounded-xl bg-[#14161d] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div className="flex-1">
+                                  <span className="text-[10px] uppercase font-bold text-[#c5a059] tracking-wider block mb-0.5">
+                                    Leg {idx + 1}
+                                  </span>
+                                  <h5 className="text-white text-xs font-semibold">{leg.label || `${leg.from} ➔ ${leg.to}`}</h5>
+                                </div>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                  <div className="flex-1 sm:w-36">
+                                    <DateInputField
+                                      min={todayStr}
+                                      value={leg.date || ''}
+                                      placeholder="DD.MM.YYYY"
+                                      onChange={(isoVal) => handleLegDateChange(idx, isoVal)}
+                                    />
+                                  </div>
+                                  <div
+                                    onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                                    className="w-28 cursor-pointer"
+                                  >
+                                    <input
+                                      type="time"
+                                      value={leg.time || '14:00'}
+                                      onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                      onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                      onChange={(e) => handleLegTimeChange(idx, e.target.value)}
+                                      className="w-full bg-[#0c0d10] border border-white/15 rounded-lg px-2 py-2 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    /* B: POINT-TO-POINT ROUTE & GOOGLE PLACES */
+                    <>
+                      {step === 2 && (
+                        <div>
+                          <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-2">
+                            Standard Transfer Route Combination *
+                          </label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            {activeP2PRoutes.map((rt) => {
+                              const isSelected = (state.pointToPointRoute || 'Jeddah ↔ Makkah') === rt;
+                              return (
+                                <button
+                                  key={rt}
+                                  type="button"
+                                  onClick={() => updateState({ pointToPointRoute: rt })}
+                                  className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${isSelected
+                                    ? 'bg-[#c5a059]/15 border-[#c5a059] text-white shadow-md'
+                                    : 'bg-[#1a1c22] border-white/5 text-gray-300 hover:border-white/20'
+                                    }`}
+                                >
+                                  <span className="truncate">{rt}</span>
+                                  {isSelected && <Check className="w-3.5 h-3.5 text-[#c5a059] shrink-0 ml-1.5" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Google Places Autocomplete: Pickup & Drop-off (Step 4 only) */}
+                      {step === 4 && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-[#c5a059]" />
+                              <h4 className="text-xs uppercase tracking-widest text-white font-bold">
+                                Pickup & Drop-off Coordinates (Google Autocomplete)
+                              </h4>
+                            </div>
+                            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                              Saudi Arabia Places
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <GooglePlacesInput
+                              id="umrah-pickup-location-input"
+                              label="Exact Pickup Location"
+                              placeholder="e.g. King Abdulaziz Airport Terminal 1 / Hotel Name"
+                              required
+                              value={state.pointToPointPickupLocation || ''}
+                              onChange={(val) => updateState({ pointToPointPickupLocation: val })}
+                            />
+
+                            <GooglePlacesInput
+                              id="umrah-dropoff-location-input"
+                              label="Exact Drop-off Location"
+                              placeholder="e.g. Fairmont Makkah Clock Tower / Madinah Hotel"
+                              required
+                              value={state.pointToPointDropoffLocation || ''}
+                              onChange={(val) => updateState({ pointToPointDropoffLocation: val })}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                            <div>
+                              <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block">
+                                Pickup Date *
+                              </label>
+                              <DateInputField
+                                min={todayStr}
+                                value={state.pointToPointPickupDate || ''}
+                                placeholder="DD.MM.YYYY"
+                                onChange={(isoVal) => updateState({ pointToPointPickupDate: isoVal })}
+                              />
+                            </div>
+                            <div
+                              onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                              className="cursor-pointer"
+                            >
+                              <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block cursor-pointer">
+                                Pickup Time *
+                              </label>
+                              <input
+                                type="time"
+                                value={state.pointToPointPickupTime || '14:00'}
+                                onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
+                                className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1.5 block">
+                                Flight No. / Terminal (Optional)
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="e.g. SV-124 / North Terminal"
+                                value={state.pointToPointFlightNo || ''}
+                                onChange={(e) => updateState({ pointToPointFlightNo: e.target.value })}
+                                className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 text-xs outline-none focus:border-[#c5a059]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 3. CHOOSE PRIVATE VEHICLE & FLEET SETUP (Step 3 only) */}
+            {step === 3 && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="text-sm uppercase tracking-widest font-bold text-[#c5a059]">
+                      Choose Private Vehicle & Fleet Setup
+                    </h4>
+                    <p className="text-xs text-gray-400 font-light mt-0.5">
+                      Vehicle fleet is automatically allocated based on your total party of {state.adultsCount + (state.childrenCount || 0)} guests.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {FIXED_CIRCUITS.map(circuit => {
-                    const isSelected = state.fixedRouteId === circuit.id;
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {activeVehicles.map(v => {
+                    const totalGuests = (state.adultsCount || 1) + (state.childrenCount || 0);
+                    const isSelected = (state.transportVehicleId === v.id) || (state.selectedVehicle === v.id);
+                    const isP2P = state.transportMode === 'pointToPoint';
+
+                    const baseRate = isP2P
+                      ? ((v as any).pointToPoint?.[state.pointToPointRoute] || (v as any).pointToPoint?.['Jeddah ↔ Makkah'] || 250)
+                      : ((v as any).fixedRoutes?.[state.fixedRouteId] || (v as any).fixedRoutes?.['p1'] || 800);
+
+                    const requiredCars = Math.max(1, Math.ceil(totalGuests / v.capacity));
+                    const cardTotalFare = baseRate * requiredCars;
+                    const needsMultiple = totalGuests > v.capacity;
+                    const maxCapacity = Math.max(...activeVehicles.map(x => x.capacity || 0));
+                    const isDisabled = needsMultiple && v.capacity < maxCapacity;
+                    const showSelected = isSelected && !isDisabled;
+
                     return (
                       <div
-                        key={circuit.id}
-                        onClick={() => handleSelectFixedCircuit(circuit.id)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${isSelected
-                            ? 'bg-[#c5a059]/10 border-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.15)]'
-                            : 'bg-[#1a1c22] border-white/5 hover:border-white/20'
+                        key={v.id}
+                        onClick={isDisabled ? undefined : () => updateState({
+                          transportVehicleId: v.id,
+                          selectedVehicle: v.id,
+                          vehicleQuantity: requiredCars,
+                          calculatedTransportPrice: cardTotalFare
+                        })}
+                        className={`group relative rounded-2xl p-5 border transition-all flex flex-col justify-between ${isDisabled
+                            ? 'bg-[#0b0c10] border-white/5 cursor-not-allowed'
+                            : `cursor-pointer ${showSelected
+                              ? 'bg-[#15171e] border-[#c5a059] shadow-[0_0_25px_rgba(197,160,89,0.2)]'
+                              : 'bg-[#0f1015] border-white/10 hover:border-white/20'
+                            }`
                           }`}
                       >
                         <div>
-                          <div className="flex items-center justify-between gap-2 mb-1.5">
-                            <span className="text-[10px] uppercase font-bold text-black bg-[#c5a059] px-2 py-0.5 rounded tracking-wider">
-                              {circuit.badge}
+                          {/* Vehicle Image */}
+                          <div className="relative w-full h-32 mb-4 rounded-xl overflow-hidden bg-black/40 flex items-center justify-center p-2">
+                            <img
+                              src={v.image}
+                              alt={v.name}
+                              className={`object-contain max-h-full max-w-full drop-shadow-xl transition-transform duration-300 ${isDisabled ? 'opacity-45 saturate-50' : 'group-hover:scale-105'}`}
+                            />
+                            <span className={`absolute top-2 right-2 text-[10px] bg-black/80 font-bold px-2 py-0.5 rounded border ${isDisabled ? 'text-gray-500 border-white/10' : 'text-amber-400 border-amber-400/30'}`}>
+                              {v.capacity} GUESTS / CAR
                             </span>
-                            {isSelected && <Check className="w-4 h-4 text-[#c5a059]" />}
                           </div>
-                          <h4 className="text-sm font-bold text-white mb-1">{circuit.title}</h4>
-                          <p className="text-[11px] text-gray-400 leading-relaxed font-mono">{circuit.fullRoute}</p>
+
+                          {/* Vehicle Header */}
+                          <div className="flex items-start justify-between mb-1.5">
+                            <div>
+                              <h4 className={`text-base font-bold transition-colors ${isDisabled ? 'text-gray-500' : 'text-white group-hover:text-[#c5a059]'}`}>
+                                {v.name}
+                              </h4>
+                              <span className={`text-[11px] font-medium ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`}>
+                                {v.category}
+                              </span>
+                            </div>
+                            {showSelected && (
+                              <div className="w-6 h-6 rounded-full bg-[#c5a059] text-black flex items-center justify-center shrink-0">
+                                <Check className="w-4 h-4 font-bold" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Clean 2-column specs without AC Chauffeur */}
+                          <div className={`grid grid-cols-2 gap-2 text-xs my-3 px-3 py-2.5 rounded-xl border ${isDisabled ? 'text-gray-500 bg-white/[0.02] border-white/5' : 'text-gray-300 bg-white/5 border-white/5'}`}>
+                            <div className="flex items-center justify-center gap-1.5 font-medium">
+                              <Users className={`w-4 h-4 shrink-0 ${isDisabled ? 'text-gray-600' : 'text-[#c5a059]'}`} />
+                              <span className="truncate">{v.capacity} Pax / Car</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-1.5 font-medium border-l border-white/10">
+                              <Briefcase className={`w-4 h-4 shrink-0 ${isDisabled ? 'text-gray-600' : 'text-[#c5a059]'}`} />
+                              <span className="truncate">{v.luggage} Bags</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="mt-3 pt-2 border-t border-white/10 text-[10px] text-gray-400 flex items-center justify-between">
-                          <span>{circuit.stops.length} Transfer Legs</span>
-                          <span className="text-[#c5a059] font-medium">{isSelected ? 'Active Selection' : 'Click to select'}</span>
+
+                        {/* Pricing & Fleet Multiplier Box */}
+                        <div className="pt-3 border-t border-white/10 mt-2">
+                          <div className="flex items-baseline justify-between mb-1">
+                            <span className={`text-[11px] uppercase font-semibold ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`}>
+                              {requiredCars > 1 ? `${requiredCars}x Cars Total Fare:` : 'Total Fare:'}
+                            </span>
+                            <span className={`text-lg font-bold font-mono ${isDisabled ? 'text-gray-500' : 'text-[#c5a059]'}`}>
+                              AED {cardTotalFare}
+                            </span>
+                          </div>
+
+                          {/* Capacity Multiplier Alert & Fleet allocation */}
+                          {isDisabled ? (
+                            <div className="mt-2.5 bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-gray-500 flex items-center justify-between">
+                              <div className="flex flex-col items-center justify-center gap-1.5 min-w-10">
+                                <Info className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                                <span className="bg-white/10 text-gray-400 font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
+                                  Limit Exceed — {v.capacity} Pax
+                                </span>
+                                <span>Needs a larger vehicle.</span>
+                              </div>
+                            </div>
+                          ) : needsMultiple ? (
+                            <div className="mt-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-xs text-amber-300 flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                <span>{totalGuests} guests exceed 1 car ({v.capacity} pax).</span>
+                              </div>
+                              <span className="bg-amber-400 text-black font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
+                                {requiredCars}x Required
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="mt-2 text-[11px] text-gray-400 flex items-center gap-1.5">
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>1 car comfortably accommodates {totalGuests} guest{totalGuests > 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+
+                          {/* Selected allocation summary without '(Locked)' */}
+                          {showSelected && (
+                            <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                              <span className="text-gray-400 font-medium">Allocated Vehicles:</span>
+                              <span className="font-bold text-[#c5a059] bg-[#c5a059]/10 border border-[#c5a059]/30 px-2.5 py-1 rounded-lg">
+                                {requiredCars}x {v.name}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                </>
-                )}
-
-                {/* Circuit Stops Timings (Step 4 only) */}
-                {step === 4 && (
-                <div className="space-y-4">
-                  <h4 className="text-xs uppercase tracking-widest text-white font-bold flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#c5a059]" />
-                    Transfer Leg Dates & Pick-Up Timings
-                  </h4>
-
-                  <div className="space-y-3">
-                    {state.fixedRouteLegs.map((leg, idx) => (
-                      <div key={leg.id || idx} className="p-4 rounded-xl bg-[#14161d] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                        <div className="flex-1">
-                          <span className="text-[10px] uppercase font-bold text-[#c5a059] tracking-wider block mb-0.5">
-                            Leg {idx + 1}
-                          </span>
-                          <h5 className="text-white text-xs font-semibold">{leg.label || `${leg.from} ➔ ${leg.to}`}</h5>
-                        </div>
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                          <div className="flex-1 sm:w-36">
-                            <DateInputField
-                              min={todayStr}
-                              value={leg.date || ''}
-                              placeholder="DD.MM.YYYY"
-                              onChange={(isoVal) => handleLegDateChange(idx, isoVal)}
-                            />
-                          </div>
-                          <div
-                            onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
-                            className="w-28 cursor-pointer"
-                          >
-                            <input
-                              type="time"
-                              value={leg.time || '14:00'}
-                              onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                              onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                              onChange={(e) => handleLegTimeChange(idx, e.target.value)}
-                              className="w-full bg-[#0c0d10] border border-white/15 rounded-lg px-2 py-2 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                )}
               </div>
-            ) : (
-              /* B: POINT-TO-POINT ROUTE & GOOGLE PLACES */
-              <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 space-y-6">
-                {step === 2 && (
-                <div>
-                  <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-2">
-                    Standard Transfer Route Combination *
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    {activeP2PRoutes.map((rt) => {
-                      const isSelected = (state.pointToPointRoute || 'Jeddah ↔ Makkah') === rt;
-                      return (
-                        <button
-                          key={rt}
-                          type="button"
-                          onClick={() => updateState({ pointToPointRoute: rt })}
-                          className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${isSelected
-                              ? 'bg-[#c5a059]/15 border-[#c5a059] text-white shadow-md'
-                              : 'bg-[#1a1c22] border-white/5 text-gray-300 hover:border-white/20'
-                            }`}
-                        >
-                          <span className="truncate">{rt}</span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-[#c5a059] shrink-0 ml-1.5" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                )}
-
-                {/* Google Places Autocomplete: Pickup & Drop-off (Step 4 only) */}
-                {step === 4 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-[#c5a059]" />
-                      <h4 className="text-xs uppercase tracking-widest text-white font-bold">
-                        Pickup & Drop-off Coordinates (Google Autocomplete)
-                      </h4>
-                    </div>
-                    <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
-                      Saudi Arabia Places
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <GooglePlacesInput
-                      id="umrah-pickup-location-input"
-                      label="Exact Pickup Location"
-                      placeholder="e.g. King Abdulaziz Airport Terminal 1 / Hotel Name"
-                      required
-                      value={state.pointToPointPickupLocation || ''}
-                      onChange={(val) => updateState({ pointToPointPickupLocation: val })}
-                    />
-
-                    <GooglePlacesInput
-                      id="umrah-dropoff-location-input"
-                      label="Exact Drop-off Location"
-                      placeholder="e.g. Fairmont Makkah Clock Tower / Madinah Hotel"
-                      required
-                      value={state.pointToPointDropoffLocation || ''}
-                      onChange={(val) => updateState({ pointToPointDropoffLocation: val })}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                    <div>
-                      <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block">
-                        Pickup Date *
-                      </label>
-                      <DateInputField
-                        min={todayStr}
-                        value={state.pointToPointPickupDate || ''}
-                        placeholder="DD.MM.YYYY"
-                        onChange={(isoVal) => updateState({ pointToPointPickupDate: isoVal })}
-                      />
-                    </div>
-                    <div
-                      onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
-                      className="cursor-pointer"
-                    >
-                      <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block cursor-pointer">
-                        Pickup Time *
-                      </label>
-                      <input
-                        type="time"
-                        value={state.pointToPointPickupTime || '14:00'}
-                        onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                        onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                        onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
-                        className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1.5 block">
-                        Flight No. / Terminal (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. SV-124 / North Terminal"
-                        value={state.pointToPointFlightNo || ''}
-                        onChange={(e) => updateState({ pointToPointFlightNo: e.target.value })}
-                        className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 text-xs outline-none focus:border-[#c5a059]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                )}
-              </div>
-            )
-            )}
-
-            {/* 3. CHOOSE PRIVATE VEHICLE & FLEET SETUP (Step 3 only) */}
-            {step === 3 && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="text-sm uppercase tracking-widest font-bold text-[#c5a059]">
-                    Choose Private Vehicle & Fleet Setup
-                  </h4>
-                  <p className="text-xs text-gray-400 font-light mt-0.5">
-                    Vehicle fleet is automatically allocated based on your total party of {state.adultsCount + (state.childrenCount || 0)} guests.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {activeVehicles.map(v => {
-                  const totalGuests = (state.adultsCount || 1) + (state.childrenCount || 0);
-                  const isSelected = (state.transportVehicleId === v.id) || (state.selectedVehicle === v.id);
-                  const isP2P = state.transportMode === 'pointToPoint';
-
-                  const baseRate = isP2P
-                    ? ((v as any).pointToPoint?.[state.pointToPointRoute] || (v as any).pointToPoint?.['Jeddah ↔ Makkah'] || 250)
-                    : ((v as any).fixedRoutes?.[state.fixedRouteId] || (v as any).fixedRoutes?.['p1'] || 800);
-
-                  const requiredCars = Math.max(1, Math.ceil(totalGuests / v.capacity));
-                  const cardTotalFare = baseRate * requiredCars;
-                  const needsMultiple = totalGuests > v.capacity;
-
-                  return (
-                    <div
-                      key={v.id}
-                      onClick={() => updateState({
-                        transportVehicleId: v.id,
-                        selectedVehicle: v.id,
-                        vehicleQuantity: requiredCars,
-                        calculatedTransportPrice: cardTotalFare
-                      })}
-                      className={`group relative rounded-2xl p-5 border transition-all cursor-pointer flex flex-col justify-between ${isSelected
-                          ? 'bg-[#15171e] border-[#c5a059] shadow-[0_0_25px_rgba(197,160,89,0.2)]'
-                          : 'bg-[#0f1015] border-white/10 hover:border-white/20'
-                        }`}
-                    >
-                      <div>
-                        {/* Vehicle Image */}
-                        <div className="relative w-full h-32 mb-4 rounded-xl overflow-hidden bg-black/40 flex items-center justify-center p-2">
-                          <img
-                            src={v.image}
-                            alt={v.name}
-                            className="object-contain max-h-full max-w-full drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <span className="absolute top-2 right-2 text-[10px] bg-black/80 font-bold text-amber-400 px-2 py-0.5 rounded border border-amber-400/30">
-                            {v.capacity} GUESTS / CAR
-                          </span>
-                        </div>
-
-                        {/* Vehicle Header */}
-                        <div className="flex items-start justify-between mb-1.5">
-                          <div>
-                            <h4 className="text-base font-bold text-white group-hover:text-[#c5a059] transition-colors">
-                              {v.name}
-                            </h4>
-                            <span className="text-[11px] text-gray-400 font-medium">
-                              {v.category}
-                            </span>
-                          </div>
-                          {isSelected && (
-                            <div className="w-6 h-6 rounded-full bg-[#c5a059] text-black flex items-center justify-center shrink-0">
-                              <Check className="w-4 h-4 font-bold" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Clean 2-column specs without AC Chauffeur */}
-                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 my-3 bg-white/5 px-3 py-2.5 rounded-xl border border-white/5">
-                          <div className="flex items-center justify-center gap-1.5 font-medium">
-                            <Users className="w-4 h-4 text-[#c5a059] shrink-0" />
-                            <span className="truncate">{v.capacity} Pax / Car</span>
-                          </div>
-                          <div className="flex items-center justify-center gap-1.5 font-medium border-l border-white/10">
-                            <Briefcase className="w-4 h-4 text-[#c5a059] shrink-0" />
-                            <span className="truncate">{v.luggage} Bags</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Pricing & Fleet Multiplier Box */}
-                      <div className="pt-3 border-t border-white/10 mt-2">
-                        <div className="flex items-baseline justify-between mb-1">
-                          <span className="text-[11px] text-gray-400 uppercase font-semibold">
-                            {requiredCars > 1 ? `${requiredCars}x Cars Total Fare:` : 'Total Fare:'}
-                          </span>
-                          <span className="text-lg font-bold text-[#c5a059] font-mono">
-                            AED {cardTotalFare}
-                          </span>
-                        </div>
-
-                        {/* Capacity Multiplier Alert & Fleet allocation */}
-                        {needsMultiple ? (
-                          <div className="mt-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-xs text-amber-300 flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                              <span>{totalGuests} guests exceed 1 car ({v.capacity} pax).</span>
-                            </div>
-                            <span className="bg-amber-400 text-black font-extrabold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">
-                              {requiredCars}x Required
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="mt-2 text-[11px] text-gray-400 flex items-center gap-1.5">
-                            <Check className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>1 car comfortably accommodates {totalGuests} guest{totalGuests > 1 ? 's' : ''}</span>
-                          </div>
-                        )}
-
-                        {/* Selected allocation summary without '(Locked)' */}
-                        {isSelected && (
-                          <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-                            <span className="text-gray-400 font-medium">Allocated Vehicles:</span>
-                            <span className="font-bold text-[#c5a059] bg-[#c5a059]/10 border border-[#c5a059]/30 px-2.5 py-1 rounded-lg">
-                              {requiredCars}x {v.name}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
             )}
           </div>
         )}
@@ -2620,8 +2737,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           setNationalitySearch('');
                         }}
                         className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.nationality === c.name
-                            ? 'bg-[#c5a059]/15 text-[#c5a059]'
-                            : 'text-gray-200 hover:bg-white/5 hover:text-white'
+                          ? 'bg-[#c5a059]/15 text-[#c5a059]'
+                          : 'text-gray-200 hover:bg-white/5 hover:text-white'
                           }`}
                       >
                         <span className="text-lg shrink-0">{c.flag}</span>
@@ -2693,8 +2810,8 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                               setPhoneCodeSearch('');
                             }}
                             className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.phoneCode === c.dialCode
-                                ? 'bg-[#c5a059]/15 text-[#c5a059]'
-                                : 'text-gray-200 hover:bg-white/5 hover:text-white'
+                              ? 'bg-[#c5a059]/15 text-[#c5a059]'
+                              : 'text-gray-200 hover:bg-white/5 hover:text-white'
                               }`}
                           >
                             <span className="text-lg shrink-0">{c.flag}</span>
