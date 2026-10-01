@@ -491,7 +491,10 @@ export default function BookingController({
     setBookingState(prev => {
       const currentVehicle = ZIYARAT_FLEET.find(v => v.id === (prev.selectedVehicle || 'sedan'));
       if (!currentVehicle || currentVehicle.capacity >= groupPax) return prev;
-      const suitable = ZIYARAT_FLEET.find(v => v.capacity >= groupPax);
+      // Smallest vehicle that carries everyone; when the group outgrows the
+      // entire fleet the largest coach stays selectable as the fallback.
+      const suitable = ZIYARAT_FLEET.find(v => v.capacity >= groupPax)
+        || [...ZIYARAT_FLEET].sort((a, b) => b.capacity - a.capacity)[0];
       if (!suitable || suitable.id === prev.selectedVehicle) return prev;
       return { ...prev, selectedVehicle: suitable.id };
     });
