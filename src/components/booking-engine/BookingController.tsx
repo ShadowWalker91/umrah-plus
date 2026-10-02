@@ -244,6 +244,10 @@ export default function BookingController({
   const isZiyarat = type === 'Ziyarat';
 
   const [currentStep, setCurrentStep] = useState(1);
+  // Booking flow has three phases: selection steps (dark, sidebar visible),
+  // a full-page Trip Summary, then the remaining steps as a checkout flow
+  // with the inverted gold theme applied to the step panel.
+  const [phase, setPhase] = useState<'booking' | 'summary' | 'checkout'>('booking');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddonsDrawer, setShowAddonsDrawer] = useState(false);
   const [transportFleet, setTransportFleet] = useState<TransportVehicleConfig[]>([]);
@@ -263,7 +267,7 @@ export default function BookingController({
     if (!panel) return;
     const top = panel.getBoundingClientRect().top + window.scrollY - 24;
     window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
-  }, [currentStep]);
+  }, [currentStep, phase]);
 
   useEffect(() => {
     getTransportData().then(res => {
@@ -428,6 +432,17 @@ export default function BookingController({
         ? 8
         : (hasTransport ? 5 : 2);
 
+  // First step of the checkout phase: the screen right after the last
+  // vehicle/fleet selection (or right after Stay & Guests for Umrah without
+  // transport). Reaching it routes the visitor through the Trip Summary first.
+  const checkoutStartStep = isTransport
+    ? 4
+    : isZiyarat
+      ? 3
+      : isUmrahPlus
+        ? 6
+        : (hasTransport ? 4 : 2);
+
   // Auto-sync vehicle quantity and calculated price based on total guests and chosen car capacity
   useEffect(() => {
     if (isTransport || hasTransport) {
@@ -556,6 +571,15 @@ export default function BookingController({
     });
   };
 
+  // Step transitions: landing on (or past) the first checkout step while still
+  // in the booking phase stops at the full-page Trip Summary instead.
+  const goToStep = (n: number) => {
+    setCurrentStep(n);
+    if (phase === 'booking' && n >= checkoutStartStep) setPhase('summary');
+  };
+
+  const advanceStep = () => goToStep(currentStep + 1);
+
   const handleSkipTransport = () => {
     updateState({ 
       skipTransport: true, 
@@ -563,17 +587,30 @@ export default function BookingController({
       selectedUpsells: bookingState.selectedUpsells.filter(id => id !== 'transport')
     });
     if (isRegularUmrah) {
-      // Advance straight to submission/lead details
+      // Without transport the next screen is already the lead-details checkout
+      // step — show the Trip Summary first. checkoutStartStep still reflects the
+      // pre-skip state in this render, so the phase is set explicitly.
       setCurrentStep(2);
+      setPhase('summary');
     } else if (isUmrahPlus) {
       // Advance directly to Ziyarat Flow (Step 4)
-      setCurrentStep(4);
+      goToStep(4);
     } else {
-      setCurrentStep(prev => prev + 1);
+      goToStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
+    // First checkout step steps back into the Trip Summary screen.
+    if (phase === 'checkout' && currentStep <= checkoutStartStep) {
+      setPhase('summary');
+      return;
+    }
+    if (phase === 'summary') {
+      setPhase('booking');
+      setCurrentStep(checkoutStartStep - 1);
+      return;
+    }
     if (currentStep === 1) {
       router.push('/#section-1');
       return;
@@ -678,7 +715,7 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        advanceStep();
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
@@ -730,7 +767,7 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        advanceStep();
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
@@ -863,9 +900,9 @@ export default function BookingController({
       if (currentStep < totalSteps) {
         // Transport schedule (Step 7) is skipped entirely when transport was skipped
         if (currentStep === 6 && bookingState.skipTransport) {
-          setCurrentStep(8);
+          goToStep(8);
         } else {
-          setCurrentStep(prev => prev + 1);
+          advanceStep();
         }
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
@@ -938,7 +975,7 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        advanceStep();
       } else {
         await handleSubmitInquiry();
       }
@@ -1198,13 +1235,61 @@ export default function BookingController({
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
+      {phase === 'summary' ? (
+        /* ── Full-page Trip Summary: hand-off between booking & checkout ── */
+        <motion.div
+          ref={bookingPanelRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full"
+        >
+          {/* Same inverted gold panel as the checkout steps so the hand-off is seamless */}
+          <div
+            data-theme="checkout"
+            className="bg-[#c5a059] border border-black/25 p-6 md:p-10 rounded-2xl shadow-xl"
+          >
+            <ItinerarySummary
+              state={bookingState}
+              type={type}
+              ziyaratPkgParams={ziyaratPkgParams}
+              variant="page"
+            />
+            <div className="mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setPhase('booking');
+                  setCurrentStep(checkoutStartStep - 1);
+                }}
+                className="bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Go Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhase('checkout')}
+                className="flex-1 bg-black hover:bg-[#f3d38a] text-[#fdfbf6] hover:text-[#12141a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all shadow-[0_4px_14px_rgba(0,0,0,0.25)] cursor-pointer"
+              >
+                Proceed To Checkout <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
       <motion.div
         ref={bookingPanelRef}
+        key={phase}
+        data-theme={phase === 'checkout' ? 'checkout' : undefined}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="booking-panel flex-1 bg-[#1a1c22] p-6 md:p-10 rounded-2xl shadow-xl border border-white/5 relative"
+        className={`booking-panel flex-1 p-6 md:p-10 rounded-2xl shadow-xl relative border ${
+          phase === 'checkout'
+            ? 'bg-[#c5a059] border-black/25'
+            : 'bg-[#1a1c22] border-white/5'
+        }`}
       >
-        <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
+        <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} labelPrefix={phase === 'checkout' ? 'Checkout' : undefined} />
 
         <form onSubmit={handleNext}>
           <DynamicQuestionnaire
@@ -1220,7 +1305,11 @@ export default function BookingController({
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="bg-transparent border border-white/20 text-white hover:bg-white/5 uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 disabled:opacity-50 cursor-pointer"
+              className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 disabled:opacity-50 cursor-pointer ${
+                phase === 'checkout'
+                  ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a]'
+                  : 'bg-transparent border border-white/20 text-white hover:bg-white/5'
+              }`}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -1232,7 +1321,11 @@ export default function BookingController({
                 type="button"
                 onClick={handleSkipTransport}
                 disabled={isSubmitting}
-                className="bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10 uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all flex-1 sm:flex-initial whitespace-nowrap cursor-pointer"
+                className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all flex-1 sm:flex-initial whitespace-nowrap cursor-pointer ${
+                  phase === 'checkout'
+                    ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:border-black hover:bg-black hover:text-[#f3d38a]'
+                    : 'bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10'
+                }`}
               >
                 Skip Transport
               </button>
@@ -1241,7 +1334,11 @@ export default function BookingController({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 sm:flex-auto bg-[#c5a059] hover:bg-[#d4b57a] text-black uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all shadow-[0_4px_14px_rgba(197,160,89,0.39)] disabled:opacity-75 cursor-pointer"
+              className={`flex-1 sm:flex-auto uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all disabled:opacity-75 cursor-pointer ${
+                phase === 'checkout'
+                  ? 'bg-black text-[#fdfbf6] hover:bg-[#f3d38a] hover:text-[#12141a] shadow-[0_4px_14px_rgba(0,0,0,0.25)]'
+                  : 'bg-[#c5a059] hover:bg-[#d4b57a] text-black shadow-[0_4px_14px_rgba(197,160,89,0.39)]'
+              }`}
             >
               {isSubmitting ? (
                 <span className="flex items-center">
@@ -1258,15 +1355,18 @@ export default function BookingController({
           </div>
         </form>
       </motion.div>
+      )}
 
-      {/* Side Summary Screen - Always visible */}
-      <div className="w-full lg:w-80 shrink-0">
-        <ItinerarySummary
-          state={bookingState}
-          type={type}
-          ziyaratPkgParams={ziyaratPkgParams}
-        />
-      </div>
+      {/* Side Trip Summary — visible during the booking phase only */}
+      {phase === 'booking' && (
+        <div className="w-full lg:w-80 shrink-0">
+          <ItinerarySummary
+            state={bookingState}
+            type={type}
+            ziyaratPkgParams={ziyaratPkgParams}
+          />
+        </div>
+      )}
 
       {/* Add-ons suggestions drawer for Umrah & Umrah Plus */}
       <AnimatePresence>
@@ -1279,11 +1379,11 @@ export default function BookingController({
               onClick={() => {
                 setShowAddonsDrawer(false);
                 if (isRegularUmrah) {
-                  setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                  goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                 } else if (isUmrahPlus) {
-                  setCurrentStep(2);
+                  goToStep(2);
                 } else {
-                  setCurrentStep(totalSteps);
+                  goToStep(totalSteps);
                 }
               }}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
@@ -1302,11 +1402,11 @@ export default function BookingController({
                   onClick={() => {
                     setShowAddonsDrawer(false);
                     if (isRegularUmrah) {
-                      setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                      goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                     } else if (isUmrahPlus) {
-                      setCurrentStep(2);
+                      goToStep(2);
                     } else {
-                      setCurrentStep(totalSteps);
+                      goToStep(totalSteps);
                     }
                   }}
                   className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer"
@@ -1379,11 +1479,11 @@ export default function BookingController({
                   onClick={() => {
                     setShowAddonsDrawer(false);
                     if (isRegularUmrah) {
-                      setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                      goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                     } else if (isUmrahPlus) {
-                      setCurrentStep(2);
+                      goToStep(2);
                     } else {
-                      setCurrentStep(totalSteps);
+                      goToStep(totalSteps);
                     }
                   }}
                   className="w-full bg-[#c5a059] hover:bg-[#d4b57a] text-black uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-sm flex items-center justify-center transition-all cursor-pointer shadow-lg"
