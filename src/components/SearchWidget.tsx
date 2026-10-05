@@ -374,7 +374,7 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
                 setIsZiyaratGuestsOpen(false);
                 setIsZiyaratCitiesOpen(false);
               }}
-              className={`relative px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 whitespace-nowrap cursor-pointer ${
+              className={`relative px-2 xl:px-6 lg:px-6 md:px-6 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 whitespace-nowrap cursor-pointer ${
                 isSelected ? 'text-black font-bold' : 'text-gray-300 hover:text-white hover:bg-white/5 font-medium'
               }`}
             >
