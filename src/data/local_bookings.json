@@ -1,5 +1,19 @@
 [
   {
+<<<<<<< HEAD
+    "id": "bk_1790864405221_52utw",
+    "reference": "BK-2026-TCKI",
+    "bookingType": "Umrah",
+    "status": "Pending",
+    "customerName": "sadsa",
+    "customerEmail": "asdfsdf@sad.com",
+    "customerPhone": "+966 2143214",
+    "customerNationality": "Afghanistan",
+    "customerNotes": "asfsa",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-30",
+    "adultsCount": 1,
+=======
     "id": "bk_1790865952138_349ix",
     "reference": "BK-2026-M7K0",
     "bookingType": "Umrah",
@@ -12,19 +26,73 @@
     "startDate": "2026-11-01",
     "endDate": "2026-11-19",
     "adultsCount": 4,
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
     "infantsCount": 0,
     "stayDetails": {
       "makkahStay": {
         "hotelCategory": "4 Star",
+<<<<<<< HEAD
+        "nights": 2,
+        "rooms": 1,
+        "checkInDate": "2026-11-28",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-30",
+=======
         "nights": 18,
         "rooms": 1,
         "checkInDate": "2026-11-01",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-19",
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
+<<<<<<< HEAD
+        "included": true,
+        "hotelCategory": "4 Star",
+        "nights": 3,
+        "rooms": 1,
+        "checkInDate": "",
+        "checkInTime": "14:00",
+        "checkOutDate": "",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      }
+    },
+    "transportDetails": null,
+    "ziyaratDetails": null,
+    "leadPassengerDetails": {
+      "fullName": "sadsa",
+      "nationality": "Afghanistan",
+      "phoneCode": "+966",
+      "phone": "2143214",
+      "email": "asdfsdf@sad.com",
+      "notes": "asfsa"
+    },
+    "fullSubmissionPayload": {
+      "type": "Umrah",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-30",
+      "adultsCount": 1,
+      "infantsCount": 0,
+      "passengerCount": 1,
+      "leadDetails": {
+        "fullName": "sadsa",
+        "nationality": "Afghanistan",
+        "phoneCode": "+966",
+        "phone": "2143214",
+        "email": "asdfsdf@sad.com",
+        "notes": "asfsa"
+      },
+      "makkahStay": {
+        "hotelCategory": "4 Star",
+        "nights": 2,
+        "rooms": 1,
+        "checkInDate": "2026-11-28",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-30",
+=======
         "included": false
       }
     },
@@ -77,10 +145,30 @@
         "checkInDate": "2026-11-01",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-19",
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
+<<<<<<< HEAD
+        "included": true,
+        "hotelCategory": "4 Star",
+        "nights": 3,
+        "rooms": 1,
+        "checkInDate": "",
+        "checkInTime": "14:00",
+        "checkOutDate": "",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      },
+      "transportation": null,
+      "selectedUpsells": [],
+      "selectedZiyaratCities": [],
+      "ziyaratDetails": null
+    },
+    "createdAt": "2026-10-01T14:20:05.221Z",
+    "updatedAt": "2026-10-01T14:20:05.221Z"
+=======
         "included": false
       },
       "transportation": {
@@ -109,6 +197,7 @@
     },
     "createdAt": "2026-10-01T14:45:52.138Z",
     "updatedAt": "2026-10-01T14:45:52.138Z"
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
   },
   {
     "id": "bk_1790777112089_74308",

@@ -348,7 +348,7 @@ export default function UmrahPlusSection() {
   return (
     <section
       id="section-5"
-      className="snap-section h-screen w-full relative flex flex-col overflow-hidden snap-start bg-[#0a0b0e] text-white pt-20 md:pt-24 lg:pt-28 [@media(max-height:840px)]:pt-20! pb-5 md:pb-6 px-4 sm:px-6 md:px-12 lg:px-16"
+      className="snap-section h-screen w-full relative flex flex-col overflow-hidden snap-start bg-[#0a0b0e] text-white pt-20 md:pt-24 lg:pt-28 [@media(max-height:840px)]:pt-20! pb-5 md:pb-6 px-4 sm:px-6 md:px-12 lg:px-16 justify-start!"
     >
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
@@ -391,7 +391,7 @@ export default function UmrahPlusSection() {
         ))}
       </div>
 
-      <div className="lg:hidden relative z-10 w-full flex-1 min-h-0 flex flex-col">
+      <div className="lg:hidden absolute inset-x-4 sm:inset-x-6 md:inset-x-12 top-20 md:top-24 [@media(max-height:840px)]:top-20! z-40 flex flex-col">
         <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-[#F9C344]/30 bg-gradient-to-b from-[#181920]/95 to-[#121318]/95 px-5 py-4 text-center shadow-[0_15px_40px_-15px_rgba(249,195,68,0.2)] backdrop-blur-xl overflow-hidden">
           <div className="absolute -top-20 -right-16 w-40 h-40 rounded-full blur-3xl bg-[#F9C344]/15 pointer-events-none" />
           <div className="relative">
@@ -407,7 +407,7 @@ export default function UmrahPlusSection() {
           </div>
         </div>
 
-        <div className="mt-4 flex-1 min-h-0 overflow-y-auto overscroll-contain pr-1">
+        <div className="mt-4">
           <div className="relative">
             <div className="absolute left-[31px] top-5 bottom-5 w-px bg-gradient-to-b from-[#F9C344]/45 via-[#F9C344]/25 to-transparent" />
 
@@ -417,12 +417,11 @@ export default function UmrahPlusSection() {
               return (
                 <div
                   key={pillar.id}
-                  className="group relative flex items-start gap-4 py-2.5 outline-none"
+                  className="group relative flex items-start gap-4 py-2.5 outline-none cursor-pointer"
                   role="button"
                   tabIndex={0}
                   aria-expanded={isActive}
                   onClick={() => toggle(idx)}
-                  onFocus={() => enter(idx)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
@@ -487,7 +486,13 @@ export default function UmrahPlusSection() {
         </div>
       </div>
 
-      <div className="relative z-30 shrink-0 mt-2 flex flex-col items-center lg:items-start gap-2 w-full">
+      <div className="lg:hidden h-[294px]" aria-hidden="true" />
+
+      <div
+        className={`relative z-50 shrink-0 mt-32 flex-col items-center lg:items-start gap-2 w-full ${
+          activePillar !== -1 ? 'hidden lg:flex' : 'flex'
+        }`}
+      >
         <SearchWidget activeService="Umrah Plus" />
       </div>
     </section>

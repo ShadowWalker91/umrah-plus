@@ -306,10 +306,10 @@ export default function SearchWidget({ activeService }: SearchWidgetProps = {}) 
               transition={{ duration: 0.15 }}
               onMouseEnter={() => openCallout(hoveredTab)}
               onMouseLeave={scheduleCloseCallout}
-              className="absolute z-30 bottom-full left-0 mb-2 w-fit max-w-[min(42rem,calc(100vw-3rem))] bg-[#12141a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex flex-col gap-1.5"
+              className="absolute z-100 bottom-full left-0 mb-2 w-fit max-w-[min(42rem,calc(100vw-3rem))] bg-[#12141a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex flex-col gap-1.5"
             >
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#c5a059]/20 text-[#c5a059] border border-[#c5a059]/30">
+                <span className="inline-flex z-100 items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#c5a059]/20 text-[#c5a059] border border-[#c5a059]/30">
                   <Sparkles className="w-3 h-3 text-[#c5a059]" />
                   {FLOW_DETAILS[hoveredTab].badge}
                 </span>

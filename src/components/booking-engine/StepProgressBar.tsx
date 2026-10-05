@@ -1,19 +1,24 @@
 export default function StepProgressBar({ 
   currentStep, 
   totalSteps,
-  stepName
+  stepName,
+  labelPrefix
 }: { 
   currentStep: number; 
   totalSteps: number;
   stepName?: string;
+  labelPrefix?: string;
 }) {
   const percentage = Math.round((currentStep / totalSteps) * 100);
+  const label = labelPrefix
+    ? `${labelPrefix}${stepName ? ` • ${stepName}` : ''}`
+    : `Progress${stepName ? ` • ${stepName}` : ''}`;
 
   return (
     <div className="w-full mb-8">
       <div className="flex justify-between items-center mb-2">
         <span className="text-[10px] uppercase font-semibold tracking-[0.2em] text-[#c5a059]">
-          Progress {stepName ? `• ${stepName}` : ''}
+          {label}
         </span>
         <span className="text-xs text-gray-400 font-light">{percentage}%</span>
       </div>

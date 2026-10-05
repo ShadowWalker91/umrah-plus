@@ -18,9 +18,16 @@ interface Props {
   state: BookingState;
   type?: string;
   ziyaratPkgParams?: any;
+  /** 'sidebar' (default) keeps the sticky rail; 'page' renders the full-width report layout */
+  variant?: 'sidebar' | 'page';
 }
 
-export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Props) {
+export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar' }: Props) {
+  const rootClass = variant === 'page'
+    // 'page' sits inside the checkout-phase gold panel, which already supplies
+    // the background, border and padding — only the content block is rendered here.
+    ? 'w-full'
+    : 'bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl';
   const isTransport = type === 'Transport';
   const isZiyarat = type === 'Ziyarat';
   const isUmrahPlus = type === 'Umrah Plus';
@@ -58,7 +65,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
     const vehicleName = vehicle?.name || 'Standard Sedan';
 
     return (
-      <div className="bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl">
+      <div className={rootClass}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
           <div>
@@ -229,7 +236,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
   }
 
   return (
-    <div className="bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl">
+    <div className={rootClass}>
       <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#c5a059] block">
