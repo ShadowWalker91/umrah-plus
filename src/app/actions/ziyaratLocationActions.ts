@@ -4,9 +4,11 @@ import { db } from '@/lib/db'
 import { ziyaratLandmarks } from '@/lib/db/schema/ziyarat'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { assertAdmin, assertMember } from '@/lib/auth/guards'
 
 export async function createZiyaratLocation(formData: FormData) {
   try {
+    await assertAdmin()
     const images = JSON.parse(formData.get('images') as string || '[]')
 
     await db.insert(ziyaratLandmarks).values({
@@ -38,6 +40,7 @@ export async function createZiyaratLocation(formData: FormData) {
 }
 export async function updateZiyaratLocation(id: string, formData: FormData) {
   try {
+    await assertMember()
     const images = JSON.parse(formData.get('images') as string || '[]')
 
     await db.update(ziyaratLandmarks).set({
@@ -70,6 +73,7 @@ export async function updateZiyaratLocation(id: string, formData: FormData) {
 }
 export async function deleteZiyaratLocation(id: string) {
   try {
+    await assertAdmin()
     await db.delete(ziyaratLandmarks).where(eq(ziyaratLandmarks.id, id))
     revalidatePath('/admin/ziyarat')
     return { success: true }

@@ -6,7 +6,7 @@ import { AuthError } from "next-auth"
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
     await signIn('credentials', {
-      email: formData.get('email'),
+      username: formData.get('username'),
       password: formData.get('password'),
       redirectTo: '/admin/dashboard',
     })

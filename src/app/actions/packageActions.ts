@@ -4,9 +4,11 @@ import { db } from '@/lib/db'
 import { packages } from '@/lib/db/schema/packages' 
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { assertAdmin, assertMember } from '@/lib/auth/guards'
 
 export async function createPackage(formData: FormData) {
   try {
+    await assertAdmin()
     console.log("👉 STARTING CREATE PACKAGE...");
 
     const title = formData.get('title') as string
@@ -58,6 +60,7 @@ export async function createPackage(formData: FormData) {
 
 export async function updatePackage(id: string, formData: FormData) {
   try {
+    await assertMember()
     console.log(`👉 STARTING UPDATE PACKAGE (ID: ${id})...`);
 
     const highlights = JSON.parse(formData.get('highlights') as string || '[]')
@@ -104,6 +107,7 @@ export async function updatePackage(id: string, formData: FormData) {
 
 export async function deletePackage(id: string) {
   try {
+    await assertAdmin()
     await db.delete(packages).where(eq(packages.id, id))
     revalidatePath('/admin/packages/ziyarat')
     return { success: true }

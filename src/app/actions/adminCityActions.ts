@@ -4,6 +4,7 @@ import { db } from '@/lib/db/';
 import { cities } from '@/lib/db/schema/cities';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin, requireMember } from '@/lib/auth/guards';
 
 // 1. Fetch all cities for the data table
 export async function getAdminCities() {
@@ -34,6 +35,9 @@ export async function getAdminCityById(id: string) {
 // 3. Create a new city
 export async function createAdminCity(formData: any) {
   try {
+    const guard = await requireAdmin();
+    if (!guard.ok) return { success: false, error: guard.error };
+
     // Generate a clean slug from the name (e.g., "Al Ula" -> "al-ula")
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
@@ -54,6 +58,9 @@ export async function createAdminCity(formData: any) {
 // 4. Update an existing city
 export async function updateAdminCity(formData: any) {
   try {
+    const guard = await requireMember();
+    if (!guard.ok) return { success: false, error: guard.error };
+
     const { id, ...data } = formData;
     
     // Regenerate slug in case the name changed
@@ -81,6 +88,9 @@ export async function updateAdminCity(formData: any) {
 // 5. Delete a city
 export async function deleteAdminCity(id: string) {
   try {
+    const guard = await requireAdmin();
+    if (!guard.ok) return { success: false, error: guard.error };
+
     await db.delete(cities).where(eq(cities.id, id));
     revalidatePath('/admin/cities');
     return { success: true, message: "City deleted successfully!" };

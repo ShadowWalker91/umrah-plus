@@ -6,10 +6,13 @@ import { Trash2, ArrowLeft, Save, Plus, ChevronDown, ChevronUp, MapPin, Car, Che
 import Link from 'next/link'
 import ImageUpload from '@/components/admin/ImageUpload'
 import { useRouter } from 'next/navigation'
+import { useRole } from '@/components/admin/RoleProvider'
 
 export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
   const isEditing = !!pkg;
   const router = useRouter()
+  const { role } = useRole()
+  const isAdmin = role === 'admin'
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // --- DATA STATE ---
@@ -111,7 +114,7 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
           </div>
         </div>
         
-        {isEditing && (
+        {isEditing && isAdmin && (
           <button 
             type="button" 
             onClick={async () => {
