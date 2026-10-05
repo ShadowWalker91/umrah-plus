@@ -1,5 +1,6 @@
 [
   {
+<<<<<<< HEAD
     "id": "bk_1790864405221_52utw",
     "reference": "BK-2026-TCKI",
     "bookingType": "Umrah",
@@ -12,19 +13,42 @@
     "startDate": "2026-11-28",
     "endDate": "2026-11-30",
     "adultsCount": 1,
+=======
+    "id": "bk_1790865952138_349ix",
+    "reference": "BK-2026-M7K0",
+    "bookingType": "Umrah",
+    "status": "Pending",
+    "customerName": "Anees",
+    "customerEmail": "yun@gmial.com",
+    "customerPhone": "+966 6456457866",
+    "customerNationality": "Albania",
+    "customerNotes": "Test  Booking",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-19",
+    "adultsCount": 4,
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
     "infantsCount": 0,
     "stayDetails": {
       "makkahStay": {
         "hotelCategory": "4 Star",
+<<<<<<< HEAD
         "nights": 2,
         "rooms": 1,
         "checkInDate": "2026-11-28",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-30",
+=======
+        "nights": 18,
+        "rooms": 1,
+        "checkInDate": "2026-11-01",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-19",
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
+<<<<<<< HEAD
         "included": true,
         "hotelCategory": "4 Star",
         "nights": 3,
@@ -68,10 +92,65 @@
         "checkInDate": "2026-11-28",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-30",
+=======
+        "included": false
+      }
+    },
+    "transportDetails": {
+      "mode": "pointToPoint",
+      "selectedVehicle": "Standard Sedan",
+      "vehicleName": "Standard Sedan",
+      "vehicleQuantity": 1,
+      "route": "Makkah ↔ Jeddah",
+      "routeDetails": "M5M8+5M, King Abdulaziz International Airport, Jeddah 23635, Saudi Arabia ➔ 3783, PJR5+94, 7903 سالم بن معقل، النخيل، الرياض 12392, Saudi Arabia",
+      "pointToPoint": {
+        "route": "Makkah ↔ Jeddah",
+        "pickupLocation": "M5M8+5M, King Abdulaziz International Airport, Jeddah 23635, Saudi Arabia",
+        "dropoffLocation": "3783, PJR5+94, 7903 سالم بن معقل، النخيل، الرياض 12392, Saudi Arabia",
+        "pickupDate": "2026-11-01",
+        "pickupTime": "14:00",
+        "flightNo": ""
+      },
+      "price": 325,
+      "luggageCount": 2
+    },
+    "ziyaratDetails": null,
+    "leadPassengerDetails": {
+      "fullName": "Anees",
+      "nationality": "Albania",
+      "phoneCode": "+966",
+      "phone": "6456457866",
+      "email": "yun@gmial.com",
+      "notes": "Test  Booking"
+    },
+    "fullSubmissionPayload": {
+      "type": "Umrah",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-19",
+      "adultsCount": 4,
+      "infantsCount": 0,
+      "passengerCount": 4,
+      "leadDetails": {
+        "fullName": "Anees",
+        "nationality": "Albania",
+        "phoneCode": "+966",
+        "phone": "6456457866",
+        "email": "yun@gmial.com",
+        "notes": "Test  Booking"
+      },
+      "makkahStay": {
+        "hotelCategory": "4 Star",
+        "nights": 18,
+        "rooms": 1,
+        "checkInDate": "2026-11-01",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-19",
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
+<<<<<<< HEAD
         "included": true,
         "hotelCategory": "4 Star",
         "nights": 3,
@@ -89,6 +168,36 @@
     },
     "createdAt": "2026-10-01T14:20:05.221Z",
     "updatedAt": "2026-10-01T14:20:05.221Z"
+=======
+        "included": false
+      },
+      "transportation": {
+        "mode": "pointToPoint",
+        "selectedVehicle": "Standard Sedan",
+        "vehicleName": "Standard Sedan",
+        "vehicleQuantity": 1,
+        "route": "Makkah ↔ Jeddah",
+        "routeDetails": "M5M8+5M, King Abdulaziz International Airport, Jeddah 23635, Saudi Arabia ➔ 3783, PJR5+94, 7903 سالم بن معقل، النخيل، الرياض 12392, Saudi Arabia",
+        "pointToPoint": {
+          "route": "Makkah ↔ Jeddah",
+          "pickupLocation": "M5M8+5M, King Abdulaziz International Airport, Jeddah 23635, Saudi Arabia",
+          "dropoffLocation": "3783, PJR5+94, 7903 سالم بن معقل، النخيل، الرياض 12392, Saudi Arabia",
+          "pickupDate": "2026-11-01",
+          "pickupTime": "14:00",
+          "flightNo": ""
+        },
+        "price": 325,
+        "luggageCount": 2
+      },
+      "selectedUpsells": [
+        "Private Transport & Airport Transfers"
+      ],
+      "selectedZiyaratCities": [],
+      "ziyaratDetails": null
+    },
+    "createdAt": "2026-10-01T14:45:52.138Z",
+    "updatedAt": "2026-10-01T14:45:52.138Z"
+>>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
   },
   {
     "id": "bk_1790777112089_74308",
