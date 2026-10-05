@@ -417,12 +417,11 @@ export default function UmrahPlusSection() {
               return (
                 <div
                   key={pillar.id}
-                  className="group relative flex items-start gap-4 py-2.5 outline-none"
+                  className="group relative flex items-start gap-4 py-2.5 outline-none cursor-pointer"
                   role="button"
                   tabIndex={0}
                   aria-expanded={isActive}
                   onClick={() => toggle(idx)}
-                  onFocus={() => enter(idx)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
@@ -489,7 +488,11 @@ export default function UmrahPlusSection() {
 
       <div className="lg:hidden h-[294px]" aria-hidden="true" />
 
-      <div className="relative z-30 shrink-0 mt-32 flex flex-col items-center lg:items-start gap-2 w-full">
+      <div
+        className={`relative z-50 shrink-0 mt-32 flex-col items-center lg:items-start gap-2 w-full ${
+          activePillar !== -1 ? 'hidden lg:flex' : 'flex'
+        }`}
+      >
         <SearchWidget activeService="Umrah Plus" />
       </div>
     </section>
