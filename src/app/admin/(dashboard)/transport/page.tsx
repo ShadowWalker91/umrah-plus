@@ -23,12 +23,20 @@ import {
   TransportVehicleConfig,
   addPointToPointRoute
 } from '@/app/actions/transportActions';
+import { useRole } from '@/components/admin/RoleProvider';
+import { useToast } from '@/components/admin/ToastProvider';
+import ErrorBanner from '@/components/admin/ErrorBanner';
 
 export default function TransportAdminPage() {
+  const { role } = useRole();
+  const isAdmin = role === 'admin';
+  const { toast } = useToast();
+
   const [data, setData] = useState<TransportStoreData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'fleet' | 'fixed' | 'pointToPoint'>('fixed');
 
   // Add vehicle modal state
@@ -122,7 +130,7 @@ export default function TransportAdminPage() {
 
   const handleCreateVehicle = () => {
     if (!data || !newVehicle.name) {
-      alert('Please enter a vehicle name.');
+      toast('Please enter a vehicle name.', 'info');
       return;
     }
     const id = newVehicle.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -160,7 +168,7 @@ export default function TransportAdminPage() {
     if (!newRouteName.trim() || !data) return;
     const trimmed = newRouteName.trim();
     if (data.pointToPointRoutesList.includes(trimmed)) {
-      alert('This route already exists.');
+      toast('This route already exists.', 'info');
       return;
     }
 
@@ -184,17 +192,23 @@ export default function TransportAdminPage() {
 
   const handleSaveAll = async () => {
     if (!data) return;
+    setSaveError(null);
     try {
       setSaving(true);
       const res = await updateTransportRates(data);
       if (res.success) {
         setSaveSuccess(true);
+        toast('Transport rates saved.', 'success');
         setTimeout(() => setSaveSuccess(false), 3000);
       } else {
-        alert('Failed to save changes: ' + (res.message || 'Unknown error'));
+        const message = res.message || 'Unknown error';
+        setSaveError(message);
+        toast(message, 'error');
       }
     } catch (err: any) {
-      alert('Error saving rates: ' + err.message);
+      const message = 'Error saving rates: ' + err.message;
+      setSaveError(message);
+      toast(message, 'error');
     } finally {
       setSaving(false);
     }
@@ -267,6 +281,10 @@ export default function TransportAdminPage() {
           </button>
         </div>
       </div>
+
+      {saveError && (
+        <ErrorBanner message={saveError} title="Could not save" onDismiss={() => setSaveError(null)} />
+      )}
 
       {/* Tabs Bar */}
       <div className="flex border-b border-gray-200 gap-4 sm:gap-8 text-sm font-semibold">
@@ -421,12 +439,14 @@ export default function TransportAdminPage() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setIsAddingRoute(true)}
-                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold uppercase flex items-center gap-2 transition-colors cursor-pointer"
-                >
-                  <Plus size={16} /> Add Custom Route
-                </button>
+                isAdmin && (
+                  <button
+                    onClick={() => setIsAddingRoute(true)}
+                    className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold uppercase flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Plus size={16} /> Add Custom Route
+                  </button>
+                )
               )}
             </div>
           </div>
@@ -490,12 +510,14 @@ export default function TransportAdminPage() {
                 Manage vehicle models, passenger capacities, luggage allowances, and imagery shown on the booking wizard.
               </p>
             </div>
-            <button
-              onClick={() => setIsAddVehicleOpen(true)}
-              className="px-5 py-2.5 bg-[#1E1E1E] hover:bg-black text-white rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer"
-            >
-              <Plus size={16} /> Add Vehicle
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setIsAddVehicleOpen(true)}
+                className="px-5 py-2.5 bg-[#1E1E1E] hover:bg-black text-white rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer"
+              >
+                <Plus size={16} /> Add Vehicle
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -581,12 +603,14 @@ export default function TransportAdminPage() {
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-gray-100 flex justify-end">
-                  <button
-                    onClick={() => handleDeleteVehicle(vehicle.id)}
-                    className="text-xs text-red-500 hover:text-red-700 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Trash2 size={14} /> Remove Vehicle
-                  </button>
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDeleteVehicle(vehicle.id)}
+                      className="text-xs text-red-500 hover:text-red-700 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Trash2 size={14} /> Remove Vehicle
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

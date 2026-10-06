@@ -4,6 +4,7 @@ import { desc } from 'drizzle-orm'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Edit, Search } from 'lucide-react'
+import { getCurrentRole } from '@/lib/auth/guards'
 
 // Helper: Decide where the Edit button goes based on Package Type
 const getEditLink = (pkg: any) => {
@@ -27,6 +28,8 @@ export default async function MasterPackagesPage() {
   // Fetch ALL packages sorted by newest
   const allPackages = await db.select().from(packages).orderBy(desc(packages.updatedAt));
 
+  const isAdmin = ((await getCurrentRole()) === 'admin');
+
   return (
     <div className="p-8 pb-20 min-h-screen bg-gray-50 text-gray-900 font-sans">
       
@@ -39,12 +42,14 @@ export default async function MasterPackagesPage() {
         
         {/* Create Button - Points to Ziyarat for now (Primary) */}
         {/* You can change this to a dropdown later if needed */}
-        <Link 
-          href="/admin/packages/ziyarat/create" 
-          className="bg-[#F9C344] text-black px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-[#F9C344]/20 hover:bg-[#e0b03d] transition-all"
-        >
-          <Plus size={20} /> Create Package
-        </Link>
+        {isAdmin && (
+          <Link 
+            href="/admin/packages/ziyarat/create" 
+            className="bg-[#F9C344] text-black px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-[#F9C344]/20 hover:bg-[#e0b03d] transition-all"
+          >
+            <Plus size={20} /> Create Package
+          </Link>
+        )}
       </div>
 
       {/* --- Filters Bar (Matches your screenshot) --- */}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { logout } from '@/app/actions/auth' 
+import { useRole } from '@/components/admin/RoleProvider'
 import { 
   LayoutDashboard, 
   MapPin, 
@@ -20,11 +21,14 @@ import {
   ChevronDown,
   ChevronRight,
   Landmark, // ✅ Icon for Ziyarat
-  CalendarCheck // ✅ Icon for Bookings
+  CalendarCheck, // ✅ Icon for Bookings
+  Users // ✅ Icon for Users module
 } from 'lucide-react'
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { role, username } = useRole()
+  const isAdmin = role === 'admin'
   const [isPackagesOpen, setIsPackagesOpen] = useState(pathname.includes('/admin/packages'))
 
   useEffect(() => {
@@ -44,6 +48,7 @@ export default function Sidebar() {
     { label: 'Hotels', href: '/admin/hotels', icon: Building2 },
     { label: 'Media', href: '/admin/media', icon: ImageIcon },
     { label: 'Reports', href: '/admin/reports', icon: FileText },
+    ...(isAdmin ? [{ label: 'Users', href: '/admin/users', icon: Users }] : []),
     { label: 'Settings', href: '/admin/settings', icon: Settings },
   ]
 
@@ -73,10 +78,10 @@ export default function Sidebar() {
     <aside className="w-72 bg-[#1E1E1E] text-white flex flex-col h-screen sticky top-0 font-sans shadow-2xl z-50 overflow-y-auto custom-scrollbar">
       <div className="pt-10 pb-8 px-6 text-center">
         <div className="w-24 h-24 mx-auto bg-gray-700 rounded-full mb-4 border-4 border-[#F9C344] relative overflow-hidden p-1">
-             <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-2xl font-bold text-[#F9C344]">A</div>
+             <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-2xl font-bold text-[#F9C344]">{username?.charAt(0)?.toUpperCase() || 'U'}</div>
         </div>
-        <h2 className="text-xl font-bold tracking-wide">Admin User</h2>
-        <p className="text-xs text-gray-400 mt-1">admin@umrahplus.com</p>
+        <h2 className="text-xl font-bold tracking-wide">{username}</h2>
+        <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">{isAdmin ? 'Administrator' : 'Editor'}</p>
       </div>
 
       <nav className="flex-1 flex flex-col gap-2 pb-10">

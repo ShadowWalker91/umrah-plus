@@ -4,6 +4,7 @@ import { ziyaratLandmarks } from '@/lib/db/schema/ziyarat'
 import { Plus, Pencil, Trash2, Search, MapPin, ChevronLeft, ChevronRight, Filter } from 'lucide-react'
 import { deleteZiyaratLocation } from '@/app/actions/ziyaratLocationActions'
 import { count, eq, desc } from 'drizzle-orm'
+import { getCurrentRole } from '@/lib/auth/guards'
 
 // FIX 1: Type definition for Next.js 15+ (searchParams is a Promise)
 type Props = {
@@ -13,6 +14,8 @@ type Props = {
 export default async function ZiyaratListPage(props: Props) {
   // FIX 2: Await the searchParams before using them
   const searchParams = await props.searchParams
+
+  const isAdmin = ((await getCurrentRole()) === 'admin')
 
   const page = Number(searchParams.page) || 1
   const limit = Number(searchParams.limit) || 25
@@ -74,12 +77,14 @@ export default async function ZiyaratListPage(props: Props) {
           <p className="text-gray-500 mt-1">Manage historical sites (Masjids, Landmarks).</p>
         </div>
         
-        <Link 
-          href="/admin/ziyarat/new" 
-          className="bg-[#F9C344] text-black px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-[#F9C344]/20 hover:bg-[#e0b03d] transition-all"
-        >
-          <Plus size={20} /> Add New
-        </Link>
+        {isAdmin && (
+          <Link 
+            href="/admin/ziyarat/new" 
+            className="bg-[#F9C344] text-black px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-[#F9C344]/20 hover:bg-[#e0b03d] transition-all"
+          >
+            <Plus size={20} /> Add New
+          </Link>
+        )}
       </div>
 
       {/* --- Filters & Search Bar --- */}
@@ -174,14 +179,16 @@ export default async function ZiyaratListPage(props: Props) {
                      <Pencil size={14} /> Edit
                   </Link>
 
-                  <form action={async () => {
-                    'use server'
-                    await deleteZiyaratLocation(loc.id)
-                  }}>
-                    <button className="inline-flex items-center justify-center bg-red-50 text-red-600 p-2 rounded-lg hover:bg-red-100 transition-colors border border-transparent hover:border-red-200">
-                      <Trash2 size={16} />
-                    </button>
-                  </form>
+                  {isAdmin && (
+                    <form action={async () => {
+                      'use server'
+                      await deleteZiyaratLocation(loc.id)
+                    }}>
+                      <button className="inline-flex items-center justify-center bg-red-50 text-red-600 p-2 rounded-lg hover:bg-red-100 transition-colors border border-transparent hover:border-red-200">
+                        <Trash2 size={16} />
+                      </button>
+                    </form>
+                  )}
                </div>
             </div>
           ))}

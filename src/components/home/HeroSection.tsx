@@ -71,10 +71,10 @@ export default function HeroSection({ scrollToNext }: HeroSectionProps) {
 
       {/* 4. MAIN CONTENT */}
       {/* Responsive layout: on mobile sits in bottom third; on tablet centered with safe right clearance; on desktop aligns bottom-left lifted upward */}
-      <div className="relative z-20 w-full pl-5 pr-14 sm:pl-8 sm:pr-16 md:pl-10 md:pr-18 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-end lg:justify-between pb-20 sm:pb-24 md:pb-28 lg:pb-28 xl:pb-32 text-center lg:text-left">
+      <div className="relative z-20 w-full pl-5 pr-14 sm:pl-8 sm:pr-16 md:pl-10 md:pr-18 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between pt-32 pb-20 sm:pb-24 md:pb-28 lg:pb-28 xl:pb-32 text-center lg:text-left">
         
         {/* Left Side: Booking Widget */}
-        <div className="w-full md:max-w-2xl lg:max-w-none lg:w-[60%] xl:w-[56%] z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+        <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 md:mt-32 lg:mt-52 flex justify-center lg:justify-start">
           <SearchWidget />
         </div>
 

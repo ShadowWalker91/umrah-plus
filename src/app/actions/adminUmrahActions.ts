@@ -10,6 +10,7 @@ import {
 } from '@/lib/db/schema/umrahPackages';
 import { eq, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin, AUTH_MESSAGES } from '@/lib/auth/guards';
 
 // 1. Fetch All Packages (Use this for both Umrah and Umrah Plus lists)
 export async function getAdminUmrahPackages(type?: 'standard' | 'plus') {
@@ -39,6 +40,9 @@ export async function getAdminUmrahPackages(type?: 'standard' | 'plus') {
 // 2. Create a New Package (Handles both standard and plus)
 export async function createUmrahPackage(formData: any) {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly);
+    if (!guard.ok) return { success: false, error: guard.error };
+
     // Destructure the arrays from the main package data
     const { 
       pricing, 
@@ -90,6 +94,9 @@ export async function createUmrahPackage(formData: any) {
 // 3. Delete a Package
 export async function deleteUmrahPackage(id: string) {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly);
+    if (!guard.ok) return { success: false, error: guard.error };
+
     // Because we used { onDelete: 'cascade' } in the schema, 
     // deleting the main package automatically deletes all related pricing, hotels, vehicles, and ziyarat rows!
     await db.delete(umrahPackages).where(eq(umrahPackages.id, id));

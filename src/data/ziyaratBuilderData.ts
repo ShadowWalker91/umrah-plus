@@ -339,4 +339,39 @@ export function getZiyaratRouteFare(routeId: string, vehicleId: string): number 
   return typeof val === 'number' ? val : null;
 }
 
+// ---------------------------------------------------------------------------
+// Fleet allocation helpers — shared by the fleet step, route/schedule fare
+// displays, the trip summary and the inquiry payload so every surface agrees
+// on the same group size and required vehicle count.
+// ---------------------------------------------------------------------------
+
+/** Total group size the selected ziyarat/premium fleet vehicle must carry. */
+export function getZiyaratGroupPax(
+  isUmrahPlus: boolean,
+  adultsCount: number,
+  childrenCount: number,
+  passengerCount: number
+): number {
+  if (isUmrahPlus) return Math.max(1, (adultsCount || 1) + (childrenCount || 0));
+  return Math.max(1, passengerCount || adultsCount || 2);
+}
+
+/** Number of vehicles required so every guest rides (round-up, minimum 1). */
+export function getRequiredFleetCount(pax: number, capacity: number): number {
+  return Math.max(1, Math.ceil(pax / Math.max(1, capacity || 2)));
+}
+
+/** Allocated quantity for a chosen builder-fleet vehicle given the current group. */
+export function getZiyaratAllocatedQuantity(
+  vehicleId: string,
+  isUmrahPlus: boolean,
+  adultsCount: number,
+  childrenCount: number,
+  passengerCount: number
+): number {
+  const pax = getZiyaratGroupPax(isUmrahPlus, adultsCount, childrenCount, passengerCount);
+  const capacity = ZIYARAT_FLEET.find(v => v.id === (vehicleId || 'sedan'))?.capacity || 2;
+  return getRequiredFleetCount(pax, capacity);
+}
+
 

@@ -52,16 +52,16 @@ export default function AdminLoginPage() {
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase ml-4">Email</label>
+                        <label className="text-xs font-bold text-gray-500 uppercase ml-4">Username</label>
                         <div className="relative group">
                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
                                 <User size={20} />
                             </div>
                             <input 
-                                name="email" 
-                                type="email" 
+                                name="username" 
+                                type="text" 
                                 required
-                                placeholder="admin@umrahplus.com"
+                                placeholder="Enter your username"
                                 className="w-full bg-[#050505] border border-gray-800 rounded-xl py-4 pl-12 pr-6 text-white focus:outline-none focus:border-[#F9C344] transition-all"
                             />
                         </div>

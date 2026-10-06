@@ -10,7 +10,7 @@ import {
   ZIYARAT_LOCATIONS,
   FIXED_CIRCUITS 
 } from './BookingController';
-import { ZIYARAT_ROUTES, ZIYARAT_FLEET, ZIYARAT_PRICES, getZiyaratRouteFare } from '@/data/ziyaratBuilderData';
+import { ZIYARAT_ROUTES, ZIYARAT_FLEET, ZIYARAT_PRICES, getZiyaratRouteFare, getZiyaratAllocatedQuantity } from '@/data/ziyaratBuilderData';
 import { Building2, Car, Users, Sparkles, CheckCircle, Compass, Calendar, Plane } from 'lucide-react';
 import { formatDateDDMMYYYY } from '@/lib/utils';
 
@@ -18,9 +18,16 @@ interface Props {
   state: BookingState;
   type?: string;
   ziyaratPkgParams?: any;
+  /** 'sidebar' (default) keeps the sticky rail; 'page' renders the full-width report layout */
+  variant?: 'sidebar' | 'page';
 }
 
-export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Props) {
+export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar' }: Props) {
+  const rootClass = variant === 'page'
+    // 'page' sits inside the checkout-phase gold panel, which already supplies
+    // the background, border and padding — only the content block is rendered here.
+    ? 'w-full'
+    : 'bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl';
   const isTransport = type === 'Transport';
   const isZiyarat = type === 'Ziyarat';
   const isUmrahPlus = type === 'Umrah Plus';
@@ -29,9 +36,18 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
   
   const transportVehicle = VEHICLES.find(v => v.id === (state.transportVehicleId || state.selectedVehicle)) || ZIYARAT_FLEET.find(v => v.id === (state.transportVehicleId || state.selectedVehicle));
   const ziyaratVehicle = ZIYARAT_FLEET.find(v => v.id === state.selectedVehicle) || VEHICLES.find(v => v.id === state.selectedVehicle);
-  const vehicle = isZiyarat 
+  const vehicle = isZiyarat
     ? ziyaratVehicle
     : (isUmrahPlus ? transportVehicle : VEHICLES.find(v => v.id === (isTransport ? state.transportVehicleId : state.selectedVehicle)));
+
+  // Ziyarat/premium fleet allocation — shared by route rows, the total badge and the fleet line
+  const ziyaratFleetQty = getZiyaratAllocatedQuantity(
+    state.selectedVehicle || 'sedan',
+    isUmrahPlus,
+    state.adultsCount,
+    state.childrenCount,
+    state.passengerCount
+  );
 
   const makkahHotel = HOTEL_CATEGORIES.find(c => c.id === state.makkahHotelCategory);
   const madinahHotel = HOTEL_CATEGORIES.find(c => c.id === state.madinahHotelCategory);
@@ -49,7 +65,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
     const vehicleName = vehicle?.name || 'Standard Sedan';
 
     return (
-      <div className="bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl">
+      <div className={rootClass}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
           <div>
@@ -220,7 +236,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
   }
 
   return (
-    <div className="bg-[#0c0d10] border border-white/5 p-6 rounded-2xl w-full sticky top-32 lg:mt-[104px] shadow-xl">
+    <div className={rootClass}>
       <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#c5a059] block">
@@ -273,8 +289,8 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
                   const rDate = state.selectedZiyaratRouteDates?.[rId];
                   const pEntry = ZIYARAT_PRICES[rId];
                   const fareNum = getZiyaratRouteFare(rId, state.selectedVehicle || 'sedan');
-                  const routeFare = fareNum !== null 
-                    ? `SAR ${fareNum}` 
+                  const routeFare = fareNum !== null
+                    ? `SAR ${fareNum * ziyaratFleetQty}`
                     : (pEntry?.custom ? 'Custom' : null);
 
                   return (
@@ -385,6 +401,11 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
               <div className="text-white text-xs font-medium">
                 Vehicle: <span className="text-[#c5a059]">{vehicle.name}</span>
                 <span className="text-gray-400 text-[11px] block font-light">Capacity: Up to {vehicle.capacity} pax</span>
+                {isZiyarat && ziyaratFleetQty > 1 && (
+                  <span className="text-[#c5a059] text-[11px] block font-semibold mt-0.5">
+                    Allocated Vehicles: {ziyaratFleetQty}x {vehicle.name}
+                  </span>
+                )}
               </div>
             ) : (
               <div className="bg-[#1a1c22] p-2.5 rounded-xl border border-[#c5a059]/30">
@@ -586,17 +607,24 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams }: Prop
             if (f) totalFare += f;
           }
         });
-        const pp = state.passengerCount > 0 ? Math.ceil(totalFare / state.passengerCount) : totalFare;
+        const allocatedTotal = totalFare * ziyaratFleetQty;
+        const pp = state.passengerCount > 0 ? Math.ceil(allocatedTotal / state.passengerCount) : allocatedTotal;
 
         return (
           <div className="mt-4 p-3 rounded-xl bg-[#131c2a] border border-[#c5a059]/40 space-y-1">
             <div className="flex justify-between items-center text-xs">
               <span className="text-gray-300 font-semibold uppercase tracking-wider">Estimated Total</span>
               <span className="text-sm font-bold text-[#f9e8a2]">
-                SAR {totalFare} {hasCustom ? '+ Custom' : ''}
+                SAR {allocatedTotal} {hasCustom ? '+ Custom' : ''}
               </span>
             </div>
-            {totalFare > 0 && (
+            {ziyaratFleetQty > 1 && (
+              <div className="flex justify-between items-center text-[11px] text-gray-400 border-t border-white/5 pt-1 mt-1">
+                <span>Fleet Allocation ({state.passengerCount} Pax):</span>
+                <span className="text-[#c5a059] font-semibold">{ziyaratFleetQty}x {vehicle?.name || ''}</span>
+              </div>
+            )}
+            {allocatedTotal > 0 && (
               <div className="flex justify-between items-center text-[11px] text-gray-400 border-t border-white/5 pt-1 mt-1">
                 <span>Per Person ({state.passengerCount} Pax):</span>
                 <span className="text-[#c5a059] font-semibold">SAR {pp} / Pax</span>

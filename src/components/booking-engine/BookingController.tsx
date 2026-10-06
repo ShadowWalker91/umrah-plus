@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
@@ -9,7 +9,15 @@ import DynamicQuestionnaire from './DynamicQuestionnaire';
 import ItinerarySummary from './ItinerarySummary';
 import { sendBookingInquiry } from '@/app/actions/sendBookingInquiry';
 import { getTransportData, TransportVehicleConfig } from '@/app/actions/transportActions';
-import { ZIYARAT_ROUTES, ZIYARAT_FLEET, ZIYARAT_CITIES_DATA, ZIYARAT_PRICES, ZIYARAT_SITES } from '@/data/ziyaratBuilderData';
+import {
+  ZIYARAT_ROUTES,
+  ZIYARAT_FLEET,
+  ZIYARAT_CITIES_DATA,
+  ZIYARAT_PRICES,
+  ZIYARAT_SITES,
+  getZiyaratGroupPax,
+  getZiyaratAllocatedQuantity
+} from '@/data/ziyaratBuilderData';
 
 export const PACKAGES = [
   { id: 'p1', name: 'Round Trip Package 01', route: 'JED Airport ➔ Makkah ➔ Madinah ➔ MED Airport' },
@@ -236,9 +244,30 @@ export default function BookingController({
   const isZiyarat = type === 'Ziyarat';
 
   const [currentStep, setCurrentStep] = useState(1);
+  // Booking flow has three phases: selection steps (dark, sidebar visible),
+  // a full-page Trip Summary, then the remaining steps as a checkout flow
+  // with the inverted gold theme applied to the step panel.
+  const [phase, setPhase] = useState<'booking' | 'summary' | 'checkout'>('booking');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddonsDrawer, setShowAddonsDrawer] = useState(false);
   const [transportFleet, setTransportFleet] = useState<TransportVehicleConfig[]>([]);
+
+  const bookingPanelRef = useRef<HTMLDivElement>(null);
+  const skipInitialScroll = useRef(true);
+
+  // Each step screen re-enters from its top instead of inheriting the scroll
+  // depth of the previous step. The first render is skipped so landing on the
+  // page never hijacks the visitor's initial scroll position.
+  useEffect(() => {
+    if (skipInitialScroll.current) {
+      skipInitialScroll.current = false;
+      return;
+    }
+    const panel = bookingPanelRef.current;
+    if (!panel) return;
+    const top = panel.getBoundingClientRect().top + window.scrollY - 24;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+  }, [currentStep, phase]);
 
   useEffect(() => {
     getTransportData().then(res => {
@@ -263,6 +292,9 @@ export default function BookingController({
     ? Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)))
     : 5;
 
+  // Ziyarat & Umrah Plus visitors pick their routes/cities on this page, so when
+  // the widget sends no `cities` param both flows start with nothing selected
+  // (regular Umrah / Transport keep their original defaults).
   const parsedCitiesList = initialCities && initialCities.length > 0
     ? initialCities.map(c => {
         const lower = c.toLowerCase().trim();
@@ -271,13 +303,12 @@ export default function BookingController({
         if (lower.startsWith('taif')) return 'taif';
         return lower;
       })
-    : ['mak', 'mad'];
+    : ((isZiyarat || isUmrahPlus) ? [] : ['mak', 'mad']);
 
   const defaultZiyaratRoutes: string[] = [];
   if (parsedCitiesList.includes('mak')) defaultZiyaratRoutes.push('mak-1');
   if (parsedCitiesList.includes('mad')) defaultZiyaratRoutes.push('mad-1');
   if (parsedCitiesList.includes('taif')) defaultZiyaratRoutes.push('taif-1');
-  if (defaultZiyaratRoutes.length === 0) defaultZiyaratRoutes.push('mak-1');
 
   const [bookingState, setBookingState] = useState<BookingState>({
     adultsCount: initialAdults,
@@ -359,24 +390,58 @@ export default function BookingController({
     : ['mak']
   ).sort((a, b) => cityOrder.indexOf(a) - cityOrder.indexOf(b));
 
+  // Reflect the cities chosen on the Ziyarat booking page in the URL
+  // (?type=Ziyarat&passengers=2&cities=Makkah%2CMadinah%2CTaif) using a shallow
+  // history update so the server components are not re-rendered.
+  useEffect(() => {
+    if (!isZiyarat) return;
+    const cityNameById: Record<string, string> = { mak: 'Makkah', mad: 'Madinah', taif: 'Taif' };
+    const nextValue = (['mak', 'mad', 'taif'] as const)
+      .filter(id => bookingState.selectedZiyaratCitiesList.includes(id))
+      .map(id => cityNameById[id])
+      .join(',');
+
+    const params = new URLSearchParams(window.location.search);
+    if ((params.get('cities') || '') === nextValue) return;
+    if (nextValue) params.set('cities', nextValue);
+    else params.delete('cities');
+
+    const query = params.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
+  }, [isZiyarat, bookingState.selectedZiyaratCitiesList]);
+
   const isRegularUmrah = !isZiyarat && !isUmrahPlus && !isTransport;
   const isSimpleUmrah = isRegularUmrah;
 
   // Transportation is optional: in Umrah Plus, Transport Flow is included by default unless skipped. In regular Umrah, added via add-ons.
+  // The Ziyarat flow has no transport segment at all, so hasTransport stays false for it.
   const hasTransport = isUmrahPlus
     ? !bookingState.skipTransport
     : (isRegularUmrah 
       ? bookingState.selectedUpsells.includes('transport')
-      : !bookingState.skipTransport);
+      : (!isZiyarat && !bookingState.skipTransport));
 
-  // In Transport Flow: 5 Steps (1: Party & Mode, 2: Route, 3: Vehicle, 4: Schedule & Locations, 5: Lead Details)
+  // Transport Flow: 5 Steps (1: Party & Mode, 2: Route, 3: Vehicle, 4: Schedule & Locations, 5: Lead Details)
+  // Regular Umrah with transport add-on: 5 Steps (1: Stay & Guests, 2: Mode & Route,
+  // 3: Fleet Setup, 4: Transfer Leg Dates & Pick-Up Timings, 5: Lead Details) — otherwise 2 Steps.
   const totalSteps = isTransport
     ? 5
     : isZiyarat
       ? 4
       : isUmrahPlus
         ? 8
-        : (hasTransport ? 3 : 2);
+        : (hasTransport ? 5 : 2);
+
+  // First step of the checkout phase: the screen right after the last
+  // vehicle/fleet selection (or right after Stay & Guests for Umrah without
+  // transport). Reaching it routes the visitor through the Trip Summary first.
+  const checkoutStartStep = isTransport
+    ? 4
+    : isZiyarat
+      ? 3
+      : isUmrahPlus
+        ? 6
+        : (hasTransport ? 4 : 2);
 
   // Auto-sync vehicle quantity and calculated price based on total guests and chosen car capacity
   useEffect(() => {
@@ -415,6 +480,46 @@ export default function BookingController({
     bookingState.transportMode,
     bookingState.vehicleQuantity,
     bookingState.calculatedTransportPrice
+  ]);
+
+  // Ziyarat & Umrah Plus premium-fleet auto-fit. Applied once per arrival at the
+  // fleet step (and re-armed whenever the group size changes) so the step never
+  // opens on an under-capacity vehicle: the selection is upgraded to the smallest
+  // vehicle that carries everyone. A deliberate downgrade made while ON the step
+  // is preserved — the fleet block then allocates the required vehicle count.
+  const fleetFitAppliedRef = useRef(false);
+  useEffect(() => {
+    fleetFitAppliedRef.current = false;
+  }, [bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount]);
+
+  useEffect(() => {
+    const onFleetStep = (isZiyarat && currentStep === 2) || (isUmrahPlus && currentStep === 5);
+    if (!onFleetStep || fleetFitAppliedRef.current) return;
+    fleetFitAppliedRef.current = true;
+
+    const groupPax = getZiyaratGroupPax(
+      isUmrahPlus,
+      bookingState.adultsCount,
+      bookingState.childrenCount,
+      bookingState.passengerCount
+    );
+    setBookingState(prev => {
+      const currentVehicle = ZIYARAT_FLEET.find(v => v.id === (prev.selectedVehicle || 'sedan'));
+      if (!currentVehicle || currentVehicle.capacity >= groupPax) return prev;
+      // Smallest vehicle that carries everyone; when the group outgrows the
+      // entire fleet the largest coach stays selectable as the fallback.
+      const suitable = ZIYARAT_FLEET.find(v => v.capacity >= groupPax)
+        || [...ZIYARAT_FLEET].sort((a, b) => b.capacity - a.capacity)[0];
+      if (!suitable || suitable.id === prev.selectedVehicle) return prev;
+      return { ...prev, selectedVehicle: suitable.id };
+    });
+  }, [
+    isZiyarat,
+    isUmrahPlus,
+    currentStep,
+    bookingState.adultsCount,
+    bookingState.childrenCount,
+    bookingState.passengerCount
   ]);
 
   const updateState = (updates: Partial<BookingState> | ((prev: BookingState) => Partial<BookingState>)) => {
@@ -466,6 +571,15 @@ export default function BookingController({
     });
   };
 
+  // Step transitions: landing on (or past) the first checkout step while still
+  // in the booking phase stops at the full-page Trip Summary instead.
+  const goToStep = (n: number) => {
+    setCurrentStep(n);
+    if (phase === 'booking' && n >= checkoutStartStep) setPhase('summary');
+  };
+
+  const advanceStep = () => goToStep(currentStep + 1);
+
   const handleSkipTransport = () => {
     updateState({ 
       skipTransport: true, 
@@ -473,17 +587,30 @@ export default function BookingController({
       selectedUpsells: bookingState.selectedUpsells.filter(id => id !== 'transport')
     });
     if (isRegularUmrah) {
-      // Advance straight to submission/lead details
+      // Without transport the next screen is already the lead-details checkout
+      // step — show the Trip Summary first. checkoutStartStep still reflects the
+      // pre-skip state in this render, so the phase is set explicitly.
       setCurrentStep(2);
+      setPhase('summary');
     } else if (isUmrahPlus) {
-      // Advance directly to Ziyarat Flow (Step 5)
-      setCurrentStep(5);
+      // Advance directly to Ziyarat Flow (Step 4)
+      goToStep(4);
     } else {
-      setCurrentStep(prev => prev + 1);
+      goToStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
+    // First checkout step steps back into the Trip Summary screen.
+    if (phase === 'checkout' && currentStep <= checkoutStartStep) {
+      setPhase('summary');
+      return;
+    }
+    if (phase === 'summary') {
+      setPhase('booking');
+      setCurrentStep(checkoutStartStep - 1);
+      return;
+    }
     if (currentStep === 1) {
       router.push('/#section-1');
       return;
@@ -507,7 +634,11 @@ export default function BookingController({
       }
     }
     if (isUmrahPlus) {
-      if (currentStep === 5 && bookingState.skipTransport) {
+      if (currentStep === 8 && bookingState.skipTransport) {
+        setCurrentStep(6);
+        return;
+      }
+      if (currentStep === 4 && bookingState.skipTransport) {
         setCurrentStep(1);
         return;
       }
@@ -584,7 +715,7 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        advanceStep();
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
@@ -636,13 +767,13 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        advanceStep();
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
       return;
     } else if (isUmrahPlus) {
-      // Sequence: 1) Umrah (Step 1) -> 2) Transport (Steps 2, 3, 4) -> 3) Ziyarat (Steps 5, 6, 7) -> 4) Lead Details (Step 8)
+      // Sequence: 1) Umrah (Step 1) -> 2) Transport (Steps 2, 3) -> 3) Ziyarat (Steps 4, 5, 6) -> 4) Route Schedule & Pickup (Step 7) -> 5) Lead Details (Step 8)
       
       // Step 1: Stay & Guests (Umrah)
       if (currentStep === 1) {
@@ -654,9 +785,9 @@ export default function BookingController({
           alert("Madinah check-out date must be after check-in date.");
           return;
         }
-        // If transport skipped previously, advance to 5, otherwise 2
+        // If transport skipped previously, advance to 4, otherwise 2
         if (bookingState.skipTransport) {
-          setCurrentStep(5);
+          setCurrentStep(4);
           return;
         }
       }
@@ -687,8 +818,41 @@ export default function BookingController({
         }
       }
 
-      // Step 4: Route Schedule & Pickup Locations (Transport)
+      // Step 4: Select Ziyarat Routes (Ziyarat)
       else if (currentStep === 4) {
+        if (bookingState.selectedZiyaratRoutes.length === 0) {
+          alert("Please select at least one Ziyarat itinerary to proceed.");
+          return;
+        }
+      }
+
+      // Step 5: Select Premium Fleet (Ziyarat)
+      else if (currentStep === 5) {
+        if (!bookingState.selectedVehicle) {
+          updateState({ selectedVehicle: 'sedan' });
+        }
+      }
+
+      // Step 6: Schedule Itinerary Dates (Ziyarat)
+      else if (currentStep === 6) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        for (const rId of bookingState.selectedZiyaratRoutes) {
+          const rDate = bookingState.selectedZiyaratRouteDates?.[rId];
+          const rObj = ZIYARAT_ROUTES.find(r => r.id === rId);
+          const rName = rObj?.name || rId;
+          if (!rDate) {
+            alert(`Please select a scheduled travel date for "${rName}".`);
+            return;
+          }
+          if (rDate < todayStr) {
+            alert(`The scheduled date for "${rName}" cannot be in the past (${rDate}). Please select a valid upcoming date.`);
+            return;
+          }
+        }
+      }
+
+      // Step 7: Route Schedule & Pickup Locations (Transport)
+      else if (currentStep === 7) {
         if (!bookingState.skipTransport) {
           if (bookingState.transportMode === 'fixed') {
             const missingDateLeg = bookingState.fixedRouteLegs.find(l => !l.date);
@@ -709,39 +873,6 @@ export default function BookingController({
               alert("Please select a pickup date.");
               return;
             }
-          }
-        }
-      }
-
-      // Step 5: Select Ziyarat Routes (Ziyarat)
-      else if (currentStep === 5) {
-        if (bookingState.selectedZiyaratRoutes.length === 0) {
-          alert("Please select at least one Ziyarat itinerary to proceed.");
-          return;
-        }
-      }
-
-      // Step 6: Select Premium Fleet (Ziyarat)
-      else if (currentStep === 6) {
-        if (!bookingState.selectedVehicle) {
-          updateState({ selectedVehicle: 'sedan' });
-        }
-      }
-
-      // Step 7: Schedule Itinerary Dates (Ziyarat)
-      else if (currentStep === 7) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        for (const rId of bookingState.selectedZiyaratRoutes) {
-          const rDate = bookingState.selectedZiyaratRouteDates?.[rId];
-          const rObj = ZIYARAT_ROUTES.find(r => r.id === rId);
-          const rName = rObj?.name || rId;
-          if (!rDate) {
-            alert(`Please select a scheduled travel date for "${rName}".`);
-            return;
-          }
-          if (rDate < todayStr) {
-            alert(`The scheduled date for "${rName}" cannot be in the past (${rDate}). Please select a valid upcoming date.`);
-            return;
           }
         }
       }
@@ -767,7 +898,12 @@ export default function BookingController({
       }
 
       if (currentStep < totalSteps) {
-        setCurrentStep(prev => prev + 1);
+        // Transport schedule (Step 7) is skipped entirely when transport was skipped
+        if (currentStep === 6 && bookingState.skipTransport) {
+          goToStep(8);
+        } else {
+          advanceStep();
+        }
       } else if (currentStep === totalSteps) {
         await handleSubmitInquiry();
       }
@@ -777,6 +913,72 @@ export default function BookingController({
     // For regular Umrah, trigger add-ons drawer after Screen 01 before moving forward
     if (currentStep === 1 && isRegularUmrah) {
       setShowAddonsDrawer(true);
+      return;
+    }
+
+    // Regular Umrah: step-per-screen validation for the transport segment & lead details
+    if (isRegularUmrah) {
+      if (hasTransport && currentStep === 2) {
+        if (bookingState.transportMode === 'fixed') {
+          if (!bookingState.fixedRouteId) {
+            alert("Please select a fixed route package.");
+            return;
+          }
+        } else {
+          if (!bookingState.pointToPointRoute) {
+            alert("Please select a transfer route combination.");
+            return;
+          }
+        }
+      } else if (hasTransport && currentStep === 3) {
+        if (!bookingState.transportVehicleId) {
+          updateState({ transportVehicleId: 'sedan', selectedVehicle: 'sedan' });
+        }
+      } else if (hasTransport && currentStep === 4) {
+        if (bookingState.transportMode === 'fixed') {
+          const missingDateLeg = bookingState.fixedRouteLegs.find(l => !l.date);
+          if (missingDateLeg) {
+            alert(`Please select travel date for "${missingDateLeg.label}".`);
+            return;
+          }
+        } else {
+          if (!bookingState.pointToPointPickupLocation.trim()) {
+            alert("Please enter a pickup location.");
+            return;
+          }
+          if (!bookingState.pointToPointDropoffLocation.trim()) {
+            alert("Please enter a drop-off location.");
+            return;
+          }
+          if (!bookingState.pointToPointPickupDate) {
+            alert("Please select a pickup date.");
+            return;
+          }
+        }
+      } else if (currentStep === totalSteps) {
+        if (!bookingState.leadDetails.fullName.trim()) {
+          alert("Please enter your full name.");
+          return;
+        }
+        if (!bookingState.leadDetails.nationality.trim()) {
+          alert("Please select your nationality.");
+          return;
+        }
+        if (!bookingState.leadDetails.phone.trim()) {
+          alert("Please enter your contact phone number.");
+          return;
+        }
+        if (!bookingState.leadDetails.email.trim()) {
+          alert("Please enter your email address.");
+          return;
+        }
+      }
+
+      if (currentStep < totalSteps) {
+        advanceStep();
+      } else {
+        await handleSubmitInquiry();
+      }
       return;
     }
 
@@ -881,13 +1083,14 @@ export default function BookingController({
         };
       } else if (isZiyarat) {
         const selectedVehId = bookingState.selectedVehicle || 'sedan';
+        const fleetQty = getZiyaratAllocatedQuantity(selectedVehId, isUmrahPlus, bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount);
         let totalZiyaratCost = 0;
         const mappedRoutes = bookingState.selectedZiyaratRoutes.map(rId => {
           const r = ZIYARAT_ROUTES.find(route => route.id === rId);
           const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
           const pEntry = (ZIYARAT_PRICES as any)?.[rId];
           const fare = (pEntry && !pEntry.custom && pEntry[selectedVehId]) ? pEntry[selectedVehId] : null;
-          if (fare) totalZiyaratCost += fare;
+          if (fare) totalZiyaratCost += fare * fleetQty;
           return {
             id: rId,
             name: r?.name || rId,
@@ -895,7 +1098,7 @@ export default function BookingController({
             duration: r?.duration || '',
             date: rDate,
             passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
-            price: fare,
+            price: fare ? fare * fleetQty : null,
             sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
           };
         });
@@ -912,6 +1115,7 @@ export default function BookingController({
             selectedRoutes: mappedRoutes,
             vehicle: vehicleName,
             vehicleId: selectedVehId,
+            vehicleQuantity: fleetQty,
             passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
             totalEstimatedCost: totalZiyaratCost
           }
@@ -943,29 +1147,37 @@ export default function BookingController({
           transportation: (bookingState.selectedUpsells.includes('transport') || (!bookingState.skipTransport && isUmrahPlus)) ? transportPayloadDetails : null,
           selectedUpsells: bookingState.selectedUpsells.map(id => UPSELLS.find(u => u.id === id)?.name || id),
           selectedZiyaratCities: isActuallyUmrahPlus ? bookingState.selectedZiyaratCities : [],
-          ...(isActuallyUmrahPlus ? {
-            ziyaratDetails: {
-              selectedRoutes: bookingState.selectedZiyaratRoutes.map(rId => {
-                const r = ZIYARAT_ROUTES.find(route => route.id === rId);
-                const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
-                const pEntry = (ZIYARAT_PRICES as any)?.[rId];
-                const fare = (pEntry && !pEntry.custom && pEntry[bookingState.selectedVehicle || 'sedan']) ? pEntry[bookingState.selectedVehicle || 'sedan'] : null;
-                return {
-                  id: rId,
-                  name: r?.name || rId,
-                  city: r?.cityName || '',
-                  duration: r?.duration || '',
-                  date: rDate,
-                  passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
-                  price: fare,
-                  sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
-                };
-              }),
-              vehicle: vehicleName,
-              vehicleId: bookingState.selectedVehicle || 'sedan',
-              passengers: bookingState.passengerCount || bookingState.adultsCount || 2
-            }
-          } : {
+          ...(isActuallyUmrahPlus ? (() => {
+            const upVehicleId = bookingState.selectedVehicle || 'sedan';
+            const upFleetQty = getZiyaratAllocatedQuantity(upVehicleId, isUmrahPlus, bookingState.adultsCount, bookingState.childrenCount, bookingState.passengerCount);
+            const upMappedRoutes = bookingState.selectedZiyaratRoutes.map(rId => {
+              const r = ZIYARAT_ROUTES.find(route => route.id === rId);
+              const rDate = bookingState.selectedZiyaratRouteDates?.[rId] || '';
+              const pEntry = (ZIYARAT_PRICES as any)?.[rId];
+              const fare = (pEntry && !pEntry.custom && pEntry[upVehicleId]) ? pEntry[upVehicleId] : null;
+              return {
+                id: rId,
+                name: r?.name || rId,
+                city: r?.cityName || '',
+                duration: r?.duration || '',
+                date: rDate,
+                passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
+                price: fare ? fare * upFleetQty : null,
+                sites: r?.siteIds ? r.siteIds.map(sId => ZIYARAT_SITES[sId]?.name || sId) : []
+              };
+            });
+            const upTotalZiyaratCost = upMappedRoutes.reduce((sum, r) => sum + (r.price || 0), 0);
+            return {
+              ziyaratDetails: {
+                selectedRoutes: upMappedRoutes,
+                vehicle: vehicleName,
+                vehicleId: upVehicleId,
+                vehicleQuantity: upFleetQty,
+                passengers: bookingState.passengerCount || bookingState.adultsCount || 2,
+                totalEstimatedCost: upTotalZiyaratCost
+              }
+            };
+          })() : {
             ziyaratDetails: null
           })
         };
@@ -1005,26 +1217,79 @@ export default function BookingController({
       if (currentStep === 1) return 'Stay & Guests';
       if (currentStep === 2) return bookingState.transportMode === 'pointToPoint' ? 'Transfer Route Selection' : 'Route Selection';
       if (currentStep === 3) return 'Private Vehicle & Fleet Setup';
-      if (currentStep === 4) return 'Route Schedule & Pickup Locations';
-      if (currentStep === 5) return 'Select Ziyarat Routes';
-      if (currentStep === 6) return 'Select Premium Fleet';
-      if (currentStep === 7) return 'Schedule Itinerary Dates';
+      if (currentStep === 4) return 'Select Ziyarat Routes';
+      if (currentStep === 5) return 'Select Premium Fleet';
+      if (currentStep === 6) return 'Schedule Itinerary Dates';
+      if (currentStep === 7) return 'Route Schedule & Pickup Locations';
       return 'Lead Passenger Details';
     }
     // Regular Umrah
     if (currentStep === 1) return 'Stay & Guests';
-    if (currentStep === 2 && hasTransport) return 'Transportation';
+    if (hasTransport) {
+      if (currentStep === 2) return 'Transportation';
+      if (currentStep === 3) return 'Choose Private Vehicle & Fleet Setup';
+      if (currentStep === 4) return 'Transfer Leg Dates & Pick-Up Timings';
+    }
     return 'Lead Passenger Details';
   };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
+      {phase === 'summary' ? (
+        /* ── Full-page Trip Summary: hand-off between booking & checkout ── */
+        <motion.div
+          ref={bookingPanelRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full"
+        >
+          {/* Same inverted gold panel as the checkout steps so the hand-off is seamless */}
+          <div
+            data-theme="checkout"
+            className="bg-[#c5a059] border border-black/25 p-6 md:p-10 rounded-2xl shadow-xl"
+          >
+            <ItinerarySummary
+              state={bookingState}
+              type={type}
+              ziyaratPkgParams={ziyaratPkgParams}
+              variant="page"
+            />
+            <div className="mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setPhase('booking');
+                  setCurrentStep(checkoutStartStep - 1);
+                }}
+                className="bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Go Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhase('checkout')}
+                className="flex-1 bg-black hover:bg-[#f3d38a] text-[#fdfbf6] hover:text-[#12141a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all shadow-[0_4px_14px_rgba(0,0,0,0.25)] cursor-pointer"
+              >
+                Proceed To Checkout <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
       <motion.div
+        ref={bookingPanelRef}
+        key={phase}
+        data-theme={phase === 'checkout' ? 'checkout' : undefined}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex-1 bg-[#1a1c22] p-6 md:p-10 rounded-2xl shadow-xl border border-white/5 relative"
+        className={`booking-panel flex-1 p-6 md:p-10 rounded-2xl shadow-xl relative border ${
+          phase === 'checkout'
+            ? 'bg-[#c5a059] border-black/25'
+            : 'bg-[#1a1c22] border-white/5'
+        }`}
       >
-        <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
+        <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} labelPrefix={phase === 'checkout' ? 'Checkout' : undefined} />
 
         <form onSubmit={handleNext}>
           <DynamicQuestionnaire
@@ -1040,19 +1305,27 @@ export default function BookingController({
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="bg-transparent border border-white/20 text-white hover:bg-white/5 uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 disabled:opacity-50 cursor-pointer"
+              className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 disabled:opacity-50 cursor-pointer ${
+                phase === 'checkout'
+                  ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a]'
+                  : 'bg-transparent border border-white/20 text-white hover:bg-white/5'
+              }`}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </button>
 
-            {/* Skip Transport button on Step 2 (Regular Umrah only) */}
-            {(currentStep === 2 && isRegularUmrah && hasTransport) && (
+            {/* Skip Transport button on transport steps 2–4 (Regular Umrah only) */}
+            {(isRegularUmrah && hasTransport && currentStep >= 2 && currentStep <= 4) && (
               <button
                 type="button"
                 onClick={handleSkipTransport}
                 disabled={isSubmitting}
-                className="bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10 uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all flex-1 sm:flex-initial whitespace-nowrap cursor-pointer"
+                className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all flex-1 sm:flex-initial whitespace-nowrap cursor-pointer ${
+                  phase === 'checkout'
+                    ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:border-black hover:bg-black hover:text-[#f3d38a]'
+                    : 'bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10'
+                }`}
               >
                 Skip Transport
               </button>
@@ -1061,7 +1334,11 @@ export default function BookingController({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 sm:flex-auto bg-[#c5a059] hover:bg-[#d4b57a] text-black uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all shadow-[0_4px_14px_rgba(197,160,89,0.39)] disabled:opacity-75 cursor-pointer"
+              className={`flex-1 sm:flex-auto uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all disabled:opacity-75 cursor-pointer ${
+                phase === 'checkout'
+                  ? 'bg-black text-[#fdfbf6] hover:bg-[#f3d38a] hover:text-[#12141a] shadow-[0_4px_14px_rgba(0,0,0,0.25)]'
+                  : 'bg-[#c5a059] hover:bg-[#d4b57a] text-black shadow-[0_4px_14px_rgba(197,160,89,0.39)]'
+              }`}
             >
               {isSubmitting ? (
                 <span className="flex items-center">
@@ -1078,15 +1355,18 @@ export default function BookingController({
           </div>
         </form>
       </motion.div>
+      )}
 
-      {/* Side Summary Screen - Always visible */}
-      <div className="w-full lg:w-80 shrink-0">
-        <ItinerarySummary
-          state={bookingState}
-          type={type}
-          ziyaratPkgParams={ziyaratPkgParams}
-        />
-      </div>
+      {/* Side Trip Summary — visible during the booking phase only */}
+      {phase === 'booking' && (
+        <div className="w-full lg:w-80 shrink-0">
+          <ItinerarySummary
+            state={bookingState}
+            type={type}
+            ziyaratPkgParams={ziyaratPkgParams}
+          />
+        </div>
+      )}
 
       {/* Add-ons suggestions drawer for Umrah & Umrah Plus */}
       <AnimatePresence>
@@ -1099,11 +1379,11 @@ export default function BookingController({
               onClick={() => {
                 setShowAddonsDrawer(false);
                 if (isRegularUmrah) {
-                  setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                  goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                 } else if (isUmrahPlus) {
-                  setCurrentStep(2);
+                  goToStep(2);
                 } else {
-                  setCurrentStep(totalSteps);
+                  goToStep(totalSteps);
                 }
               }}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
@@ -1122,11 +1402,11 @@ export default function BookingController({
                   onClick={() => {
                     setShowAddonsDrawer(false);
                     if (isRegularUmrah) {
-                      setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                      goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                     } else if (isUmrahPlus) {
-                      setCurrentStep(2);
+                      goToStep(2);
                     } else {
-                      setCurrentStep(totalSteps);
+                      goToStep(totalSteps);
                     }
                   }}
                   className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer"
@@ -1199,11 +1479,11 @@ export default function BookingController({
                   onClick={() => {
                     setShowAddonsDrawer(false);
                     if (isRegularUmrah) {
-                      setCurrentStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
+                      goToStep(bookingState.selectedUpsells.includes('transport') ? 2 : totalSteps);
                     } else if (isUmrahPlus) {
-                      setCurrentStep(2);
+                      goToStep(2);
                     } else {
-                      setCurrentStep(totalSteps);
+                      goToStep(totalSteps);
                     }
                   }}
                   className="w-full bg-[#c5a059] hover:bg-[#d4b57a] text-black uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-sm flex items-center justify-center transition-all cursor-pointer shadow-lg"

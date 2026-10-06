@@ -5,18 +5,23 @@ import { useRouter } from 'next/navigation'
 import { createZiyaratLocation } from '@/app/actions/ziyaratLocationActions'
 // ✅ CHANGE THIS IMPORT:
 import LocalImageUpload from '@/components/admin/LocalImageUpload' 
+import ErrorBanner from '@/components/admin/ErrorBanner'
+import { useToast } from '@/components/admin/ToastProvider'
 import { Loader2, Save, ArrowLeft, MapPin, Clock, Video, Globe } from 'lucide-react'
 import Link from 'next/link'
 
 export default function NewZiyaratPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   const [gallery, setGallery] = useState<string[]>([])
   const [banner, setBanner] = useState<string>('')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     setIsSaving(true)
 
     const formData = new FormData(e.currentTarget)
@@ -26,11 +31,22 @@ export default function NewZiyaratPage() {
     formData.append('bannerImage', banner)
 
     try {
-      await createZiyaratLocation(formData)
+      const result = await createZiyaratLocation(formData)
+
+      if (!result.success) {
+        const message = result.error || 'Failed to save location'
+        setError(message)
+        toast(message, 'error')
+        return
+      }
+
+      toast('Location created successfully!', 'success')
       router.push('/admin/ziyarat')
     } catch (error) {
       console.error(error)
-      alert("Failed to save location. Note: Large images might fail.")
+      const message = 'Failed to save location. Note: Large images might fail.'
+      setError(message)
+      toast(message, 'error')
     } finally {
       setIsSaving(false)
     }
@@ -48,6 +64,12 @@ export default function NewZiyaratPage() {
            <p className="text-sm text-gray-500">Create a historical site entry.</p>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6">
+          <ErrorBanner message={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         

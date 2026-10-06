@@ -3,6 +3,7 @@
 import { db } from '@/lib/db';
 import { bookings, NewBooking } from '@/lib/db/schema/bookings';
 import { desc, eq, and, gte } from 'drizzle-orm';
+import { assertMember } from '@/lib/auth/guards';
 import fs from 'fs';
 import path from 'path';
 
@@ -240,6 +241,7 @@ export async function getBookingById(id: string) {
  * Update the status of a booking (e.g., Pending -> Contacted -> Confirmed)
  */
 export async function updateBookingStatus(id: string, status: string) {
+  await assertMember();
   const now = new Date();
 
   // 1. PRIMARY: Update DB

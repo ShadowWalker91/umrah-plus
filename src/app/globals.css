@@ -172,6 +172,14 @@
   justify-content: center;
 }
 
+/* Snap section whose content (e.g. the package tier grid) may need more room
+   than a single viewport: grows with its content instead of clipping it,
+   while still filling the screen when there is room. */
+.snap-section-auto {
+  height: auto;
+  min-height: 100vh;
+}
+
 /* Hide Scrollbar for cleaner look */
 .snap-container::-webkit-scrollbar {
   width: 0px;
@@ -550,6 +558,21 @@ body.overflow-hidden {
     pointer-events: none;
 }
 
+/* A z-index on the popup alone only competes inside its own stacking context,
+   so it can still be covered by sibling city columns or the sticky Trip Summary
+   panel. Raise the whole ancestor chain while the popup is open. */
+
+/* 1. Beat the sibling city columns (their route lists sit at z-20) */
+[id^="col-"]:has(.z-node:hover) {
+    z-index: 100;
+}
+
+/* 2. Beat the sticky Trip Summary sidebar (z auto) while hovering, but stay
+      under the fixed site header (z-50) and the add-ons drawer (z-100/101) */
+.booking-panel:has(.z-node:hover) {
+    z-index: 40;
+}
+
 .z-node:hover .info-popup {
     opacity: 1;
     visibility: visible;
@@ -871,4 +894,196 @@ body.overflow-hidden {
         transform: translateX(-50%) translateY(10px) !important;
         width: min(290px, 85vw) !important;
     }
-}
+}
+
+/* ==========================================================================
+   Booking engine — checkout phase (inverted gold theme)
+   Applied only inside the step panel via [data-theme="checkout"].
+   Tailwind v4 utilities live inside a cascade layer, so these unlayered
+   rules always win over them without !important. Rules use :where() to keep
+   their own specificity at (0,1,0) so the ivory form-field rules below,
+   which carry element selectors, can override them.
+   ========================================================================== */
+
+[data-theme="checkout"] {
+    color-scheme: light;
+}
+
+/* ── Surfaces: dark cards dissolve into the gold background ───────────── */
+[data-theme="checkout"] :where(
+    .bg-\[\#0c0d10\],
+    .bg-\[\#12141a\],
+    .bg-\[\#14161d\],
+    .bg-\[\#0b0c10\],
+    .bg-\[\#0f1015\],
+    .bg-\[\#15171e\],
+    .bg-\[\#131c2a\],
+    .bg-\[\#131c2a\]\/90
+) {
+    background-color: transparent;
+}
+
+/* Floating menus & popovers become light sheets */
+[data-theme="checkout"] .bg-\[\#1a1c22\] {
+    background-color: #ffffff;
+}
+
+/* Light tints become black tints */
+[data-theme="checkout"] :where(.bg-white\/5) {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="checkout"] :where(.bg-white\/10) {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+[data-theme="checkout"] :where(.bg-white\/\[0\.02\]) {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Solid gold accents (progress fill, chips) become black */
+[data-theme="checkout"] :where(.bg-\[\#c5a059\]) {
+    background-color: #12141a;
+}
+[data-theme="checkout"] :where(.bg-\[\#c5a059\].text-black) {
+    color: #fdfbf6;
+}
+[data-theme="checkout"] :where(
+    .bg-\[\#c5a059\]\/10,
+    .bg-\[\#c5a059\]\/15
+) {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+[data-theme="checkout"] :where(.bg-\[\#c5a059\]\/20) {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Dark chips on cards become ivory chips */
+[data-theme="checkout"] :where(.bg-black\/30, .bg-black\/40) {
+    background-color: rgba(253, 251, 246, 0.75);
+}
+
+/* Neutral bullet dots read as black on gold */
+[data-theme="checkout"] :where(.bg-gray-400) {
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+/* Notice cards (amber/emerald tints) become frosted white sheets */
+[data-theme="checkout"] :where(.bg-amber-500\/10, .bg-emerald-500\/10) {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Borders: everything outlined in black ────────────────────────────── */
+[data-theme="checkout"] :where(.border-white\/5) {
+    border-color: rgba(0, 0, 0, 0.25);
+}
+[data-theme="checkout"] :where(.border-white\/10) {
+    border-color: rgba(0, 0, 0, 0.35);
+}
+[data-theme="checkout"] :where(.border-white\/15) {
+    border-color: rgba(0, 0, 0, 0.45);
+}
+[data-theme="checkout"] :where(.border-\[\#c5a059\]) {
+    border-color: rgba(0, 0, 0, 0.55);
+}
+[data-theme="checkout"] :where(
+    .border-\[\#c5a059\]\/20,
+    .border-\[\#c5a059\]\/25,
+    .border-\[\#c5a059\]\/30,
+    .border-amber-400\/30,
+    .border-amber-500\/20,
+    .border-emerald-500\/20
+) {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+[data-theme="checkout"] :where(
+    .border-\[\#c5a059\]\/40,
+    .border-\[\#c5a059\]\/50
+) {
+    border-color: rgba(0, 0, 0, 0.45);
+}
+[data-theme="checkout"] :where(.border-\[\#c5a059\]\/60, .border-b-\[\#c5a059\]\/50) {
+    border-color: rgba(0, 0, 0, 0.5);
+}
+[data-theme="checkout"] :where(.ring-\[\#c5a059\]\/30) {
+    --tw-ring-color: rgba(0, 0, 0, 0.35);
+}
+
+/* ── Text: mostly black, grays darkened to stay readable on gold ─────── */
+[data-theme="checkout"] :where(.text-white) {
+    color: #12141a;
+}
+[data-theme="checkout"] :where(
+    .text-gray-200,
+    .text-gray-300,
+    .text-gray-400
+) {
+    color: #3f3f46;
+}
+[data-theme="checkout"] :where(.text-gray-500, .text-gray-600) {
+    color: #52525b;
+}
+[data-theme="checkout"] :where(.text-\[\#c5a059\]) {
+    color: #12141a;
+}
+[data-theme="checkout"] :where(.text-\[\#f9e8a2\]) {
+    color: #854d0e;
+}
+[data-theme="checkout"] :where(
+    .text-amber-300,
+    .text-amber-300\/90,
+    .text-amber-400,
+    .text-amber-400\/80,
+    .text-amber-400\/90,
+    .text-yellow-300,
+    .text-yellow-400
+) {
+    color: #92400e;
+}
+[data-theme="checkout"] :where(.text-emerald-400) {
+    color: #065f46;
+}
+[data-theme="checkout"] :where(.text-\[\#00d084\]) {
+    color: #047857;
+}
+
+/* ── Hover states on light surfaces ───────────────────────────────────── */
+[data-theme="checkout"] :where(.hover\:bg-white\/5:hover) {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+[data-theme="checkout"] :where(.hover\:bg-white\/10:hover) {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme="checkout"] :where(.hover\:border-white\/20:hover) {
+    border-color: rgba(0, 0, 0, 0.55);
+}
+[data-theme="checkout"] :where(.hover\:text-white:hover) {
+    color: #12141a;
+}
+
+/* ── Form fields: ivory on gold, black text, light native pickers ────── */
+[data-theme="checkout"] input,
+[data-theme="checkout"] select,
+[data-theme="checkout"] textarea {
+    background-color: #fdfbf6;
+    color: #12141a;
+    border-color: rgba(0, 0, 0, 0.4);
+    color-scheme: light;
+}
+[data-theme="checkout"] input:focus,
+[data-theme="checkout"] select:focus,
+[data-theme="checkout"] textarea:focus {
+    border-color: #12141a;
+    box-shadow: 0 0 0 3px rgba(18, 20, 26, 0.15);
+}
+[data-theme="checkout"] button.bg-\[\#0c0d10\],
+[data-theme="checkout"] button.bg-\[\#1a1c22\] {
+    background-color: #fdfbf6;
+    color: #12141a;
+}
+[data-theme="checkout"] input::placeholder,
+[data-theme="checkout"] textarea::placeholder {
+    color: #6b7280;
+}
+[data-theme="checkout"] input::-webkit-calendar-picker-indicator {
+    filter: none;
+    opacity: 0.75;
+}

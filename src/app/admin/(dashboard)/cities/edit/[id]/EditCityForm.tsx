@@ -6,9 +6,11 @@ import { MapPin, Video, Cloud, Car, Camera, Plus, Trash2, ArrowLeft, Save, Refre
 import Link from 'next/link';
 // We will create this update action in a moment
 import { updateAdminCity } from '@/app/actions/adminCityActions';
+import { useToast } from '@/components/admin/ToastProvider';
 
 export default function EditCityForm({ initialData }: { initialData: any }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,10 +52,13 @@ export default function EditCityForm({ initialData }: { initialData: any }) {
     const result = await updateAdminCity(formData);
     
     if (result.success) {
+      toast('City updated successfully!', 'success');
       router.push('/admin/cities');
       router.refresh();
     } else {
-      setError(result.error || "Failed to update city");
+      const message = result.error || "Failed to update city";
+      setError(message);
+      toast(message, 'error');
       setLoading(false);
     }
   };
