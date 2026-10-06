@@ -184,19 +184,28 @@ export default function PackagesSection() {
                 ))}
               </ul>
 
-              <a
-                href={quoteUrl(tier.name)}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Get WhatsApp quote for ${tier.name}`}
-                className="quote-button"
-              >
-                <span>
-                  Get WhatsApp
-                  <br />
-                  Quote <WhatsAppIcon />
-                </span>
-              </a>
+              <div className="quote-actions">
+                <a
+                  href={quoteUrl(tier.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Get WhatsApp quote for ${tier.name}`}
+                  className="quote-button"
+                >
+                  <span>
+                    Get WhatsApp
+                    <br />
+                    Quote <WhatsAppIcon />
+                  </span>
+                </a>
+                <a
+                  href="#"
+                  aria-label={`Get more details for ${tier.name}`}
+                  className="quote-button"
+                >
+                  <span>Get More Details</span>
+                </a>
+              </div>
             </motion.article>
           ))}
         </div>

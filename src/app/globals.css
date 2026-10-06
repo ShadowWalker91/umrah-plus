@@ -1405,14 +1405,25 @@ body.overflow-hidden {
 }
 
 /* --- Quote button ----------------------------------------------------- */
-.quote-button {
+.quote-actions {
     grid-area: btn;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    justify-self: center;
+    width: 100%;
+    max-width: 190px;
+}
+
+.quote-button {
     background: var(--pkg-quote-gradient);
     color: var(--pkg-primary-foreground);
     border: 0;
     border-radius: 16px;
     width: 100%;
-    max-width: 160px;
+    max-width: 200px;
     min-height: 50px;
     padding: 9px 14px;
     font-size: 14px;
@@ -1425,7 +1436,6 @@ body.overflow-hidden {
     display: flex;
     align-items: center;
     justify-content: center;
-    justify-self: center;
     transition: filter 0.2s ease;
 }
 
@@ -1462,11 +1472,13 @@ body.overflow-hidden {
         padding-left: 22px;
     }
 
-    .quote-button {
-        justify-self: center;
+    .quote-actions {
         width: 80%;
         max-width: 100%;
-        padding: 10px 22px;
+    }
+
+    .quote-button {
+        padding: 10px 60px;
     }
 }
 
@@ -1524,10 +1536,12 @@ body.overflow-hidden {
         padding: 0;
     }
 
-    .quote-button {
-        justify-self: center;
+    .quote-actions {
         width: 80%;
         max-width: 100%;
+    }
+
+    .quote-button {
         padding: 10px 22px;
     }
 }
