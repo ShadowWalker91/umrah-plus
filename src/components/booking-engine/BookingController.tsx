@@ -1246,7 +1246,7 @@ export default function BookingController({
           {/* Same inverted gold panel as the checkout steps so the hand-off is seamless */}
           <div
             data-theme="checkout"
-            className="bg-[#c5a059] border border-black/25 p-6 md:p-10 rounded-2xl shadow-xl"
+            className="bg-[#c5a059] border border-black/25 p-6 md:p-10 rounded-2xl shadow-xl max-w-[80%] mx-auto"
           >
             <ItinerarySummary
               state={bookingState}

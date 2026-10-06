@@ -917,7 +917,7 @@ body.overflow-hidden {
 
 /* Floating menus & popovers become light sheets */
 [data-theme="checkout"] .bg-\[\#1a1c22\] {
-    background-color: #ffffff;
+    background-color: #ada9a9;
 }
 
 /* Light tints become black tints */
@@ -950,7 +950,7 @@ body.overflow-hidden {
 
 /* Dark chips on cards become ivory chips */
 [data-theme="checkout"] :where(.bg-black\/30, .bg-black\/40) {
-    background-color: rgba(253, 251, 246, 0.75);
+    background-color: transparent;
 }
 
 /* Neutral bullet dots read as black on gold */
@@ -960,7 +960,7 @@ body.overflow-hidden {
 
 /* Notice cards (amber/emerald tints) become frosted white sheets */
 [data-theme="checkout"] :where(.bg-amber-500\/10, .bg-emerald-500\/10) {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: transparent;
 }
 
 /* ── Borders: everything outlined in black ────────────────────────────── */
@@ -1002,13 +1002,14 @@ body.overflow-hidden {
 /* ── Text: mostly black, grays darkened to stay readable on gold ─────── */
 [data-theme="checkout"] :where(.text-white) {
     color: #12141a;
+    font-weight: 600;
 }
 [data-theme="checkout"] :where(
     .text-gray-200,
     .text-gray-300,
     .text-gray-400
 ) {
-    color: #3f3f46;
+    color: #000000;
 }
 [data-theme="checkout"] :where(.text-gray-500, .text-gray-600) {
     color: #52525b;
@@ -1017,7 +1018,7 @@ body.overflow-hidden {
     color: #12141a;
 }
 [data-theme="checkout"] :where(.text-\[\#f9e8a2\]) {
-    color: #854d0e;
+    color: #f1ee07;
 }
 [data-theme="checkout"] :where(
     .text-amber-300,
@@ -1028,7 +1029,7 @@ body.overflow-hidden {
     .text-yellow-300,
     .text-yellow-400
 ) {
-    color: #92400e;
+    color: #f1ee07;
 }
 [data-theme="checkout"] :where(.text-emerald-400) {
     color: #065f46;
@@ -1073,7 +1074,7 @@ body.overflow-hidden {
 }
 [data-theme="checkout"] input::placeholder,
 [data-theme="checkout"] textarea::placeholder {
-    color: #6b7280;
+    color: #ada9a9;
 }
 [data-theme="checkout"] input::-webkit-calendar-picker-indicator {
     filter: none;
