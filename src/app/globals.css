@@ -1473,12 +1473,12 @@ body.overflow-hidden {
     }
 
     .quote-actions {
-        width: 80%;
+        width: 100%;
         max-width: 100%;
     }
 
     .quote-button {
-        padding: 10px 60px;
+        padding: 40px 60px;
     }
 }
 

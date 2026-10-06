@@ -193,9 +193,7 @@ export default function PackagesSection() {
                   className="quote-button"
                 >
                   <span>
-                    Get WhatsApp
-                    <br />
-                    Quote <WhatsAppIcon />
+                    Get WhatsApp Quote <WhatsAppIcon />
                   </span>
                 </a>
                 <a

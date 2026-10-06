@@ -147,7 +147,7 @@ export default function TransportSection() {
           </div>
           
           {/* Booking Widget — full width, exactly like the other home sections */}
-          <div className="w-full z-30 flex justify-center lg:justify-start lg:mb-14 xl:mb-18">
+          <div className="w-full z-30 flex justify-center lg:justify-start mt-32 md:mt-5 lg:mb-14 xl:mb-18">
             <SearchWidget activeService="Transport" />
           </div>
 
@@ -252,9 +252,9 @@ export default function TransportSection() {
 
         {/* BOTTOM PACKAGE BUTTONS */}
         <div className="flex flex-col md:flex-row gap-4 justify-center w-full max-w-2xl mx-auto">
-          <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2 cursor-pointer">
+          {/* <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2 cursor-pointer">
             <Calendar size={18} /> Flexible Umrah Packages
-          </button>
+          </button> */}
           <button className="flex-1 bg-[#F9C344] text-black font-bold py-4 px-6 rounded-lg hover:bg-white hover:scale-[1.02] transition-all shadow-lg uppercase tracking-wide text-sm flex items-center justify-center gap-2 cursor-pointer">
             <Bus size={18} /> Fixed Transport Packages
           </button>
