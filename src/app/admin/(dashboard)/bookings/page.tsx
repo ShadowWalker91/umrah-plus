@@ -39,8 +39,10 @@ import {
 import { getBookings, updateBookingStatus, BookingFilterOptions } from '@/app/actions/bookingActions'
 import { exportBookingsToCsv, printBookingToPdf } from '@/lib/exportUtils'
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY } from '@/lib/utils'
+import { useToast } from '@/components/admin/ToastProvider'
 
 export default function BookingsAdminPage() {
+  const { toast } = useToast()
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'list' | 'tree'>('list')
@@ -100,6 +102,7 @@ export default function BookingsAdminPage() {
       }
     } catch (err) {
       console.error('Error updating status:', err)
+      toast('Failed to update booking status.', 'error')
     } finally {
       setStatusUpdating(false)
     }

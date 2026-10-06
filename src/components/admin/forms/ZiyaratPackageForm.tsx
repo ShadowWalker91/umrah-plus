@@ -5,6 +5,8 @@ import { createPackage, updatePackage, deletePackage } from '@/app/actions/packa
 import { Trash2, ArrowLeft, Save, Plus, ChevronDown, ChevronUp, MapPin, Car, Check, X, Star, FileText, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import ImageUpload from '@/components/admin/ImageUpload'
+import ErrorBanner from '@/components/admin/ErrorBanner'
+import { useToast } from '@/components/admin/ToastProvider'
 import { useRouter } from 'next/navigation'
 import { useRole } from '@/components/admin/RoleProvider'
 
@@ -13,7 +15,9 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
   const router = useRouter()
   const { role } = useRole()
   const isAdmin = role === 'admin'
+  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // --- DATA STATE ---
   const [itinerary, setItinerary] = useState<any[]>(pkg?.itinerary || [])
@@ -65,6 +69,7 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
   // --- SUBMIT HANDLER ---
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
 
@@ -84,18 +89,25 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
     formData.set('priceStarting', finalPrice.toString())
 
     try {
-      if (isEditing) {
-        await updatePackage(pkg.id, formData)
-        alert('Package Updated Successfully!')
-      } else {
-        await createPackage(formData)
-        alert('Package Created Successfully!')
+      const result = isEditing
+        ? await updatePackage(pkg.id, formData)
+        : await createPackage(formData)
+
+      if (!result.success) {
+        const message = result.error || 'Error saving package.'
+        setError(message)
+        toast(message, 'error')
+        return
       }
+
+      toast(isEditing ? 'Package updated successfully!' : 'Package created successfully!', 'success')
       router.push('/admin/packages/ziyarat')
       router.refresh()
     } catch (err) {
       console.error(err)
-      alert('Error saving package.')
+      const message = 'Error saving package.'
+      setError(message)
+      toast(message, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -119,7 +131,14 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
             type="button" 
             onClick={async () => {
                if(confirm('Are you sure you want to delete this package?')) {
-                  await deletePackage(pkg.id);
+                  const result = await deletePackage(pkg.id);
+                  if (!result.success) {
+                    const message = result.error || 'Failed to delete package.';
+                    setError(message);
+                    toast(message, 'error');
+                    return;
+                  }
+                  toast('Package deleted.', 'success')
                   router.push('/admin/packages/ziyarat');
                }
             }} 
@@ -129,6 +148,12 @@ export default function ZiyaratPackageForm({ pkg }: { pkg?: any }) {
           </button>
         )}
       </div>
+
+      {error && (
+        <div className="mb-6">
+          <ErrorBanner message={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         

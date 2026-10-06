@@ -5,7 +5,7 @@ import { users } from '@/lib/db/schema/users'
 import { desc, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { hashPassword, verifyPassword } from '@/lib/auth/password'
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdmin, AUTH_MESSAGES } from '@/lib/auth/guards'
 
 const MIN_PASSWORD_LENGTH = 6
 
@@ -66,7 +66,7 @@ export async function getUserById(id: string) {
 
 // 3. Create a new editor account (admin only)
 export async function createUser(input: { username: string; password: string }): Promise<ActionResponse> {
-  const guard = await requireAdmin()
+  const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly)
   if (!guard.ok) return { success: false, error: guard.error }
 
   try {
@@ -134,7 +134,7 @@ export async function updateUser(input: { id: string; username: string; password
 
 // 5. Delete an editor account (admin only — the admin account itself cannot be deleted)
 export async function deleteUser(id: string): Promise<ActionResponse> {
-  const guard = await requireAdmin()
+  const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly)
   if (!guard.ok) return { success: false, error: guard.error }
 
   try {

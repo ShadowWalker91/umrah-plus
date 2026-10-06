@@ -1,4 +1,7 @@
 import { auth } from '@/auth';
+import { AUTH_MESSAGES } from './messages';
+
+export { AUTH_MESSAGES };
 
 export type Role = 'admin' | 'editor';
 
@@ -51,10 +54,23 @@ export async function isAdmin(): Promise<boolean> {
 /**
  * Guard for actions restricted to the admin account (create / delete / user management).
  */
-export async function requireAdmin(): Promise<GuardResult> {
+export async function requireAdmin(
+  message: string = AUTH_MESSAGES.adminOnly,
+): Promise<GuardResult> {
   const user = await getSessionUser();
-  if (!user) return { ok: false, error: 'You must be signed in.' };
-  if (user.role !== 'admin') return { ok: false, error: 'Only the admin can perform this action.' };
+  if (!user) return { ok: false, error: AUTH_MESSAGES.notSignedIn };
+  if (user.role !== 'admin') return { ok: false, error: message };
+  return { ok: true, user };
+}
+
+/**
+ * Guard for adding or removing images / media assets — admin only.
+ * Editors may still edit the text fields around them.
+ */
+export async function requireImageAdmin(): Promise<GuardResult> {
+  const user = await getSessionUser();
+  if (!user) return { ok: false, error: AUTH_MESSAGES.notSignedIn };
+  if (user.role !== 'admin') return { ok: false, error: AUTH_MESSAGES.imageAdminOnly };
   return { ok: true, user };
 }
 
@@ -63,17 +79,19 @@ export async function requireAdmin(): Promise<GuardResult> {
  */
 export async function requireMember(): Promise<GuardResult> {
   const user = await getSessionUser();
-  if (!user) return { ok: false, error: 'You must be signed in.' };
+  if (!user) return { ok: false, error: AUTH_MESSAGES.notSignedIn };
   return { ok: true, user };
 }
 
 /**
  * Throwing variant of requireAdmin — for actions whose error convention is exceptions.
  */
-export async function assertAdmin(): Promise<SessionUser> {
+export async function assertAdmin(
+  message: string = AUTH_MESSAGES.adminOnly,
+): Promise<SessionUser> {
   const user = await getSessionUser();
-  if (!user) throw new Error('You must be signed in.');
-  if (user.role !== 'admin') throw new Error('Only the admin can perform this action.');
+  if (!user) throw new Error(AUTH_MESSAGES.notSignedIn);
+  if (user.role !== 'admin') throw new Error(message);
   return user;
 }
 
@@ -82,6 +100,6 @@ export async function assertAdmin(): Promise<SessionUser> {
  */
 export async function assertMember(): Promise<SessionUser> {
   const user = await getSessionUser();
-  if (!user) throw new Error('You must be signed in.');
+  if (!user) throw new Error(AUTH_MESSAGES.notSignedIn);
   return user;
 }

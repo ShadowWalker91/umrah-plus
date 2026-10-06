@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.youtube.com',
       },
+      // SUPABASE STORAGE (admin uploaded images: packages, ziyarat, vehicles...)
+      {
+        protocol: 'https',
+        hostname: 'fsqtaokjrksgweofwmbj.supabase.co',
+      },
     ],
   },
   async redirects() {

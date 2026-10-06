@@ -3,7 +3,8 @@
 import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
-import { requireAdmin, requireMember } from '@/lib/auth/guards';
+import { requireAdmin, requireMember, AUTH_MESSAGES } from '@/lib/auth/guards';
+import { mediaChanged } from '@/lib/auth/imagePolicy';
 
 export interface TransportVehicleConfig {
   id: string;
@@ -100,6 +101,16 @@ export async function updateTransportRates(payload: TransportStoreData): Promise
       return { success: false, message: 'Only the admin can add or remove vehicles and routes.' };
     }
 
+    // Editors may update rates/specs, but vehicle photos are admin-only
+    if (guard.user.role !== 'admin') {
+      const payloadById = new Map(payload.vehicles.map((v) => [v.id, v] as const));
+      const imageChanged = store.vehicles.some((existing) => {
+        const next = payloadById.get(existing.id);
+        return !next || mediaChanged(existing.image, next.image);
+      });
+      if (imageChanged) return { success: false, message: AUTH_MESSAGES.imageAdminOnly };
+    }
+
     const success = writeRatesFile(payload);
     if (success) {
       revalidatePath('/admin/transport');
@@ -122,10 +133,19 @@ export async function saveVehicle(vehicle: TransportVehicleConfig): Promise<{ su
     const existingIndex = store.vehicles.findIndex(v => v.id === vehicle.id);
 
     // Updating an existing vehicle is allowed for editors; adding a new one is admin-only
-    const guard = existingIndex !== -1 ? await requireMember() : await requireAdmin();
+    const guard = existingIndex !== -1
+      ? await requireMember()
+      : await requireAdmin(AUTH_MESSAGES.createAdminOnly);
     if (!guard.ok) return { success: false, message: guard.error };
 
     if (existingIndex !== -1) {
+      // Vehicle photos are admin-only
+      if (
+        guard.user.role !== 'admin' &&
+        mediaChanged(store.vehicles[existingIndex].image, vehicle.image)
+      ) {
+        return { success: false, message: AUTH_MESSAGES.imageAdminOnly };
+      }
       store.vehicles[existingIndex] = vehicle;
     } else {
       store.vehicles.push(vehicle);
@@ -145,7 +165,7 @@ export async function saveVehicle(vehicle: TransportVehicleConfig): Promise<{ su
  */
 export async function deleteVehicle(vehicleId: string): Promise<{ success: boolean; message?: string }> {
   try {
-    const guard = await requireAdmin();
+    const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly);
     if (!guard.ok) return { success: false, message: guard.error };
 
     const store = ensureRatesFile();
@@ -165,7 +185,7 @@ export async function deleteVehicle(vehicleId: string): Promise<{ success: boole
  */
 export async function addPointToPointRoute(routeName: string): Promise<{ success: boolean; message?: string }> {
   try {
-    const guard = await requireAdmin();
+    const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly);
     if (!guard.ok) return { success: false, message: guard.error };
 
     const store = ensureRatesFile();

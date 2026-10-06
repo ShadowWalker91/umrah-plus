@@ -1,8 +1,16 @@
 import Link from 'next/link'
 import { Package, MapPin, Users, Plane, CalendarCheck, Clock, CheckCircle, ArrowRight, Eye } from 'lucide-react'
 import { getBookings, getBookingStats } from '@/app/actions/bookingActions'
+import AccessDeniedNotice from '@/components/admin/AccessDeniedNotice'
 
-export default async function DashboardPage() {
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function DashboardPage({ searchParams }: Props) {
+  const params = await searchParams
+  const denied = typeof params.denied === 'string' ? params.denied : null
+
   const statsData = await getBookingStats()
   const recentBookings = await getBookings({ dateRange: 'all' })
   const topRecent = recentBookings.slice(0, 5)
@@ -16,6 +24,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {denied && <AccessDeniedNotice message={denied} />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Dashboard Overview</h1>

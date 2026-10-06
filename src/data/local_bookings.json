@@ -1,19 +1,5 @@
 [
   {
-<<<<<<< HEAD
-    "id": "bk_1790864405221_52utw",
-    "reference": "BK-2026-TCKI",
-    "bookingType": "Umrah",
-    "status": "Pending",
-    "customerName": "sadsa",
-    "customerEmail": "asdfsdf@sad.com",
-    "customerPhone": "+966 2143214",
-    "customerNationality": "Afghanistan",
-    "customerNotes": "asfsa",
-    "startDate": "2026-11-28",
-    "endDate": "2026-11-30",
-    "adultsCount": 1,
-=======
     "id": "bk_1790865952138_349ix",
     "reference": "BK-2026-M7K0",
     "bookingType": "Umrah",
@@ -26,73 +12,19 @@
     "startDate": "2026-11-01",
     "endDate": "2026-11-19",
     "adultsCount": 4,
->>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
     "infantsCount": 0,
     "stayDetails": {
       "makkahStay": {
         "hotelCategory": "4 Star",
-<<<<<<< HEAD
-        "nights": 2,
-        "rooms": 1,
-        "checkInDate": "2026-11-28",
-        "checkInTime": "14:00",
-        "checkOutDate": "2026-11-30",
-=======
         "nights": 18,
         "rooms": 1,
         "checkInDate": "2026-11-01",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-19",
->>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
-<<<<<<< HEAD
-        "included": true,
-        "hotelCategory": "4 Star",
-        "nights": 3,
-        "rooms": 1,
-        "checkInDate": "",
-        "checkInTime": "14:00",
-        "checkOutDate": "",
-        "checkOutTime": "12:00",
-        "preferredHotel": ""
-      }
-    },
-    "transportDetails": null,
-    "ziyaratDetails": null,
-    "leadPassengerDetails": {
-      "fullName": "sadsa",
-      "nationality": "Afghanistan",
-      "phoneCode": "+966",
-      "phone": "2143214",
-      "email": "asdfsdf@sad.com",
-      "notes": "asfsa"
-    },
-    "fullSubmissionPayload": {
-      "type": "Umrah",
-      "startDate": "2026-11-28",
-      "endDate": "2026-11-30",
-      "adultsCount": 1,
-      "infantsCount": 0,
-      "passengerCount": 1,
-      "leadDetails": {
-        "fullName": "sadsa",
-        "nationality": "Afghanistan",
-        "phoneCode": "+966",
-        "phone": "2143214",
-        "email": "asdfsdf@sad.com",
-        "notes": "asfsa"
-      },
-      "makkahStay": {
-        "hotelCategory": "4 Star",
-        "nights": 2,
-        "rooms": 1,
-        "checkInDate": "2026-11-28",
-        "checkInTime": "14:00",
-        "checkOutDate": "2026-11-30",
-=======
         "included": false
       }
     },
@@ -145,30 +77,10 @@
         "checkInDate": "2026-11-01",
         "checkInTime": "14:00",
         "checkOutDate": "2026-11-19",
->>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
         "checkOutTime": "12:00",
         "preferredHotel": ""
       },
       "madinahStay": {
-<<<<<<< HEAD
-        "included": true,
-        "hotelCategory": "4 Star",
-        "nights": 3,
-        "rooms": 1,
-        "checkInDate": "",
-        "checkInTime": "14:00",
-        "checkOutDate": "",
-        "checkOutTime": "12:00",
-        "preferredHotel": ""
-      },
-      "transportation": null,
-      "selectedUpsells": [],
-      "selectedZiyaratCities": [],
-      "ziyaratDetails": null
-    },
-    "createdAt": "2026-10-01T14:20:05.221Z",
-    "updatedAt": "2026-10-01T14:20:05.221Z"
-=======
         "included": false
       },
       "transportation": {
@@ -197,7 +109,97 @@
     },
     "createdAt": "2026-10-01T14:45:52.138Z",
     "updatedAt": "2026-10-01T14:45:52.138Z"
->>>>>>> c3cffe62fbf403a8f6314adf3a673c9c7e2d306e
+  },
+  {
+    "id": "bk_1790864405221_52utw",
+    "reference": "BK-2026-TCKI",
+    "bookingType": "Umrah",
+    "status": "Pending",
+    "customerName": "sadsa",
+    "customerEmail": "asdfsdf@sad.com",
+    "customerPhone": "+966 2143214",
+    "customerNationality": "Afghanistan",
+    "customerNotes": "asfsa",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-30",
+    "adultsCount": 1,
+    "infantsCount": 0,
+    "stayDetails": {
+      "makkahStay": {
+        "hotelCategory": "4 Star",
+        "nights": 2,
+        "rooms": 1,
+        "checkInDate": "2026-11-28",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-30",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      },
+      "madinahStay": {
+        "included": true,
+        "hotelCategory": "4 Star",
+        "nights": 3,
+        "rooms": 1,
+        "checkInDate": "",
+        "checkInTime": "14:00",
+        "checkOutDate": "",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      }
+    },
+    "transportDetails": null,
+    "ziyaratDetails": null,
+    "leadPassengerDetails": {
+      "fullName": "sadsa",
+      "nationality": "Afghanistan",
+      "phoneCode": "+966",
+      "phone": "2143214",
+      "email": "asdfsdf@sad.com",
+      "notes": "asfsa"
+    },
+    "fullSubmissionPayload": {
+      "type": "Umrah",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-30",
+      "adultsCount": 1,
+      "infantsCount": 0,
+      "passengerCount": 1,
+      "leadDetails": {
+        "fullName": "sadsa",
+        "nationality": "Afghanistan",
+        "phoneCode": "+966",
+        "phone": "2143214",
+        "email": "asdfsdf@sad.com",
+        "notes": "asfsa"
+      },
+      "makkahStay": {
+        "hotelCategory": "4 Star",
+        "nights": 2,
+        "rooms": 1,
+        "checkInDate": "2026-11-28",
+        "checkInTime": "14:00",
+        "checkOutDate": "2026-11-30",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      },
+      "madinahStay": {
+        "included": true,
+        "hotelCategory": "4 Star",
+        "nights": 3,
+        "rooms": 1,
+        "checkInDate": "",
+        "checkInTime": "14:00",
+        "checkOutDate": "",
+        "checkOutTime": "12:00",
+        "preferredHotel": ""
+      },
+      "transportation": null,
+      "selectedUpsells": [],
+      "selectedZiyaratCities": [],
+      "ziyaratDetails": null
+    },
+    "createdAt": "2026-10-01T14:20:05.221Z",
+    "updatedAt": "2026-10-01T14:20:05.221Z"
   },
   {
     "id": "bk_1790777112089_74308",
@@ -4655,6 +4657,86 @@
     "updatedAt": "2026-09-12T12:52:02.832Z"
   },
   {
+    "id": "bk_demo_101",
+    "reference": "BK-2026-X7M2",
+    "bookingType": "Umrah Plus",
+    "status": "Pending",
+    "customerName": "Sheikh Tariq Mansoor",
+    "customerEmail": "tariq.mansoor@example.com",
+    "customerPhone": "+44 7911 123456",
+    "customerNationality": "British",
+    "customerNotes": "Family pilgrimage with elderly parents. Ground floor or elevator access preferred near Haram.",
+    "startDate": "2026-10-15",
+    "endDate": "2026-10-25",
+    "adultsCount": 4,
+    "infantsCount": 1,
+    "stayDetails": {
+      "makkahStay": {
+        "hotelCategory": "5 Star",
+        "nights": 6,
+        "rooms": 2
+      },
+      "madinahStay": {
+        "included": true,
+        "hotelCategory": "5 Star",
+        "nights": 4,
+        "rooms": 2
+      }
+    },
+    "transportDetails": {
+      "selectedVehicle": "GMC Yukon XL / Luxury Suburban",
+      "route": "Route 01 (Jeddah ➔ Makkah ➔ Madinah ➔ Madinah Airport)",
+      "singleRoutes": null
+    },
+    "ziyaratDetails": {
+      "vehicle": "Luxury GMC Yukon XL",
+      "guidePreference": "with",
+      "selectedRoutes": [
+        {
+          "id": "makkah-prophetic-heritage",
+          "name": "Prophetic Heritage & Early Revelations",
+          "city": "Makkah",
+          "duration": "4 - 5 Hours",
+          "sites": [
+            "Cave of Hira (Jabal al-Nour)",
+            "Cave of Thawr",
+            "Jannat al-Mu'alla Cemetery",
+            "Masjid Al-Jinn"
+          ]
+        },
+        {
+          "id": "madinah-battle-of-uhud",
+          "name": "Uhud Martyrs & Battlefields",
+          "city": "Madinah",
+          "duration": "3 - 4 Hours",
+          "sites": [
+            "Mount Uhud & Archers' Hill",
+            "Uhud Martyrs' Cemetery",
+            "Masjid Quba",
+            "Masjid al-Qiblatayn"
+          ]
+        }
+      ]
+    },
+    "leadPassengerDetails": {
+      "fullName": "Sheikh Tariq Mansoor",
+      "nationality": "British",
+      "phoneCode": "+44",
+      "phone": "7911 123456",
+      "email": "tariq.mansoor@example.com",
+      "notes": "Family pilgrimage with elderly parents. Ground floor or elevator access preferred near Haram."
+    },
+    "fullSubmissionPayload": {
+      "selectedUpsells": [
+        "Private VIP Meet & Assist at King Abdulaziz Airport",
+        "Rawdah Permit Support & Guidance",
+        "Zamzam 5L Canister Delivery to Departure Airport"
+      ]
+    },
+    "createdAt": "2026-09-12T08:30:00.000Z",
+    "updatedAt": "2026-09-12T08:30:00.000Z"
+  },
+  {
     "id": "bk_1789200763668_obsrb",
     "reference": "BK-2026-AE42",
     "bookingType": "Umrah Plus",
@@ -4930,86 +5012,6 @@
     },
     "createdAt": "2026-09-12T04:13:29.236Z",
     "updatedAt": "2026-09-12T04:14:39.524Z"
-  },
-  {
-    "id": "bk_demo_101",
-    "reference": "BK-2026-X7M2",
-    "bookingType": "Umrah Plus",
-    "status": "Pending",
-    "customerName": "Sheikh Tariq Mansoor",
-    "customerEmail": "tariq.mansoor@example.com",
-    "customerPhone": "+44 7911 123456",
-    "customerNationality": "British",
-    "customerNotes": "Family pilgrimage with elderly parents. Ground floor or elevator access preferred near Haram.",
-    "startDate": "2026-10-15",
-    "endDate": "2026-10-25",
-    "adultsCount": 4,
-    "infantsCount": 1,
-    "stayDetails": {
-      "makkahStay": {
-        "hotelCategory": "5 Star",
-        "nights": 6,
-        "rooms": 2
-      },
-      "madinahStay": {
-        "included": true,
-        "hotelCategory": "5 Star",
-        "nights": 4,
-        "rooms": 2
-      }
-    },
-    "transportDetails": {
-      "selectedVehicle": "GMC Yukon XL / Luxury Suburban",
-      "route": "Route 01 (Jeddah ➔ Makkah ➔ Madinah ➔ Madinah Airport)",
-      "singleRoutes": null
-    },
-    "ziyaratDetails": {
-      "vehicle": "Luxury GMC Yukon XL",
-      "guidePreference": "with",
-      "selectedRoutes": [
-        {
-          "id": "makkah-prophetic-heritage",
-          "name": "Prophetic Heritage & Early Revelations",
-          "city": "Makkah",
-          "duration": "4 - 5 Hours",
-          "sites": [
-            "Cave of Hira (Jabal al-Nour)",
-            "Cave of Thawr",
-            "Jannat al-Mu'alla Cemetery",
-            "Masjid Al-Jinn"
-          ]
-        },
-        {
-          "id": "madinah-battle-of-uhud",
-          "name": "Uhud Martyrs & Battlefields",
-          "city": "Madinah",
-          "duration": "3 - 4 Hours",
-          "sites": [
-            "Mount Uhud & Archers' Hill",
-            "Uhud Martyrs' Cemetery",
-            "Masjid Quba",
-            "Masjid al-Qiblatayn"
-          ]
-        }
-      ]
-    },
-    "leadPassengerDetails": {
-      "fullName": "Sheikh Tariq Mansoor",
-      "nationality": "British",
-      "phoneCode": "+44",
-      "phone": "7911 123456",
-      "email": "tariq.mansoor@example.com",
-      "notes": "Family pilgrimage with elderly parents. Ground floor or elevator access preferred near Haram."
-    },
-    "fullSubmissionPayload": {
-      "selectedUpsells": [
-        "Private VIP Meet & Assist at King Abdulaziz Airport",
-        "Rawdah Permit Support & Guidance",
-        "Zamzam 5L Canister Delivery to Departure Airport"
-      ]
-    },
-    "createdAt": "2026-09-12T08:30:00.000Z",
-    "updatedAt": "2026-09-12T08:30:00.000Z"
   },
   {
     "id": "bk_demo_102",

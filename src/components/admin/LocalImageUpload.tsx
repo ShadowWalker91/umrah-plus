@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { ImagePlus, Trash } from 'lucide-react'
+import { ImagePlus, Lock, Trash } from 'lucide-react'
+import { useRole } from '@/components/admin/RoleProvider'
 
 interface LocalImageUploadProps {
   onChange: (value: string | string[]) => void
@@ -20,6 +21,8 @@ export default function LocalImageUpload({
   onRemove
 }: LocalImageUploadProps) {
   const [isMounted, setIsMounted] = useState(false)
+  const { role } = useRole()
+  const canEditImages = role === 'admin'
 
   useEffect(() => {
     setIsMounted(true)
@@ -72,15 +75,17 @@ export default function LocalImageUpload({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           {imagesToRender.map((url, index) => (
             <div key={index} className="relative w-full h-[200px] rounded-xl overflow-hidden border border-gray-200 group bg-gray-100">
-              <div className="z-10 absolute top-2 right-2">
-                <button
-                  type="button"
-                  onClick={() => handleRemove(url)}
-                  className="bg-red-500 text-white p-1 rounded-full shadow-sm hover:bg-red-600 transition"
-                >
-                  <Trash className="h-4 w-4" />
-                </button>
-              </div>
+              {canEditImages && (
+                <div className="z-10 absolute top-2 right-2">
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(url)}
+                    className="bg-red-500 text-white p-1 rounded-full shadow-sm hover:bg-red-600 transition"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
               <Image
                 fill
                 className="object-cover"
@@ -93,19 +98,26 @@ export default function LocalImageUpload({
       )}
 
       {/* FILE INPUT BUTTON */}
-      <div className="relative flex items-center justify-center gap-2 w-full p-10 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-500 font-medium cursor-pointer">
-        <input 
-            type="file" 
-            accept="image/*"
-            multiple={multiple}
-            onChange={handleFileChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-        <div className="flex flex-col items-center gap-2 pointer-events-none">
-            <ImagePlus className="h-6 w-6 text-gray-400" />
-            <span>{multiple ? 'Select Files (Local)' : 'Select File (Local)'}</span>
+      {canEditImages ? (
+        <div className="relative flex items-center justify-center gap-2 w-full p-10 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 transition text-gray-500 font-medium cursor-pointer">
+          <input
+              type="file"
+              accept="image/*"
+              multiple={multiple}
+              onChange={handleFileChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <div className="flex flex-col items-center gap-2 pointer-events-none">
+              <ImagePlus className="h-6 w-6 text-gray-400" />
+              <span>{multiple ? 'Select Files (Local)' : 'Select File (Local)'}</span>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex items-center justify-center gap-2 w-full p-6 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 text-gray-400 text-sm font-medium">
+          <Lock className="h-4 w-4" />
+          <span>Only the admin can add or remove images.</span>
+        </div>
+      )}
       <p className="text-xs text-gray-400 text-center">
         Note: Images are saved locally as text (Base64). Please use small images to avoid database lag.
       </p>

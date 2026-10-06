@@ -172,6 +172,14 @@
   justify-content: center;
 }
 
+/* Snap section whose content (e.g. the package tier grid) may need more room
+   than a single viewport: grows with its content instead of clipping it,
+   while still filling the screen when there is room. */
+.snap-section-auto {
+  height: auto;
+  min-height: 100vh;
+}
+
 /* Hide Scrollbar for cleaner look */
 .snap-container::-webkit-scrollbar {
   width: 0px;

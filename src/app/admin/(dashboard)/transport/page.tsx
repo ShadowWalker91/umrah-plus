@@ -24,15 +24,19 @@ import {
   addPointToPointRoute
 } from '@/app/actions/transportActions';
 import { useRole } from '@/components/admin/RoleProvider';
+import { useToast } from '@/components/admin/ToastProvider';
+import ErrorBanner from '@/components/admin/ErrorBanner';
 
 export default function TransportAdminPage() {
   const { role } = useRole();
   const isAdmin = role === 'admin';
+  const { toast } = useToast();
 
   const [data, setData] = useState<TransportStoreData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'fleet' | 'fixed' | 'pointToPoint'>('fixed');
 
   // Add vehicle modal state
@@ -126,7 +130,7 @@ export default function TransportAdminPage() {
 
   const handleCreateVehicle = () => {
     if (!data || !newVehicle.name) {
-      alert('Please enter a vehicle name.');
+      toast('Please enter a vehicle name.', 'info');
       return;
     }
     const id = newVehicle.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -164,7 +168,7 @@ export default function TransportAdminPage() {
     if (!newRouteName.trim() || !data) return;
     const trimmed = newRouteName.trim();
     if (data.pointToPointRoutesList.includes(trimmed)) {
-      alert('This route already exists.');
+      toast('This route already exists.', 'info');
       return;
     }
 
@@ -188,17 +192,23 @@ export default function TransportAdminPage() {
 
   const handleSaveAll = async () => {
     if (!data) return;
+    setSaveError(null);
     try {
       setSaving(true);
       const res = await updateTransportRates(data);
       if (res.success) {
         setSaveSuccess(true);
+        toast('Transport rates saved.', 'success');
         setTimeout(() => setSaveSuccess(false), 3000);
       } else {
-        alert('Failed to save changes: ' + (res.message || 'Unknown error'));
+        const message = res.message || 'Unknown error';
+        setSaveError(message);
+        toast(message, 'error');
       }
     } catch (err: any) {
-      alert('Error saving rates: ' + err.message);
+      const message = 'Error saving rates: ' + err.message;
+      setSaveError(message);
+      toast(message, 'error');
     } finally {
       setSaving(false);
     }
@@ -271,6 +281,10 @@ export default function TransportAdminPage() {
           </button>
         </div>
       </div>
+
+      {saveError && (
+        <ErrorBanner message={saveError} title="Could not save" onDismiss={() => setSaveError(null)} />
+      )}
 
       {/* Tabs Bar */}
       <div className="flex border-b border-gray-200 gap-4 sm:gap-8 text-sm font-semibold">

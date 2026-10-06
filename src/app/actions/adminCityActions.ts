@@ -4,7 +4,19 @@ import { db } from '@/lib/db/';
 import { cities } from '@/lib/db/schema/cities';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { requireAdmin, requireMember } from '@/lib/auth/guards';
+import { requireAdmin, requireMember, AUTH_MESSAGES } from '@/lib/auth/guards';
+import { mediaListChanged } from '@/lib/auth/imagePolicy';
+
+type CityMediaSource = { thingsToDo?: unknown };
+
+/** Images carried by a city: the things-to-do photo per entry. */
+function collectCityMedia(source: CityMediaSource): string[] {
+  if (!Array.isArray(source.thingsToDo)) return [];
+  return (source.thingsToDo as { image?: unknown }[])
+    .map((item) => item?.image)
+    .filter((value): value is string => typeof value === 'string' && !!value);
+}
+
 
 // 1. Fetch all cities for the data table
 export async function getAdminCities() {
@@ -35,7 +47,7 @@ export async function getAdminCityById(id: string) {
 // 3. Create a new city
 export async function createAdminCity(formData: any) {
   try {
-    const guard = await requireAdmin();
+    const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly);
     if (!guard.ok) return { success: false, error: guard.error };
 
     // Generate a clean slug from the name (e.g., "Al Ula" -> "al-ula")
@@ -62,7 +74,22 @@ export async function updateAdminCity(formData: any) {
     if (!guard.ok) return { success: false, error: guard.error };
 
     const { id, ...data } = formData;
-    
+
+    // Editors may edit city content, but images are admin-only.
+    if (guard.user.role !== 'admin') {
+      const [existing] = await db
+        .select({ thingsToDo: cities.thingsToDo })
+        .from(cities)
+        .where(eq(cities.id, id))
+        .limit(1);
+
+      if (!existing) return { success: false, error: 'City not found.' };
+
+      if (mediaListChanged(collectCityMedia(existing), collectCityMedia(data))) {
+        return { success: false, error: AUTH_MESSAGES.imageAdminOnly };
+      }
+    }
+
     // Regenerate slug in case the name changed
     const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
@@ -88,7 +115,7 @@ export async function updateAdminCity(formData: any) {
 // 5. Delete a city
 export async function deleteAdminCity(id: string) {
   try {
-    const guard = await requireAdmin();
+    const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly);
     if (!guard.ok) return { success: false, error: guard.error };
 
     await db.delete(cities).where(eq(cities.id, id));
