@@ -28,6 +28,7 @@ import {
 import Image from 'next/image';
 import GooglePlacesInput from './GooglePlacesInput';
 import DateInputField from './DateInputField';
+import ScheduleItineraryDates from './ScheduleItineraryDates';
 import { formatDateDDMMYYYY } from '@/lib/utils';
 import { getTransportData, TransportStoreData } from '@/app/actions/transportActions';
 import {
@@ -434,11 +435,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   if (isTransport && step === 1) {
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Service Mode & Group Size
-          </span>
-        </div>
 
         {/* 1. Mode Cards */}
         <div className="mb-8">
@@ -621,11 +617,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Route Selection
-          </span>
-        </div>
 
         {/* Tabbed Route Selection: the active tab merges seamlessly into the
             gold-bordered options panel below (connected-tab pattern) */}
@@ -820,11 +811,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Choose Private Vehicle & Fleet Setup
-          </span>
-        </div>
 
         {/* Fleet Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -997,11 +983,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Select Your Ziyarat Routes
-          </span>
-        </div>
 
         {/* Mobile/Tablet Quick Jump Pills */}
         <div className="flex lg:hidden justify-center items-center gap-2 mb-6">
@@ -1229,11 +1210,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Select Your Premium Fleet
-          </span>
-        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {BUILDER_FLEET.map(v => {
@@ -1334,124 +1310,17 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   }
 
   // =============================================================
-  // ZIYARAT FLOW - STEP 3 (Or Step 7 in Umrah Plus): SCHEDULE ITINERARY DATES
+  // ZIYARAT FLOW - STEP 3 (Or Step 6 in Umrah Plus): SCHEDULE ITINERARY DATES
   // =============================================================
   const isZiyaratDateStep = (isZiyarat && step === 3) || (isUmrahPlus && step === 6);
   if (isZiyaratDateStep) {
-    const todayStr = new Date().toISOString().split('T')[0];
-
     return (
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Schedule Itinerary Dates
-          </span>
-        </div>
-
-        {/* 2. Schedule Date for Each Selected Itinerary */}
-        <div className="bg-[#0c0d10] border border-[#c5a059]/40 rounded-2xl p-5 sm:p-6 mb-8 shadow-[0_0_30px_rgba(197,160,89,0.08)]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4 mb-4">
-            <div>
-              <h4 className="text-sm font-bold tracking-wider text-[#c5a059] uppercase flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#c5a059]" />
-                Schedule Date for Each Selected Itinerary ({state.selectedZiyaratRoutes.length})
-              </h4>
-              <p className="text-xs text-gray-400 font-light mt-1">
-                Please specify your planned travel date for each holy tour. Past dates are disabled.
-              </p>
-            </div>
-            <span className="text-[11px] text-amber-400/90 font-medium bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
-              Must be today or future date
-            </span>
-          </div>
-
-          {state.selectedZiyaratRoutes.length === 0 ? (
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs text-center">
-              No itineraries selected yet. Please go back to Step 1 to select your Ziyarat routes.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {state.selectedZiyaratRoutes.map(rId => {
-                const r = ZIYARAT_ROUTES.find(route => route.id === rId);
-                if (!r) return null;
-                const curDate = state.selectedZiyaratRouteDates?.[rId] || '';
-                const isDateValid = Boolean(curDate && curDate >= todayStr);
-                const pEntry = ZIYARAT_PRICES[rId];
-                const selectedFleetId = state.selectedVehicle || 'sedan';
-                const fleetQty = getZiyaratAllocatedQuantity(selectedFleetId, isUmrahPlus, state.adultsCount, state.childrenCount, state.passengerCount);
-                const fareNum = getZiyaratRouteFare(rId, selectedFleetId);
-                const routeFare = fareNum !== null
-                  ? `SAR ${fareNum * fleetQty}`
-                  : (pEntry?.custom ? 'Custom Plan' : '');
-
-                let cityBorder = 'border-l-emerald-500';
-                if (r.cityId === 'mak') cityBorder = 'border-l-blue-500';
-                if (r.cityId === 'taif') cityBorder = 'border-l-purple-500';
-
-                return (
-                  <div
-                    key={rId}
-                    className={`p-4 rounded-xl border border-l-4 ${cityBorder} transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${isDateValid
-                      ? 'bg-[#131c2a]/90 border-white/10'
-                      : 'bg-[#1a1c22] border-[#c5a059]/60 shadow-[0_0_15px_rgba(197,160,89,0.12)] ring-1 ring-[#c5a059]/30'
-                      }`}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="text-[10px] uppercase font-bold text-[#c5a059] tracking-wider">
-                          {r.cityName} • {r.duration}
-                        </span>
-                        {routeFare && (
-                          <span className="text-[11px] font-bold text-[#f9e8a2] bg-black/40 border border-[#c5a059]/30 px-2 py-0.5 rounded">
-                            {routeFare}
-                          </span>
-                        )}
-                      </div>
-                      <h5 className="text-white font-bold text-sm leading-snug">{r.name}</h5>
-                      <span className="text-[11px] text-gray-400 font-light block mt-0.5">
-                        {r.siteIds.length} Sacred Sites Included
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col sm:items-end gap-1.5 shrink-0">
-                      <label
-                        htmlFor={`date-input-${rId}`}
-                        className="text-[11px] text-gray-300 uppercase tracking-wider font-semibold flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <span>Travel Date *</span>
-                        {isDateValid ? (
-                          <span className="text-emerald-400 font-bold text-[10px] flex items-center gap-0.5">
-                            <Check className="w-3 h-3" /> Confirmed
-                          </span>
-                        ) : (
-                          <span className="text-amber-400 font-bold text-[10px]">Required</span>
-                        )}
-                      </label>
-                      <DateInputField
-                        id={`date-input-${rId}`}
-                        min={todayStr}
-                        required
-                        value={curDate}
-                        placeholder="DD.MM.YYYY"
-                        isValid={isDateValid}
-                        hasError={!isDateValid}
-                        onChange={(isoVal) => {
-                          updateState({
-                            selectedZiyaratRouteDates: {
-                              ...(state.selectedZiyaratRouteDates || {}),
-                              [rId]: isoVal
-                            }
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </motion.div>
+      <ScheduleItineraryDates
+        step={step}
+        totalSteps={totalSteps}
+        state={state}
+        updateState={updateState}
+      />
     );
   }
 
@@ -1499,11 +1368,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step 1 of {totalSteps} • Stay & Guests
-          </span>
-        </div>
 
         {/* 1. GUESTS (Pilgrims only - Infants completely removed) */}
         <div className="bg-[#0c0d10] border border-white/5 rounded-2xl p-5 sm:p-6 mb-6">
@@ -1898,11 +1762,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • {transportStepLabel}
-          </span>
-        </div>
 
         {/* Skip Transportation Option Banner (Step 2 only) */}
         {step === 2 && (
@@ -2092,7 +1951,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           <div className="space-y-3">
                             {state.fixedRouteLegs.map((leg, idx) => (
                               <div key={leg.id || idx} className="p-4 rounded-xl bg-[#14161d] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                   <span className="text-[10px] uppercase font-bold text-[#c5a059] tracking-wider block mb-0.5">
                                     Leg {idx + 1}
                                   </span>
@@ -2160,11 +2019,11 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       {/* Google Places Autocomplete: Pickup & Drop-off (Step 4 only) */}
                       {step === 4 && (
                         <div className="space-y-4">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-3 flex-wrap">
                             <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-[#c5a059]" />
+                              <MapPin className="w-4 h-4 text-[#c5a059] shrink-0" />
                               <h4 className="text-xs uppercase tracking-widest text-white font-bold">
-                                Pickup & Drop-off Coordinates (Google Autocomplete)
+                                Pickup &amp; Drop-off Coordinates (Google Autocomplete)
                               </h4>
                             </div>
                             <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
@@ -2204,10 +2063,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                                 onChange={(isoVal) => updateState({ pointToPointPickupDate: isoVal })}
                               />
                             </div>
-                            <div
-                              onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
-                              className="cursor-pointer"
-                            >
+                      <div
+                        onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                        className="cursor-pointer min-w-0"
+                      >
                               <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block cursor-pointer">
                                 Pickup Time *
                               </label>
@@ -2400,64 +2259,111 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // =============================================================
   const isTransportScheduleStep = (isTransport && step === 4) || (isUmrahPlus && step === 7);
   if (isTransportScheduleStep) {
+    // Day suggestion anchor: first confirmed leg date, else the Makkah stay.
+    const anchorStr =
+      state.fixedRouteLegs.find(l => l.date)?.date ||
+      state.makkahCheckInDate ||
+      state.pointToPointPickupDate ||
+      todayStr;
+    const suggestedDay = (idx: number) => {
+      const d = new Date(`${anchorStr}T00:00:00`);
+      if (!Number.isNaN(d.getTime())) d.setDate(d.getDate() + idx);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return `${formatDateDDMMYYYY(iso)} (Day ${idx + 1})`;
+    };
+    const flightValid = (f?: string) => /^[A-Za-z]{2,3}-?\d{1,4}(\s*\/.*)?$/.test((f || '').trim());
+    const legComplete = (leg: TransportLeg) =>
+      Boolean(leg.date && leg.time && (leg.pickupLocation || '').trim() && (leg.dropoffLocation || '').trim());
+    const firstPendingIdx = state.fixedRouteLegs.findIndex(l => !legComplete(l));
+
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Route Schedule & Pickup Locations
-          </span>
+        {/* Step subtitle from the S4 design */}
+        <div className="text-center mb-6 pb-4 border-b border-white/10">
+          <p className="text-sm sm:text-base font-playfair italic text-[#e6c987]">
+            Bismillahi-r-Rahmani-r-Rahim — Your Sacred Route Awaits
+          </p>
+          <p className="text-xs text-gray-400 font-light mt-1">
+            We dispatch our chauffeurs according to your schedule so you can travel in peace.
+          </p>
         </div>
 
         {/* -------------------------------------------------------------
             TRANSPORT FLOW STEP 4: FIXED ROUTE SCHEDULE & LOCATIONS
         ------------------------------------------------------------- */}
         {state.transportMode === 'fixed' && (
-          <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 mb-8 shadow-xl">
+          <div className="bg-[#0c0d10] border border-white/10 rounded-2xl p-5 md:p-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-yellow-400 shrink-0" />
+                <Clock className="w-4 h-4 text-[#c5a059] shrink-0" />
                 <h4 className="text-sm uppercase tracking-widest text-white font-bold">
-                  Travel Dates & Pickup Times for Each Route Stop
+                  Travel Dates &amp; Pickup Times for Each Route Stop
                 </h4>
               </div>
-              <span className="text-[11px] text-yellow-400 italic"></span>
+              <span className="text-[10px] uppercase tracking-wider text-gray-400">
+                {state.fixedRouteLegs.filter(legComplete).length}/{state.fixedRouteLegs.length} stops scheduled
+              </span>
             </div>
 
             <p className="text-xs text-gray-400 font-light mb-6">
-              Our chauffeur dispatches according to each stop's schedule. Please specify your travel date, pickup time, hotel locations, and flight numbers for airport transfers.
+              Our chauffeur dispatches according to each stop&rsquo;s schedule. Please specify your travel date,
+              pickup time, hotel locations, and flight numbers for airport transfers.
             </p>
 
             <div className="space-y-5">
               {state.fixedRouteLegs.map((leg, index) => {
-                const hasAirport = leg.from.toLowerCase().includes('airport') || leg.to.toLowerCase().includes('airport') || (leg.label && leg.label.toLowerCase().includes('airport'));
+                const hasAirport =
+                  leg.from.toLowerCase().includes('airport') ||
+                  leg.to.toLowerCase().includes('airport') ||
+                  (leg.label && leg.label.toLowerCase().includes('airport'));
+                const complete = legComplete(leg);
+                const active = !complete && (firstPendingIdx === -1 || index <= firstPendingIdx);
+                const hasPickup = Boolean((leg.pickupLocation || '').trim());
+                const isHotelStop = leg.from.toLowerCase().includes('hotel');
+                const fValid = flightValid(leg.flightNo);
 
                 return (
                   <div
                     key={leg.id || index}
-                    className="p-4 sm:p-5 rounded-xl border border-white/10 bg-[#1a1c22] space-y-4"
+                    className={`p-4 sm:p-5 rounded-xl border space-y-4 transition-all ${
+                      complete
+                        ? 'border-emerald-600/50 bg-emerald-950/20'
+                        : active
+                          ? 'border-[#c5a059] bg-[#1a1c22] ring-1 ring-[#c5a059]/30 shadow-[0_0_15px_rgba(197,160,89,0.12)]'
+                          : 'border-white/10 bg-[#12141a]'
+                    }`}
                   >
                     {/* Leg Header with Badge & Route */}
-                    <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-3 flex-wrap">
+                    <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3 flex-wrap">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-full bg-[#c5a059]/20 text-[#c5a059] flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-[#c5a059] text-black flex items-center justify-center font-bold text-xs shrink-0">
                           {index + 1}
                         </div>
-                        <div className="text-xs sm:text-sm font-bold text-amber-300 flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-amber-500/20">
-                          <span className="text-yellow-300 font-extrabold">{leg.from}</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-amber-400 font-bold shrink-0" />
-                          <span className="text-yellow-300 font-extrabold">{leg.to}</span>
+                        <div className="text-xs sm:text-sm font-bold flex flex-wrap items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-[#c5a059]/30 min-w-0 max-w-full">
+                          <span className="text-[#f3d38a] font-extrabold">{leg.from}</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#c5a059] font-bold shrink-0" />
+                          <span className="text-[#f3d38a] font-extrabold">{leg.to}</span>
                         </div>
                       </div>
-                      <span className="text-[11px] text-gray-400 font-light">
-                        {leg.label}
-                      </span>
+                      <div className="flex items-center gap-2 flex-wrap justify-end min-w-0">
+                        <span className="text-[11px] text-gray-400 font-light">{leg.label}</span>
+                        {complete ? (
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded flex items-center gap-1">
+                            <Check className="w-3 h-3" /> Completed
+                          </span>
+                        ) : active ? (
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#f3d38a] px-2 py-0.5 rounded">
+                            In Progress
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
 
                     {/* Row 1: Travel Date, Pickup Time, and Flight No (if airport) */}
                     <div className={`grid grid-cols-1 sm:grid-cols-2 ${hasAirport ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-3.5`}>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-amber-300/90 block mb-1 font-semibold flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-yellow-400" />
+                      <div className="min-w-0">
+                        <label className="text-[10px] uppercase tracking-wider text-[#c5a059] block mb-1 font-semibold flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#c5a059]" />
                           Travel Date *
                         </label>
                         <DateInputField
@@ -2467,14 +2373,20 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           placeholder="DD.MM.YYYY"
                           onChange={(isoVal) => handleLegDateChange(index, isoVal)}
                         />
+                        {!leg.date && (
+                          <span className="text-[10px] text-amber-300/90 flex items-center gap-1 mt-1">
+                            <Sparkles className="w-3 h-3 text-amber-400" />
+                            Suggested: {suggestedDay(index)}
+                          </span>
+                        )}
                       </div>
 
                       <div
                         onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
-                        className="cursor-pointer"
+                        className="cursor-pointer min-w-0"
                       >
-                        <label className="text-[10px] uppercase tracking-wider text-amber-300/90 block mb-1 font-semibold flex items-center gap-1.5 cursor-pointer">
-                          <Clock className="w-3.5 h-3.5 text-yellow-400" />
+                        <label className="text-[10px] uppercase tracking-wider text-[#c5a059] block mb-1 font-semibold flex items-center gap-1.5 cursor-pointer">
+                          <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
                           Pickup Time *
                         </label>
                         <input
@@ -2488,9 +2400,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       </div>
 
                       {hasAirport && (
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-amber-300/90 block mb-1 font-semibold flex items-center gap-1.5">
-                            <Plane className="w-3.5 h-3.5 text-yellow-400" />
+                        <div className="min-w-0">
+                          <label className="text-[10px] uppercase tracking-wider text-[#c5a059] block mb-1 font-semibold flex items-center gap-1.5">
+                            <Plane className="w-3.5 h-3.5 text-[#c5a059]" />
                             Flight No. / Terminal (Airport) *
                           </label>
                           <input
@@ -2500,20 +2412,41 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                             onChange={(e) => handleLegFlightChange(index, e.target.value)}
                             className="w-full bg-[#12141a] border border-white/15 rounded-xl px-3.5 py-2.5 text-white text-xs outline-none focus:border-[#c5a059]"
                           />
+                          {fValid ? (
+                            <span className="text-[10px] font-bold bg-emerald-600/15 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded inline-flex items-center gap-1 mt-1">
+                              <Check className="w-3 h-3" /> {(leg.flightNo || '').split('/')[0].trim()} Validated
+                            </span>
+                          ) : !leg.flightNo ? (
+                            <span className="text-[10px] text-amber-300/90 inline-flex items-center gap-1 mt-1">
+                              <Info className="w-3 h-3 text-amber-400" /> Need flight info helper?
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-amber-300/90 inline-flex items-center gap-1 mt-1">
+                              <Info className="w-3 h-3 text-amber-400" /> Format: SV-124 / Terminal 1
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
 
                     {/* Row 2: Pickup Hotel / Location & Drop-off Hotel / Location */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
-                      <GooglePlacesInput
-                        id={`leg-pickup-${index}`}
-                        label="Pickup Hotel / Location"
-                        placeholder={leg.from.toLowerCase().includes('airport') ? 'e.g. King Abdulaziz Airport Terminal 1' : 'e.g. Hotel in Makkah / Madinah'}
-                        required
-                        value={leg.pickupLocation || ''}
-                        onChange={(val) => handleLegPickupChange(index, val)}
-                      />
+                      <div className="min-w-0">
+                        <GooglePlacesInput
+                          id={`leg-pickup-${index}`}
+                          label="Pickup Hotel / Location"
+                          placeholder={leg.from.toLowerCase().includes('airport') ? 'e.g. King Abdulaziz Airport Terminal 1' : 'e.g. Hotel in Makkah / Madinah'}
+                          required
+                          value={leg.pickupLocation || ''}
+                          onChange={(val) => handleLegPickupChange(index, val)}
+                        />
+                        {!hasPickup && isHotelStop && (
+                          <span className="text-[10px] text-[#f3d38a] flex items-center gap-1 mt-1">
+                            <MapPin className="w-3 h-3 text-[#c5a059]" />
+                            From Your Accommodation — pickup defaults to your selected hotel
+                          </span>
+                        )}
+                      </div>
 
                       <GooglePlacesInput
                         id={`leg-dropoff-${index}`}
@@ -2535,12 +2468,12 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
             TRANSPORT FLOW STEP 4: POINT-TO-POINT COORDINATES
         ------------------------------------------------------------- */}
         {state.transportMode === 'pointToPoint' && (
-          <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 mb-8 space-y-5 shadow-xl">
+          <div className="bg-[#0c0d10] border border-white/10 rounded-2xl p-5 md:p-6 space-y-5 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#c5a059]" />
                 <h4 className="text-sm uppercase tracking-widest text-white font-bold">
-                  Pickup & Drop-off Coordinates
+                  Pickup &amp; Drop-off Coordinates
                 </h4>
               </div>
               <div className="flex items-center gap-2">
@@ -2559,14 +2492,22 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
             {/* Pickup & Drop-off Hotel / Locations */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GooglePlacesInput
-                id="pickup-location-input"
-                label="Pickup Hotel / Location"
-                placeholder="e.g. King Abdulaziz Airport Terminal 1 / Hotel Name"
-                required
-                value={state.pointToPointPickupLocation || ''}
-                onChange={(val) => updateState({ pointToPointPickupLocation: val })}
-              />
+              <div>
+                <GooglePlacesInput
+                  id="pickup-location-input"
+                  label="Pickup Hotel / Location"
+                  placeholder="e.g. King Abdulaziz Airport Terminal 1 / Hotel Name"
+                  required
+                  value={state.pointToPointPickupLocation || ''}
+                  onChange={(val) => updateState({ pointToPointPickupLocation: val })}
+                />
+                {!state.pointToPointPickupLocation && (
+                  <span className="text-[10px] text-[#f3d38a] flex items-center gap-1 mt-1">
+                    <MapPin className="w-3 h-3 text-[#c5a059]" />
+                    From Your Accommodation — pickup defaults to your selected hotel
+                  </span>
+                )}
+              </div>
 
               <GooglePlacesInput
                 id="dropoff-location-input"
@@ -2582,7 +2523,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
                 <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-2 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-yellow-400" />
+                  <Calendar className="w-4 h-4 text-[#c5a059]" />
                   Pickup Date *
                 </label>
                 <DateInputField
@@ -2593,6 +2534,12 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   className="py-3 px-4 text-sm"
                   onChange={(isoVal) => updateState({ pointToPointPickupDate: isoVal })}
                 />
+                {!state.pointToPointPickupDate && (
+                  <span className="text-[10px] text-amber-300/90 flex items-center gap-1 mt-1">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    Suggested: {suggestedDay(0)}
+                  </span>
+                )}
               </div>
 
               <div
@@ -2600,7 +2547,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 className="cursor-pointer"
               >
                 <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-2 flex items-center gap-1.5 cursor-pointer">
-                  <Clock className="w-4 h-4 text-yellow-400" />
+                  <Clock className="w-4 h-4 text-[#c5a059]" />
                   Pickup Time *
                 </label>
                 <input
@@ -2616,7 +2563,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
               <div>
                 <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-2 flex items-center gap-1.5">
-                  <Plane className="w-4 h-4 text-yellow-400" />
+                  <Plane className="w-4 h-4 text-[#c5a059]" />
                   {(state.pointToPointRoute || '').toLowerCase().includes('airport') || (state.pointToPointPickupLocation || '').toLowerCase().includes('airport') || (state.pointToPointDropoffLocation || '').toLowerCase().includes('airport')
                     ? 'Flight No. / Terminal (Required for Airport) *'
                     : 'Flight No. / Terminal (Optional)'}
@@ -2630,6 +2577,17 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     className="w-full bg-[#12141a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#c5a059]"
                   />
                 </div>
+                {state.pointToPointFlightNo && (
+                  flightValid(state.pointToPointFlightNo) ? (
+                    <span className="text-[10px] font-bold bg-emerald-600/15 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded inline-flex items-center gap-1 mt-1">
+                      <Check className="w-3 h-3" /> {(state.pointToPointFlightNo || '').split('/')[0].trim()} Validated
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-amber-300/90 inline-flex items-center gap-1 mt-1">
+                      <Info className="w-3 h-3 text-amber-400" /> Format: SV-124 / Terminal 1
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -2644,24 +2602,25 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
   // FINAL STEP (STEP 5 for Transport, STEP 4 for Ziyarat, etc.): LEAD PASSENGER DETAILS
   // =============================================================
   if (step === totalSteps) {
+    const phoneDigits = (state.leadDetails.phone || '').replace(/\D/g, '');
+    const whatsappOk = /^[0-9]{7,15}$/.test(phoneDigits);
+
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <span className="text-xs text-[#c5a059] font-bold tracking-wider uppercase bg-[#c5a059]/10 px-3.5 py-1.5 rounded-full border border-[#c5a059]/25 shadow-sm">
-            Step {step} of {totalSteps} • Lead Passenger Details
-          </span>
-        </div>
-
-        {/* -------------------------------------------------------------
-            LEAD PASSENGER DETAILS
-        ------------------------------------------------------------- */}
-        <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 space-y-6 shadow-xl">
-          <div className="pb-3 border-b border-white/10">
-            <h4 className="text-sm uppercase tracking-widest text-white font-bold flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#c5a059]" />
-              Lead Passenger Information
-            </h4>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-5 items-start">
+          {/* -------------------------------------------------------------
+              LEAD PASSENGER DETAILS
+          ------------------------------------------------------------- */}
+          <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 space-y-6 shadow-xl">
+            <div className="pb-3 border-b border-white/10">
+              <h4 className="text-sm uppercase tracking-widest text-white font-bold flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#c5a059]" />
+                Lead Passenger Information
+              </h4>
+              <p className="text-xs text-gray-400 font-light mt-1">
+                Step {step} of {totalSteps} — we&rsquo;ll use these details to dispatch and confirm your booking.
+              </p>
+            </div>
           <div>
             <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
               Full Name *
@@ -2864,6 +2823,77 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors resize-none text-sm font-light"
             />
           </div>
+        </div>
+
+        {/* -------------------------------------------------------------
+            RIGHT RAIL: WHATSAPP + FINAL CONFIRMATION
+        ------------------------------------------------------------- */}
+        <aside className="bg-[#0c0d10] border border-[#c5a059]/30 rounded-2xl p-5 space-y-4 shadow-[0_0_25px_rgba(197,160,89,0.1)] lg:sticky lg:top-4">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-400">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+              </span>
+              <h5 className="text-xs uppercase tracking-widest text-white font-bold">WhatsApp Updates</h5>
+            </div>
+
+            {whatsappOk ? (
+              <span className="text-[11px] font-bold bg-emerald-600/15 border border-emerald-500/40 text-emerald-300 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                {state.leadDetails.phoneCode} {state.leadDetails.phone} — WhatsApp Verified
+              </span>
+            ) : (
+              <span className="text-[11px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5" />
+                Enter a valid WhatsApp number
+              </span>
+            )}
+
+            <label className="flex items-start gap-2.5 cursor-pointer group text-xs text-gray-300 font-light leading-relaxed">
+              <input
+                type="checkbox"
+                checked={state.whatsappOptIn !== false}
+                onChange={(e) => updateState({ whatsappOptIn: e.target.checked })}
+                className="mt-0.5 w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
+              />
+              <span>
+                Send my trip updates &amp; driver dispatches on WhatsApp
+                <span className="block text-[10px] text-gray-500 mt-0.5">Recommended for real-time coordination.</span>
+              </span>
+            </label>
+
+            <div className="border-t border-white/10 pt-4">
+              <h5 className="text-sm font-playfair text-[#e6c987] mb-1">You&rsquo;re all set!</h5>
+              <p className="text-[11px] text-gray-400 font-light leading-relaxed">
+                Please review your contact details. Your itinerary reference and confirmation will be sent right after submission.
+              </p>
+            </div>
+
+            <label
+              className={`flex items-start gap-2.5 cursor-pointer rounded-xl border p-3.5 transition-all ${
+                state.leadConfirmed
+                  ? 'border-[#c5a059] bg-[#c5a059]/10'
+                  : 'border-white/10 bg-black/20 hover:border-[#c5a059]/50'
+              }`}
+            >
+              <input
+                type="checkbox"
+                required
+                checked={state.leadConfirmed}
+                onChange={(e) => updateState({ leadConfirmed: e.target.checked })}
+                className="mt-0.5 w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
+              />
+              <span className="text-xs font-semibold text-white leading-snug">
+                I confirm these lead passenger details are correct
+              </span>
+            </label>
+
+            <div className="text-[10px] uppercase tracking-widest text-gray-400 border-t border-white/10 pt-3 flex items-center justify-between">
+              <span>Est. Total</span>
+              <span className="text-[#f3d38a] font-bold">Shown in bar below</span>
+            </div>
+          </aside>
         </div>
       </motion.div>
     );

@@ -74,6 +74,7 @@ export interface BookingInquiryPayload {
 
 export async function sendBookingInquiry(payload: BookingInquiryPayload) {
   let bookingId: string | undefined;
+  let reference: string | undefined;
 
   try {
     console.log("👉 NEW BOOKING INQUIRY RECEIVED:", JSON.stringify(payload, null, 2));
@@ -111,6 +112,7 @@ export async function sendBookingInquiry(payload: BookingInquiryPayload) {
       });
       if (saveRes && saveRes.bookingId) {
         bookingId = saveRes.bookingId;
+        reference = saveRes.reference;
       }
       console.log("✅ Successfully saved booking inquiry to Admin Dashboard! ID:", bookingId);
     } catch (saveErr) {
@@ -293,9 +295,9 @@ export async function sendBookingInquiry(payload: BookingInquiryPayload) {
       }
     }
 
-    return { success: true, bookingId };
+    return { success: true, bookingId, reference };
   } catch (error) {
     console.error("Booking inquiry processing error:", error);
-    return { success: true, bookingId };
+    return { success: true, bookingId, reference };
   }
 }

@@ -3,10 +3,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import StepProgressBar from './StepProgressBar';
 import DynamicQuestionnaire from './DynamicQuestionnaire';
 import ItinerarySummary from './ItinerarySummary';
+import CheckoutBanner from './checkout/CheckoutBanner';
+import StepHeader from './checkout/StepHeader';
+import BlessedSummary from './checkout/BlessedSummary';
+import BottomBar from './checkout/BottomBar';
+import BlessedJourneyOverview from './checkout/BlessedJourneyOverview';
+import TripSummaryScreen from './checkout/TripSummaryScreen';
+import { computeCheckoutTotals, daysUntil, firstJourneyDate } from './checkout/totals';
+import { formatDateDDMMYYYY } from '@/lib/utils';
 import { sendBookingInquiry } from '@/app/actions/sendBookingInquiry';
 import { getTransportData, TransportVehicleConfig } from '@/app/actions/transportActions';
 import {
@@ -208,6 +216,11 @@ export interface BookingState {
   skipTransport?: boolean;
   skipZiyarat?: boolean;
 
+  // Checkout-screen preferences (S4–S6 designs)
+  routeTimeOfDay?: Record<string, 'morning' | 'afternoon'>;
+  whatsappOptIn?: boolean;
+  leadConfirmed?: boolean;
+
   // Lead Details
   leadDetails: {
     fullName: string;
@@ -372,6 +385,9 @@ export default function BookingController({
     selectedUpsells: [],
     selectedZiyaratCities: [],
     skipTransport: !isZiyarat && !isTransport && !isUmrahPlus,
+    routeTimeOfDay: {},
+    whatsappOptIn: true,
+    leadConfirmed: false,
 
     leadDetails: {
       fullName: '',
@@ -991,6 +1007,10 @@ export default function BookingController({
   };
 
   const handleSubmitInquiry = async () => {
+    if (!bookingState.leadConfirmed) {
+      alert('Please confirm that your lead passenger details are correct before submitting.');
+      return;
+    }
     try {
       setIsSubmitting(true);
 
@@ -1185,9 +1205,26 @@ export default function BookingController({
 
       const response = await sendBookingInquiry(payload);
 
-      // Direct user to Thank You page with booking ID if available
+      // Direct user to Thank You page with booking ID, reference and a compact
+      // trip snapshot so the confirmation card can render the verified list.
       if (response && response.bookingId) {
-        router.push(`/booking/thank-you?bookingId=${response.bookingId}`);
+        const qs = new URLSearchParams();
+        qs.set('bookingId', response.bookingId);
+        if (response.reference) qs.set('ref', response.reference);
+        qs.set('pax', String(bookingState.passengerCount || bookingState.adultsCount || 1));
+        const zyRouteIds = (isZiyarat || isUmrahPlus) ? bookingState.selectedZiyaratRoutes : [];
+        if (zyRouteIds.length > 0) {
+          qs.set('routes', String(zyRouteIds.length));
+          const sites = zyRouteIds.reduce((sum, rId) => {
+            const r = ZIYARAT_ROUTES.find(route => route.id === rId);
+            return sum + (r?.siteIds.length || 0);
+          }, 0);
+          if (sites > 0) qs.set('sites', String(sites));
+        }
+        const stayIncluded = type !== 'Transport' && type !== 'Ziyarat';
+        qs.set('stay', stayIncluded ? '1' : '0');
+        qs.set('total', computeCheckoutTotals(bookingState, type).estTotalLabel);
+        router.push(`/booking/thank-you?${qs.toString()}`);
       } else {
         router.push('/booking/thank-you');
       }
@@ -1233,63 +1270,114 @@ export default function BookingController({
     return 'Lead Passenger Details';
   };
 
+  // ── Checkout design (S1–S7) derived values ──────────────────────────
+  const totals = computeCheckoutTotals(bookingState, type);
+
+  const bannerStart = startDate || bookingState.makkahCheckInDate || '';
+  const bannerEnd = endDate || bookingState.makkahCheckOutDate || '';
+  const bannerDates =
+    bannerStart && bannerEnd
+      ? `${formatDateDDMMYYYY(bannerStart)} — ${formatDateDDMMYYYY(bannerEnd)}`
+      : bannerStart
+        ? formatDateDDMMYYYY(bannerStart)
+        : null;
+  const countdownDays = daysUntil(firstJourneyDate(bookingState));
+  const isBlessedSummary = isZiyarat && phase === 'summary';
+
+  const legStop = (s: string) => {
+    if (/\bJED\b/i.test(s)) return 'Jeddah';
+    if (/\bMED\b/i.test(s)) return 'MED';
+    return s.replace(/\s*\(.*?\)/g, '').replace(/\s*(Airport|Hotel|City).*/i, '').trim() || s;
+  };
+  const routeStatusText = (() => {
+    if (bookingState.transportMode === 'fixed' && bookingState.fixedRouteLegs.length > 0) {
+      const legs = bookingState.fixedRouteLegs;
+      const stops = legs.map(l => legStop(l.from));
+      stops.push(legStop(legs[legs.length - 1].to));
+      return Array.from(new Set(stops)).join(' → ');
+    }
+    if (bookingState.transportMode === 'pointToPoint') {
+      return bookingState.pointToPointRoute || null;
+    }
+    return null;
+  })();
+
+  const scheduledRouteCount = (bookingState.selectedZiyaratRoutes || []).filter(
+    rId => bookingState.selectedZiyaratRouteDates?.[rId]
+  ).length;
+  const checkoutChecklist = [
+    bookingState.selectedZiyaratRoutes && bookingState.selectedZiyaratRoutes.length > 0
+      ? `${scheduledRouteCount}/${bookingState.selectedZiyaratRoutes.length} Routes Scheduled`
+      : null,
+    'Pilgrim of Al-Rahman',
+    'Sacred Sites Confirmed',
+    currentStep === totalSteps ? 'Last Stop: Lead Passenger Info' : null,
+  ].filter(Boolean) as string[];
+
+  const summaryBack = () => {
+    setPhase('booking');
+    setCurrentStep(checkoutStartStep - 1);
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="w-full">
+      <CheckoutBanner
+        title={isBlessedSummary ? 'Customize Your Blessed Journey of a Lifetime' : `Customize Your ${type} Journey`}
+        subtitle={isBlessedSummary ? 'Labbaik Allahumma Labbaik' : undefined}
+        dates={bannerDates}
+        countdownDays={countdownDays}
+        countdownNote={isZiyarat ? 'May Allah accept your Ziyarat.' : 'May Allah accept your Umrah.'}
+        variant="ornate"
+      />
+
+      <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 min-w-0 max-w-full">
       {phase === 'summary' ? (
         /* ── Full-page Trip Summary: hand-off between booking & checkout ── */
         <motion.div
           ref={bookingPanelRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full"
+          className="w-full min-w-0"
         >
-          {/* Same inverted gold panel as the checkout steps so the hand-off is seamless */}
-          <div
-            data-theme="checkout"
-            className="bg-[#c5a059] border border-black/25 p-6 md:p-10 rounded-2xl shadow-xl max-w-[80%] mx-auto"
-          >
-            <ItinerarySummary
-              state={bookingState}
-              type={type}
-              ziyaratPkgParams={ziyaratPkgParams}
-              variant="page"
-            />
-            <div className="mt-6 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setPhase('booking');
-                  setCurrentStep(checkoutStartStep - 1);
-                }}
-                className="bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Go Back
-              </button>
-              <button
-                type="button"
-                onClick={() => setPhase('checkout')}
-                className="flex-1 bg-black hover:bg-[#f3d38a] text-[#fdfbf6] hover:text-[#12141a] uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all shadow-[0_4px_14px_rgba(0,0,0,0.25)] cursor-pointer"
-              >
-                Proceed To Checkout <ArrowRight className="w-5 h-5 ml-2" />
-              </button>
-            </div>
+          <div className="bg-[#0c0d10] border border-[#c5a059]/35 p-5 sm:p-8 md:p-10 rounded-2xl shadow-xl">
+            {isZiyarat ? (
+              <BlessedJourneyOverview
+                state={bookingState}
+                type={type}
+                totals={totals}
+                onBack={summaryBack}
+                onProceed={() => setPhase('checkout')}
+              />
+            ) : (
+              <TripSummaryScreen
+                state={bookingState}
+                type={type}
+                ziyaratPkgParams={ziyaratPkgParams}
+                totals={totals}
+                onBack={summaryBack}
+                onProceed={() => setPhase('checkout')}
+              />
+            )}
           </div>
         </motion.div>
       ) : (
       <motion.div
         ref={bookingPanelRef}
         key={phase}
-        data-theme={phase === 'checkout' ? 'checkout' : undefined}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`booking-panel flex-1 p-6 md:p-10 rounded-2xl shadow-xl relative border ${
-          phase === 'checkout'
-            ? 'bg-[#c5a059] border-black/25'
-            : 'bg-[#1a1c22] border-white/5'
-        }`}
+        className="booking-panel flex-1 min-w-0 bg-[#1a1c22] border border-white/5 p-5 sm:p-8 md:p-10 rounded-2xl shadow-xl relative"
       >
-        <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} labelPrefix={phase === 'checkout' ? 'Checkout' : undefined} />
+        {phase === 'checkout' ? (
+          <StepHeader
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            stepName={getStepName()}
+            labelPrefix="Checkout"
+          />
+        ) : (
+          <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
+        )}
 
         <form onSubmit={handleNext}>
           <DynamicQuestionnaire
@@ -1300,71 +1388,54 @@ export default function BookingController({
             onSkipTransport={handleSkipTransport}
           />
 
-          <div className="mt-8 flex flex-wrap sm:flex-nowrap justify-between gap-3 sm:gap-4">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={isSubmitting}
-              className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all flex-1 sm:flex-initial sm:w-1/3 disabled:opacity-50 cursor-pointer ${
-                phase === 'checkout'
-                  ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:bg-black hover:text-[#f3d38a]'
-                  : 'bg-transparent border border-white/20 text-white hover:bg-white/5'
-              }`}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </button>
-
-            {/* Skip Transport button on transport steps 2–4 (Regular Umrah only) */}
-            {(isRegularUmrah && hasTransport && currentStep >= 2 && currentStep <= 4) && (
-              <button
-                type="button"
-                onClick={handleSkipTransport}
-                disabled={isSubmitting}
-                className={`uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all flex-1 sm:flex-initial whitespace-nowrap cursor-pointer ${
-                  phase === 'checkout'
-                    ? 'bg-transparent border-2 border-black/40 text-[#12141a] hover:border-black hover:bg-black hover:text-[#f3d38a]'
-                    : 'bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10'
-                }`}
-              >
-                Skip Transport
-              </button>
-            )}
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`flex-1 sm:flex-auto uppercase tracking-[0.15em] p-4 rounded-xl font-bold text-xs sm:text-sm md:text-base flex items-center justify-center transition-all disabled:opacity-75 cursor-pointer ${
-                phase === 'checkout'
-                  ? 'bg-black text-[#fdfbf6] hover:bg-[#f3d38a] hover:text-[#12141a] shadow-[0_4px_14px_rgba(0,0,0,0.25)]'
-                  : 'bg-[#c5a059] hover:bg-[#d4b57a] text-black shadow-[0_4px_14px_rgba(197,160,89,0.39)]'
-              }`}
-            >
-              {isSubmitting ? (
-                <span className="flex items-center">
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting Request...
-                </span>
-              ) : currentStep === totalSteps ? (
-                'Submit Request'
-              ) : (
-                <>
-                  Continue <ArrowRight className="w-5 h-5 ml-2" />
-                </>
-              )}
-            </button>
-          </div>
+          <BottomBar
+            onBack={handleBack}
+            onNext={() => handleNext()}
+            nextLabel={currentStep === totalSteps ? 'Submit Request' : 'Continue'}
+            backLabel="Go Back"
+            submitting={isSubmitting}
+            priceChip={phase === 'checkout' ? `EST. TOTAL  ${totals.estTotalLabel}` : null}
+            variant={currentStep === totalSteps ? 'submit' : 'default'}
+            middleAction={
+              isRegularUmrah && hasTransport && currentStep >= 2 && currentStep <= 4 ? (
+                <button
+                  type="button"
+                  onClick={handleSkipTransport}
+                  disabled={isSubmitting}
+                  className="w-full sm:w-40 lg:w-44 shrink-0 uppercase tracking-[0.18em] p-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all cursor-pointer bg-transparent border border-white/20 hover:border-[#c5a059] text-gray-300 hover:text-[#c5a059] hover:bg-[#c5a059]/10 disabled:opacity-50"
+                >
+                  Skip Transport
+                </button>
+              ) : null
+            }
+          />
         </form>
       </motion.div>
       )}
 
-      {/* Side Trip Summary — visible during the booking phase only */}
+      {/* Side rail — detailed trip summary while booking, Blessed Summary during checkout */}
       {phase === 'booking' && (
-        <div className="w-full lg:w-80 shrink-0">
+        <div className="w-full xl:w-80 shrink-0 min-w-0">
           <ItinerarySummary
             state={bookingState}
             type={type}
             ziyaratPkgParams={ziyaratPkgParams}
           />
+        </div>
+      )}
+      {phase === 'checkout' && (
+        <div className="w-full xl:w-80 shrink-0 min-w-0">
+          <div className="xl:sticky xl:top-32">
+            <BlessedSummary
+              state={bookingState}
+              type={type}
+              totals={totals}
+              checklist={checkoutChecklist}
+              statusLabel={routeStatusText ? 'Route Schedule Status' : undefined}
+              statusText={routeStatusText || undefined}
+              mapStatus={currentStep === totalSteps ? 'Route Complete' : 'Tracking'}
+            />
+          </div>
         </div>
       )}
 
@@ -1495,6 +1566,7 @@ export default function BookingController({
           </>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

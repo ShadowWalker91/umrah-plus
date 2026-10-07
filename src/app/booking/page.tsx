@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import BookingController from '@/components/booking-engine/BookingController';
-import { formatDateDDMMYYYY } from '@/lib/utils';
 
 // Next.js 15+ App Router approach for SearchParams
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -50,19 +49,6 @@ export default async function BookingPage(props: { searchParams: SearchParams })
             <ArrowLeft size={14} className="text-[#c5a059]" />
             <span>Back to Search Widget</span>
           </Link>
-        </div>
-
-        <div className="mb-10 text-center mt-2">
-          <h1 className="text-3xl md:text-5xl font-playfair italic text-[#c5a059] mb-4">
-            Customize Your {type} Journey
-          </h1>
-          {(start || end) && (
-            <p className="text-gray-400 font-light tracking-wide uppercase text-sm">
-              {start && formatDateDDMMYYYY(start)} 
-              {start && end && ' — '} 
-              {end && formatDateDDMMYYYY(end)}
-            </p>
-          )}
         </div>
 
         <BookingController 

@@ -602,6 +602,14 @@ body.overflow-hidden {
     z-index: 40;
 }
 
+/* Booking panel: let inputs/textareas shrink inside flex & grid tracks so
+   wide steps (route schedule, lead details) never overflow their column. */
+.booking-panel input,
+.booking-panel textarea,
+.booking-panel select {
+    min-width: 0;
+}
+
 .z-node:hover .info-popup {
     opacity: 1;
     visibility: visible;

@@ -168,7 +168,7 @@ export default function GooglePlacesInput({
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className="relative w-full min-w-0">
       {label && (
         <label htmlFor={id} className="text-xs uppercase tracking-widest text-[#c5a059] font-bold block mb-2">
           {label} {required && <span className="text-red-400">*</span>}
