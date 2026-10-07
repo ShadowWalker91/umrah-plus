@@ -2,10 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus, Package, Edit, Trash2, MapPin, Clock } from 'lucide-react';
 import { getAdminExplorePackages } from '@/app/actions/adminExploreActions';
+import { getCurrentRole } from '@/lib/auth/guards';
 
 export default async function ExploreSaudiPackagesPage() {
   const response = await getAdminExplorePackages();
   const packages = response.success ? response.data : [];
+
+  const isAdmin = ((await getCurrentRole()) === 'admin');
 
   return (
     <div className="p-6 space-y-6">
@@ -15,12 +18,14 @@ export default async function ExploreSaudiPackagesPage() {
           <h1 className="text-2xl font-bold text-white">Explore Saudi Packages</h1>
           <p className="text-gray-400 text-sm">Manage tours, itineraries, and vehicle-specific pricing for cities.</p>
         </div>
-        <Link 
-          href="/admin/packages/explore-saudi/create" 
-          className="flex items-center gap-2 bg-[#F9C344] text-black px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors"
-        >
-          <Plus size={18} /> Add New Package
-        </Link>
+        {isAdmin && (
+          <Link 
+            href="/admin/packages/explore-saudi/create" 
+            className="flex items-center gap-2 bg-[#F9C344] text-black px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors"
+          >
+            <Plus size={18} /> Add New Package
+          </Link>
+        )}
       </div>
 
       {/* Packages Table */}
@@ -83,11 +88,13 @@ export default async function ExploreSaudiPackagesPage() {
                       >
                         <Edit size={16} />
                       </Link>
-                      <button 
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {isAdmin && (
+                        <button 
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

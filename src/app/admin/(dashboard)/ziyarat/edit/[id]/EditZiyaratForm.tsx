@@ -4,12 +4,16 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateZiyaratLocation } from '@/app/actions/ziyaratLocationActions'
 import LocalImageUpload from '@/components/admin/LocalImageUpload'
+import ErrorBanner from '@/components/admin/ErrorBanner'
+import { useToast } from '@/components/admin/ToastProvider'
 import { Loader2, Save, ArrowLeft, MapPin, Clock, Video, Globe } from 'lucide-react'
 import Link from 'next/link'
 
 export default function EditZiyaratForm({ initialData }: { initialData: any }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   // Initialize state with existing data
   const [gallery, setGallery] = useState<string[]>(initialData.images || [])
@@ -17,6 +21,7 @@ export default function EditZiyaratForm({ initialData }: { initialData: any }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     setIsSaving(true)
 
     const formData = new FormData(e.currentTarget)
@@ -24,11 +29,22 @@ export default function EditZiyaratForm({ initialData }: { initialData: any }) {
     formData.append('bannerImage', banner)
 
     try {
-      await updateZiyaratLocation(initialData.id, formData)
+      const result = await updateZiyaratLocation(initialData.id, formData)
+
+      if (!result.success) {
+        const message = result.error || 'Failed to update location'
+        setError(message)
+        toast(message, 'error')
+        return
+      }
+
+      toast('Location updated successfully!', 'success')
       router.push('/admin/ziyarat')
       router.refresh() // Refresh to show updated data
     } catch (error) {
-      alert("Failed to update location")
+      const message = 'Failed to update location'
+      setError(message)
+      toast(message, 'error')
     } finally {
       setIsSaving(false)
     }
@@ -47,6 +63,12 @@ export default function EditZiyaratForm({ initialData }: { initialData: any }) {
            <p className="text-sm text-gray-500">Updating: {initialData.name}</p>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6">
+          <ErrorBanner message={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         

@@ -4,12 +4,15 @@ import { eq, desc } from 'drizzle-orm'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Plus } from 'lucide-react'
+import { getCurrentRole } from '@/lib/auth/guards'
 
 export default async function ZiyaratListPage() {
   // 1. Fetch ONLY Ziyarat packages from the Database
   const data = await db.select().from(packages)
     .where(eq(packages.type, 'ZIYARAT'))
     .orderBy(desc(packages.updatedAt));
+
+  const isAdmin = ((await getCurrentRole()) === 'admin');
 
   return (
     <div className="p-8 pb-20">
@@ -21,12 +24,14 @@ export default async function ZiyaratListPage() {
         </div>
         
         {/* ✅ CORRECTED PATH: Points to /admin/packages/ziyarat/create */}
-        <Link 
-          href="/admin/packages/ziyarat/create" 
-          className="bg-black text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl font-medium"
-        >
-          <Plus size={18} /> Create New
-        </Link>
+        {isAdmin && (
+          <Link 
+            href="/admin/packages/ziyarat/create" 
+            className="bg-black text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl font-medium"
+          >
+            <Plus size={18} /> Create New
+          </Link>
+        )}
       </div>
 
       {/* Grid Layout */}
@@ -83,14 +88,16 @@ export default async function ZiyaratListPage() {
              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
                 <Plus size={24} />
              </div>
-             <h3 className="text-lg font-bold text-gray-900">No Packages Found</h3>
-             <p className="text-gray-500 mb-6 max-w-sm mx-auto">You haven't added any Ziyarat packages yet. Create your first one to get started.</p>
-             <Link 
-                href="/admin/packages/ziyarat/create" 
-                className="inline-flex items-center gap-2 text-sm font-bold text-black hover:underline"
-             >
-                Create New Package &rarr;
-             </Link>
+              <h3 className="text-lg font-bold text-gray-900">No Packages Found</h3>
+              <p className="text-gray-500 mb-6 max-w-sm mx-auto">You haven't added any Ziyarat packages yet. Create your first one to get started.</p>
+              {isAdmin && (
+                <Link 
+                  href="/admin/packages/ziyarat/create" 
+                  className="inline-flex items-center gap-2 text-sm font-bold text-black hover:underline"
+                >
+                  Create New Package &rarr;
+                </Link>
+              )}
           </div>
         )}
       </div>

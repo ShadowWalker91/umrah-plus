@@ -4,6 +4,7 @@ import { db } from '@/lib/db/';
 import { explorePackages, explorePackageVehicles } from '@/lib/db/schema/explorePackages';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin, AUTH_MESSAGES } from '@/lib/auth/guards';
 
 // 1. Fetch packages with City and Vehicle details for the Admin Table
 export async function getAdminExplorePackages() {
@@ -29,6 +30,9 @@ export async function getAdminExplorePackages() {
 // 2. Create package with vehicle prices
 export async function createExplorePackage(data: any) {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly);
+    if (!guard.ok) return { success: false, error: guard.error };
+
     const { vehicleOptions, ...packageData } = data;
 
     // Insert main package
@@ -55,6 +59,9 @@ export async function createExplorePackage(data: any) {
 // 3. Delete a package
 export async function deleteExplorePackage(id: string) {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly);
+    if (!guard.ok) return { success: false, error: guard.error };
+
     await db.delete(explorePackages).where(eq(explorePackages.id, id));
     revalidatePath('/admin/packages/explore-saudi');
     return { success: true, message: "Package deleted successfully" };

@@ -3,6 +3,8 @@
 import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin, requireMember, AUTH_MESSAGES } from '@/lib/auth/guards';
+import { mediaChanged } from '@/lib/auth/imagePolicy';
 
 export interface TransportVehicleConfig {
   id: string;
@@ -76,6 +78,39 @@ export async function getTransportData(): Promise<TransportStoreData> {
  */
 export async function updateTransportRates(payload: TransportStoreData): Promise<{ success: boolean; message?: string }> {
   try {
+    const guard = await requireMember();
+    if (!guard.ok) return { success: false, message: guard.error };
+
+    // Editors may update rates/specs, but only the admin can add or remove vehicles and routes
+    const store = ensureRatesFile();
+    const existingVehicleIds = new Set(store.vehicles.map((v) => v.id));
+    const payloadVehicleIds = new Set(payload.vehicles.map((v) => v.id));
+    const addedVehicles = [...payloadVehicleIds].filter((id) => !existingVehicleIds.has(id));
+    const removedVehicles = [...existingVehicleIds].filter((id) => !payloadVehicleIds.has(id));
+    const addedRoutes = payload.pointToPointRoutesList.filter((r) => !store.pointToPointRoutesList.includes(r));
+    const removedRoutes = store.pointToPointRoutesList.filter((r) => !payload.pointToPointRoutesList.includes(r));
+    const addedFixedRoutes = payload.fixedRoutesList.filter((r) => !store.fixedRoutesList.some((s) => s.id === r.id));
+    const removedFixedRoutes = store.fixedRoutesList.filter((r) => !payload.fixedRoutesList.some((s) => s.id === r.id));
+
+    const structuralChange =
+      addedVehicles.length || removedVehicles.length ||
+      addedRoutes.length || removedRoutes.length ||
+      addedFixedRoutes.length || removedFixedRoutes.length;
+
+    if (guard.user.role !== 'admin' && structuralChange) {
+      return { success: false, message: 'Only the admin can add or remove vehicles and routes.' };
+    }
+
+    // Editors may update rates/specs, but vehicle photos are admin-only
+    if (guard.user.role !== 'admin') {
+      const payloadById = new Map(payload.vehicles.map((v) => [v.id, v] as const));
+      const imageChanged = store.vehicles.some((existing) => {
+        const next = payloadById.get(existing.id);
+        return !next || mediaChanged(existing.image, next.image);
+      });
+      if (imageChanged) return { success: false, message: AUTH_MESSAGES.imageAdminOnly };
+    }
+
     const success = writeRatesFile(payload);
     if (success) {
       revalidatePath('/admin/transport');
@@ -96,7 +131,21 @@ export async function saveVehicle(vehicle: TransportVehicleConfig): Promise<{ su
   try {
     const store = ensureRatesFile();
     const existingIndex = store.vehicles.findIndex(v => v.id === vehicle.id);
+
+    // Updating an existing vehicle is allowed for editors; adding a new one is admin-only
+    const guard = existingIndex !== -1
+      ? await requireMember()
+      : await requireAdmin(AUTH_MESSAGES.createAdminOnly);
+    if (!guard.ok) return { success: false, message: guard.error };
+
     if (existingIndex !== -1) {
+      // Vehicle photos are admin-only
+      if (
+        guard.user.role !== 'admin' &&
+        mediaChanged(store.vehicles[existingIndex].image, vehicle.image)
+      ) {
+        return { success: false, message: AUTH_MESSAGES.imageAdminOnly };
+      }
       store.vehicles[existingIndex] = vehicle;
     } else {
       store.vehicles.push(vehicle);
@@ -116,6 +165,9 @@ export async function saveVehicle(vehicle: TransportVehicleConfig): Promise<{ su
  */
 export async function deleteVehicle(vehicleId: string): Promise<{ success: boolean; message?: string }> {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.deleteAdminOnly);
+    if (!guard.ok) return { success: false, message: guard.error };
+
     const store = ensureRatesFile();
     store.vehicles = store.vehicles.filter(v => v.id !== vehicleId);
     writeRatesFile(store);
@@ -133,6 +185,9 @@ export async function deleteVehicle(vehicleId: string): Promise<{ success: boole
  */
 export async function addPointToPointRoute(routeName: string): Promise<{ success: boolean; message?: string }> {
   try {
+    const guard = await requireAdmin(AUTH_MESSAGES.createAdminOnly);
+    if (!guard.ok) return { success: false, message: guard.error };
+
     const store = ensureRatesFile();
     const trimmed = routeName.trim();
     if (!trimmed) return { success: false, message: 'Route name cannot be empty' };

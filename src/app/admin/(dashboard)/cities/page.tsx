@@ -2,10 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus, MapPin, Edit, Trash2, Video } from 'lucide-react';
 import { getAdminCities, deleteAdminCity } from '@/app/actions/adminCityActions';
+import { getCurrentRole } from '@/lib/auth/guards';
 
 export default async function CitiesListPage() {
   const response = await getAdminCities();
   const cities = response.success ? response.data : [];
+
+  const isAdmin = ((await getCurrentRole()) === 'admin');
 
   return (
     <div className="p-6 space-y-6">
@@ -14,12 +17,14 @@ export default async function CitiesListPage() {
           <h1 className="text-2xl font-bold text-white">Saudi Cities</h1>
           <p className="text-gray-400 text-sm">Manage city content, hero videos, and local guides.</p>
         </div>
-        <Link 
-          href="/admin/cities/create" 
-          className="flex items-center gap-2 bg-[#F9C344] text-black px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors"
-        >
-          <Plus size={18} /> Add New City
-        </Link>
+        {isAdmin && (
+          <Link 
+            href="/admin/cities/create" 
+            className="flex items-center gap-2 bg-[#F9C344] text-black px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors"
+          >
+            <Plus size={18} /> Add New City
+          </Link>
+        )}
       </div>
 
       <div className="bg-[#151515] border border-white/10 rounded-xl overflow-hidden">
@@ -66,12 +71,14 @@ export default async function CitiesListPage() {
                       >
                         <Edit size={16} />
                       </Link>
-                      {/* Note: Delete should ideally use a Client Component button for confirmation */}
-                      <button 
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {isAdmin && (
+                        /* Note: Delete should ideally use a Client Component button for confirmation */
+                        <button 
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

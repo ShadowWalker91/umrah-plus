@@ -489,7 +489,7 @@ export default function UmrahPlusSection() {
       <div className="lg:hidden h-[294px]" aria-hidden="true" />
 
       <div
-        className={`relative z-50 shrink-0 mt-32 flex-col items-center lg:items-start gap-2 w-full ${
+        className={`relative z-50 shrink-0 mt-72 md:mt-32 flex-col items-center lg:items-start gap-2 w-full ${
           activePillar !== -1 ? 'hidden lg:flex' : 'flex'
         }`}
       >
