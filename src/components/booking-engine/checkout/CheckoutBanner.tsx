@@ -1,5 +1,6 @@
 'use client';
 
+import { url } from 'inspector';
 import Image from 'next/image';
 
 interface CheckoutBannerProps {
@@ -31,11 +32,11 @@ export default function CheckoutBanner({
   const ornate = variant === 'ornate';
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-[#c5a059]/30 bg-[#0c0d10] mb-7 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
+    <div className="relative w-full overflow-hidden rounded-2xl border border-[#c5a059]/30 bg-[#0c0d10] mb-7 shadow-[0_10px_40px_rgba(0,0,0,0.45)]" style={{backgroundImage: "url('/assets/images/banner.png')"}}>
       {/* Arched side imagery */}
       {ornate && (
         <>
-          <div className="absolute inset-y-0 left-0 w-[26%] min-w-[110px]">
+          {/* <div className="absolute inset-y-0 left-0 w-[26%] min-w-[110px]">
             <Image
               src="/assets/images/ziyarat/MakkahZiyaratCover.webp"
               alt=""
@@ -58,7 +59,7 @@ export default function CheckoutBanner({
             <div className="absolute inset-0 bg-gradient-to-l from-[#0c0d10]/60 via-[#0c0d10]/30 to-[#0c0d10]" />
             <div className="absolute inset-y-3 right-3 left-0 rounded-t-[999px] border border-x border-t border-[#c5a059]/50 pointer-events-none" />
             <div className="absolute inset-y-6 right-7 left-0 rounded-t-[999px] border border-x border-t border-[#c5a059]/25 pointer-events-none" />
-          </div>
+          </div> */}
         </>
       )}
 
