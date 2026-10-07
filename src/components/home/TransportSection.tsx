@@ -147,7 +147,7 @@ export default function TransportSection() {
           </div>
           
           {/* Booking Widget — full width, exactly like the other home sections */}
-          <div className="w-full z-30 flex justify-center lg:justify-start mt-32 md:mt-5 lg:mb-14 xl:mb-18">
+          <div className="w-full z-30 flex justify-center lg:justify-start mt-72 md:mt-5 lg:mb-14 xl:mb-18">
             <SearchWidget activeService="Transport" />
           </div>
 

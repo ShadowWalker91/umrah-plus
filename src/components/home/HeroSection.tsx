@@ -74,7 +74,7 @@ export default function HeroSection({ scrollToNext }: HeroSectionProps) {
       <div className="relative z-20 w-full pl-5 pr-14 sm:pl-8 sm:pr-16 md:pl-10 md:pr-18 lg:px-16 h-full flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between pt-32 pb-20 sm:pb-24 md:pb-28 lg:pb-28 xl:pb-32 text-center lg:text-left">
         
         {/* Left Side: Booking Widget */}
-        <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-10 sm:mt-16 md:mt-53 lg:mt-52 flex justify-center lg:justify-start">
+        <div className="relative z-30 w-full max-w-6xl mx-auto shrink-0 mt-72 md:mt-53 lg:mt-52 flex justify-center lg:justify-start">
           <SearchWidget />
         </div>
 
