@@ -490,7 +490,7 @@ export default function DownloadItineraryButton({ bookingId }: { bookingId: stri
     <button
       onClick={handleDownload}
       disabled={isGenerating}
-      className="w-full sm:w-auto h-[48px] inline-flex items-center justify-center gap-2 bg-transparent border border-[#c5a059] text-[#c5a059] hover:bg-[#c5a059]/10 font-bold uppercase tracking-wider text-xs md:text-sm px-6 rounded-xl transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
+      className="w-full sm:w-auto h-[48px] inline-flex items-center justify-center gap-2 bg-transparent border border-[#c5a059] text-[#c5a059] hover:bg-[#c5a059]/10 font-bold uppercase tracking-wider text-xs md:text-sm px-4 rounded-xl transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
     >
       {isGenerating ? (
         <><Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...</>

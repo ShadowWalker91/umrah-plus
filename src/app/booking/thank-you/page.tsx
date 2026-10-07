@@ -242,7 +242,7 @@ function ThankYouContent() {
 
             <Link
               href="/transportation"
-              className="h-[46px] inline-flex items-center justify-center gap-2 bg-transparent border border-white/20 hover:border-[#c5a059]/70 hover:bg-[#c5a059]/10 text-white font-bold uppercase tracking-wider text-xs px-6 rounded-xl transition-all whitespace-nowrap cursor-pointer"
+              className="h-[46px] inline-flex items-center justify-center gap-2 bg-transparent border border-white/20 hover:border-[#c5a059]/70 hover:bg-[#c5a059]/10 text-white font-bold uppercase tracking-wider text-xs px-4 rounded-xl transition-all whitespace-nowrap cursor-pointer"
             >
               <Truck className="w-4 h-4 text-[#c5a059]" /> Explore Transportation
             </Link>

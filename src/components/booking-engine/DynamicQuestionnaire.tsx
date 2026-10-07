@@ -2607,7 +2607,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)] gap-5 mb-5  items-start">
           {/* -------------------------------------------------------------
               LEAD PASSENGER DETAILS
           ------------------------------------------------------------- */}
@@ -2825,6 +2825,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
           </div>
         </div>
 
+        </div>
         {/* -------------------------------------------------------------
             RIGHT RAIL: WHATSAPP + FINAL CONFIRMATION
         ------------------------------------------------------------- */}
@@ -2882,10 +2883,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 required
                 checked={state.leadConfirmed}
                 onChange={(e) => updateState({ leadConfirmed: e.target.checked })}
-                className="mt-0.5 w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
+                className="w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
               />
               <span className="text-xs font-semibold text-white leading-snug">
-                I confirm these lead passenger details are correct
+                I confirm these above details are correct
               </span>
             </label>
 
@@ -2894,7 +2895,6 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               <span className="text-[#f3d38a] font-bold">Shown in bar below</span>
             </div>
           </aside>
-        </div>
       </motion.div>
     );
   }
