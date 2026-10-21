@@ -1,35 +1,38 @@
-<h2 style="margin-top: 24px; margin-bottom: 12px; color: #F9C344;font-size:28px; font-weight:bold;">The Hour of Trial: The Prophet’s (S.A.W.) Asylum</h2>
-<p style="text-align:justify;">The year was the ‘Am al-Huzn (Year of Sorrow), circa 619 CE. Having lost his two greatest protectors—his uncle and guardian, Abu Talib, and his devoted wife, Khadijah (R.A.H.)—the Prophet Muhammad (S.A.W.) journeyed to Taif, seeking support and refuge from the prominent Thaqif tribe.
+---
+title: "Masjid Addas (r.a.)"
+urduTitle: "مسجد عداس"
+description: "Masjid Addas is one of the most well known Islamic historical sites in Taif, remembered for a moment of kindness during one of the hardest days in the life of Prophet Muhammad ﷺThe mosque is associated with Addas, the Christian servant who is remembered in..."
+---
 
-The reception he received was devastating. The tribal leaders not only scornfully refused his call to Islam but incited the city’s children and mob to chase him out, pelting him with stones. The Prophet (S.A.W.), accompanied only by his freed slave, Zayd ibn Harithah (R.A.H.), was severely wounded, his blessed sandals filling with blood.
-
-Exhausted, wounded, and emotionally drained, he finally found refuge outside the city walls in a tranquil grape orchard owned by two Quraysh chiefs, ‘Utbah and Shaybah ibn Rabi’ah (both were staunch opponents of Islam). It was here, beneath the shade of the vines, that the Prophet (S.A.W.) offered his famous, heartbreaking Dua to Allah (S.W.T.), submitting his weakness to the Lord of the worlds.</p>
-
-
-<h2 style="margin-top: 24px; margin-bottom: 12px; color: #F9C344;font-size:28px; font-weight:bold;">The Miracle of Compassion: The Story of Addas (R.A.H.)</h2>
-<p style="text-align:justify;">The owners of the orchard, despite their enmity, felt a degree of sympathy for the wounded Prophet (S.A.W.) and instructed their young, Christian slave, Addas (R.A.H.), to take a bunch of grapes and offer them to the man resting under the wall.
-
-This simple act of service led to one of the most poignant spiritual encounters in the Seerah:
-
-The Blessed Word: As the Prophet (S.A.W.) reached for the grapes, he pronounced: “Bismillah” (In the Name of Allah) before beginning to eat.
-The Recognition: Addas (R.A.H.) was immediately struck by the phrase. He was a foreign slave, a Christian originally from Nineveh (in modern-day Iraq), and he confessed that he had never heard such noble words spoken by the people of the Arabian Peninsula.
-The Prophetic Kinship: The Prophet (S.A.W.), sensing the young man’s sincerity, asked him where he was from. When Addas replied “Nineveh,” the Prophet (S.A.W.) responded, “From the town of the righteous man, Yunus ibn Matta.” Addas was astonished that this wounded stranger knew of his Prophet, Yunus (A.S.). The Prophet (S.A.W.) then simply stated: “He is my brother; he was a Prophet of Allah, and I am a Prophet of Allah.”
-In that moment of shared Prophetic heritage, the truth was illuminated for Addas (R.A.H.). He immediately knelt, kissed the Prophet’s (S.A.W.) head, hands, and feet (still bleeding from the stones), and declared his faith in Islam.
-
-Addas (R.A.H.) became the only person from Taif, and the only human convert, whose acceptance of Islam is recorded on that dark day, a shining testament to the fact that divine light finds its way even in the darkest circumstances.</p>
-<h2 style="margin-top: 24px; margin-bottom: 12px; color: #F9C344;font-size:28px; font-weight:bold;">The Sanctuary of Resilience: Masjid Addas Today</h2>
-<p style="text-align:justify;">The site where this profound conversation and conversion took place is now marked by the small, revered Masjid Addas (R.A.H.). It is often situated within the tranquil greenery of the Taif region, reminding visitors of the grape orchard that provided refuge.
-
-A Monument to Universal Truth: Masjid Addas stands as a powerful symbol of the universal message of Islam, confirming the lineage of Prophethood that extended from Yunus (A.S.) to Muhammad (S.A.W.). It teaches us that truth is recognizable to any sincere heart, regardless of tribal affiliation or previous creed.
-Architecture of Commemoration: The mosque, though modest in size, is built to honor the exact place of the encounter. Its simplicity reflects the raw, profound nature of the moment—no grand ceremonies, just a sincere conversation between a Prophet and a seeker of truth.
-The Barakah of Mercy: The Barakah associated with Masjid Addas is the blessing of mercy and forgiveness. After the ordeal, the Prophet (S.A.W.) was offered divine revenge—an angel was sent, ready to crush the people of Taif with the mountains if commanded. Yet, the Prophet (S.A.W.) refused, praying instead: “Nay, I hope that Allah will bring forth from their loins children who will worship Allah alone, and associate no partners with Him.”
-The existence of Masjid Addas (R.A.H.) and the subsequent flourishing of Islam in Taif, attested to by the presence of Masjid Abdullah ibn Abbas (R.A.H.) and his grave, proves that the Prophet’s (S.A.W.) prayer for guidance was ultimately answered.</p>
-
-
-
-<h2 style="margin-top: 24px; margin-bottom: 12px; color: #F9C344;font-size:28px; font-weight:bold;">For the Umrah Plus Pilgrim: The Lesson of Patience</h2>
-<p style="text-align:justify;">The Ziyārah to Masjid Addas (R.A.H.) offers a pivotal lesson that guides the contemporary pilgrim:
-
-Enduring Hope: When you stand here, remember that even in the most painful trials, Allah (S.W.T.) never abandons His Messenger (S.A.W.). The sole acceptance of Addas (R.A.H.) was the divine sign that the message would endure.
-The Power of the Dua for Others: The Prophet’s (S.A.W.) decision to pray for the future generations of Taif, rather than seek revenge, serves as the highest ideal of mercy and ethical conduct.
-Masjid Addas (R.A.H.) is not just a reminder of suffering; it is a spiritual anchor of hope, a sanctuary that embodies the enduring promise that sincerity and compassion will always triumph over hostility and despair.</p>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Masjid Addas is one of the most well known Islamic historical sites in Taif, remembered for a moment of kindness during one of the hardest days in the life of Prophet Muhammad ﷺThe mosque is associated with Addas, the Christian servant who is remembered in the Seerah for offering grapes to the Prophet ﷺ after his painful journey out of Taif. This is not just a mosque with a story attached to it. For many visitors, Masjid Addas represents mercy, dignity, and the human side of the Prophet’s ﷺ life. It stands in Taif as a reminder that even in hardship, noble character can open hearts. That is why it holds a special place among Taif Ziyarat places and historical places in Taif. A visitor approaching this site is usually thinking less about architecture and more about meaning. The mosque belongs to the wider memory of Taif, where faith, pain, patience, and kindness are remembered together. It is one of those places that helps the Seerah feel closer, more personal, and deeply moving. Historical Significance The painful return from Taif Masjid Addas is traditionally linked with the Prophet Muhammad ﷺs return from Taif after the people rejected his message and caused him great hurt. In Islamic memory, this was one of the most difficult moments in the Seerah, yet it also revealed the Prophet’s ﷺ patience and mercy. The mosque is remembered in connection with that emotional chapter.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is associated with the Prophet Muhammad ﷺs difficult departure from</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Taif.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The event is part of the "Year of Sorrow" in the broader Seerah memory.</li>
+  <li style="margin-bottom: 8px;">The site reflects patience during hardship.</li>
+  <li style="margin-bottom: 8px;">It reminds visitors that Taif was part of a painful but important moment in</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Islamic history. The kindness of Addas The strongest memory connected to the site is the kindness of Addas, who offered grapes to the Prophet ﷺ when others had turned away from him. That simple act has stayed in Muslim memory because it shows how one moment of compassion can carry lasting meaning. In many ways, it is this human kindness that gives the mosque its heart.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Addas is remembered as the one who offered grapes to the Prophet ﷺ.</li>
+  <li style="margin-bottom: 8px;">He is traditionally described as a Christian servant of Utbah ibn Rabi‘ah.</li>
+  <li style="margin-bottom: 8px;">The encounter is one of the most moving stories connected with Taif.</li>
+  <li style="margin-bottom: 8px;">The site is often visited because of this memory of mercy.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A place tied to the Seerah of mercy Masjid Addas belongs to the wider Seerah of mercy, where the Prophet Muhammad ﷺ responded to pain with dignity and prayer rather than anger. The site is meaningful because it helps visitors remember not only what happened, but how the Prophet ﷺ carried himself through it. That lesson remains powerful for anyone studying Islamic heritage in Taif.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is linked with prophetic patience and mercy.</li>
+  <li style="margin-bottom: 8px;">It is remembered as part of the Seerah, not just local history.</li>
+  <li style="margin-bottom: 8px;">The story gives depth to ziyarat in Taif.</li>
+  <li style="margin-bottom: 8px;">It encourages reflection on character, faith, and forgiveness.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A remembered place, not just a building The mosque matters because memory matters. Even if visitors come for a few minutes, they are standing near a place that carries one of the most touching scenes in Taif’s Islamic history. That is why Masjid Addas remains important among Taif historical sites.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is remembered for meaning rather than size.</li>
+  <li style="margin-bottom: 8px;">It is part of Taif’s Islamic heritage.</li>
+  <li style="margin-bottom: 8px;">The story helps visitors connect with the Prophet’s ﷺ journey.</li>
+  <li style="margin-bottom: 8px;">It remains a meaningful stop for pilgrims and families.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Site Today Physical appearance today Today, Masjid Addas is a modest historical mosque rather than a large landmark. It is known more for the story attached to it than for elaborate design. Visitors usually find a simple place of prayer and remembrance, which suits the quiet dignity of the site. Historical remains and structure The current mosque is a later structure connected with the traditionally identified location of the Addas story. Visitors should understand it as a commemorative site, not as a surviving building from the Prophet’s ﷺ time. Its value lies in remembrance and historical association. Modern surroundings and visitor access The area around the mosque has become part of modern Taif, yet the site is still treated as a meaningful stop on a Taif Ziyarat route. Access may vary with local conditions, so visitors should expect a normal mosque setting rather than a heavily developed tourist attraction. What visitors should expect Visitors should come with respect, calmness, and an awareness of the site’s Seerah connection. There are no special rituals attached to the mosque. Its power is in the story it preserves, and in the quiet reminder that mercy can appear in the most difficult moments. Why It Still Matters Masjid Addas still matters because it preserves one of the most tender moments in the Seerah. When the world had turned harsh, a simple act of kindness became unforgettable. That is why the mosque speaks to visitors even today. It does not speak loudly, but it speaks clearly about mercy, faith, and the dignity of the Prophet Muhammad ﷺ. For people following Taif Ziyarat, this site adds an important emotional layer to the journey. It helps visitors understand that Islamic history is not only about major events and great victories. It is also about small moments that reveal the nobility of character. The grapes offered by Addas are remembered not because they were grand, but because they happened at a time when compassion mattered deeply. The mosque also reminds modern visitors that Taif is not only a place on a map. It is a city tied to some of the most moving chapters in Islamic memory. Standing near a place like Masjid Addas can make the Seerah feel closer and more human. It invites gratitude for the Prophet’s ﷺ patience, admiration for kindness, and reflection on how even a small act can become part of a lasting legacy. Frequently Asked Questions 1. Where is Masjid Addas located in Taif? Masjid Addas is in the Al Mathnah area of Taif, near Wadi Waj Road. 2. Why is Masjid Addas important? It is traditionally linked with the story of Addas offering grapes to Prophet Muhammad ﷺ after his difficult departure from Taif. 3. Can visitors go to Masjid Addas today? Yes, visitors can usually approach the mosque, but visiting hours are not officially fixed and access may depend on local arrangements</p>

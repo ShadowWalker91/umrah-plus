@@ -9,6 +9,7 @@ import { eq } from 'drizzle-orm'
 import { ChevronRight, ArrowLeft, Play, MapPin, Clock, Info, Globe } from 'lucide-react'
 import Footer from '@/components/Footer'
 import SacredSitesTabs from '@/components/ziyarat/SacredSitesTabs' // ✅ Import Tabs
+import { getZiyaratData } from '@/lib/ziyarat'
 
 interface PageProps {
   params: Promise<{ city: string; slug: string }>
@@ -17,18 +18,44 @@ interface PageProps {
 export default async function SingleZiyaratPage({ params }: PageProps) {
   const { city, slug } = await params
   
-  const cityDisplayName = city.replace('-ziyarat', '').charAt(0).toUpperCase() + city.replace('-ziyarat', '').slice(1)
+  const normalizedCity = city.replace('-ziyarat', '').toLowerCase()
+  const cityDisplayName = normalizedCity.charAt(0).toUpperCase() + normalizedCity.slice(1)
+  const staticData = getZiyaratData(normalizedCity, slug)
 
-  // 1. Fetch Current Location
+  // 1. Fetch Current Location from DB
   const result = await db
     .select()
     .from(ziyaratLandmarks)
     .where(eq(ziyaratLandmarks.slug, slug))
     .limit(1)
 
-  const location = result[0]
+  const dbLocation = result[0]
 
-  if (!location) return notFound()
+  // If neither DB nor static data has it, then 404
+  if (!dbLocation && !staticData) return notFound()
+
+  // Prioritize whichever source has the richer content
+  const fullHistory = (dbLocation?.fullHistory && dbLocation.fullHistory.length >= (staticData?.history?.length || 0))
+    ? dbLocation.fullHistory
+    : (staticData?.history || dbLocation?.fullHistory || '')
+
+  const shortDescription = (dbLocation?.shortDescription && dbLocation.shortDescription.length >= (staticData?.description?.length || 0))
+    ? dbLocation.shortDescription
+    : (staticData?.description || dbLocation?.shortDescription || '')
+
+  const location = {
+    ...dbLocation,
+    name: dbLocation?.name || staticData?.title || '',
+    urduTitle: dbLocation?.urduTitle || staticData?.urduTitle || '',
+    bannerImage: dbLocation?.bannerImage || staticData?.bannerImage || (dbLocation?.images && dbLocation.images[0]) || '/placeholder.jpg',
+    images: (dbLocation?.images && dbLocation.images.length > 0) ? dbLocation.images : (staticData?.bannerImage ? [staticData.bannerImage] : []),
+    location: dbLocation?.location || staticData?.location || 'N/A',
+    timings: dbLocation?.timings || staticData?.timings || 'Open 24 Hours',
+    shortDescription,
+    fullHistory,
+    videoUrl: dbLocation?.videoUrl || null,
+    googleMapLink: dbLocation?.googleMapLink || null,
+  }
 
   // 2. Fetch All Locations (For the Bottom Tabs)
   const allLocations = await db.select().from(ziyaratLandmarks)

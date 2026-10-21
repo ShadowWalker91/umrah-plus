@@ -88,13 +88,13 @@ function ThankYouContent() {
       <div className="relative w-full overflow-hidden rounded-t-3xl border border-b-0 border-[#c5a059]/40 bg-[#0c0d10] shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
         <div className="absolute inset-y-0 left-0 w-[26%] min-w-[110px]">
           <Image
-            src="/assets/images/ziyarat/MakkahZiyaratCover.webp"
-            alt=""
+            src="/assets/images/makkah_kaaba.jpg"
+            alt="The Holy Kaaba"
             fill
             sizes="30vw"
-            className="object-cover opacity-80"
+            className="object-cover opacity-85 object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0c0d10]/60 via-[#0c0d10]/30 to-[#0c0d10]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0c0d10]/50 via-[#0c0d10]/25 to-[#0c0d10]" />
           <div className="absolute inset-y-3 left-3 right-0 rounded-t-[999px] border border-x border-t border-[#c5a059]/50 pointer-events-none" />
         </div>
         <div className="absolute inset-y-0 right-0 w-[26%] min-w-[110px]">
@@ -143,7 +143,7 @@ function ThankYouContent() {
                 sublabel="Makkah Stay"
               />
             )}
-            <VerifiedRow icon={<Car className="w-4 h-4" />} label="Transit Route Scheduled" />
+            <VerifiedRow icon={<Car className="w-4 h-4" />} label="Transit Route" />
           </div>
 
           {total && (
@@ -171,7 +171,7 @@ function ThankYouContent() {
 
           <div className="mt-3 flex items-center justify-center gap-2 bg-black/50 border border-[#c5a059]/40 rounded-lg px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-[#f3d38a] font-bold text-center">
             <Flag className="w-3.5 h-3.5 text-[#c5a059] shrink-0" />
-            Specially Assigned to Our Experts
+            Assigned to Our Team
           </div>
         </div>
 

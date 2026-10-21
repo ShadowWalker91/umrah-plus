@@ -52,6 +52,7 @@ import {
   getZiyaratAllocatedQuantity
 } from '@/data/ziyaratBuilderData';
 import { COUNTRIES } from '@/data/countriesData';
+import type { CheckoutTotals } from './checkout/totals';
 
 interface Props {
   step: number;
@@ -60,9 +61,10 @@ interface Props {
   type?: string;
   onSkipTransport?: () => void;
   onSkipZiyarat?: () => void;
+  totals?: CheckoutTotals;
 }
 
-export default function DynamicQuestionnaire({ step, state, updateState, type, onSkipTransport, onSkipZiyarat }: Props) {
+export default function DynamicQuestionnaire({ step, state, updateState, type, onSkipTransport, onSkipZiyarat, totals }: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredSiteId, setHoveredSiteId] = useState<string | null>(null);
 
@@ -1487,15 +1489,23 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     />
                   </div>
                   <div
-                    onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                    onClick={(e) => {
+                      const target = e.target as HTMLElement;
+                      if (target.tagName.toLowerCase() !== 'input') {
+                        const el = e.currentTarget.querySelector('input');
+                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                      }
+                    }}
                     className="cursor-pointer"
                   >
                     <label className="text-[10px] text-gray-400 block mb-1 cursor-pointer">Time</label>
                     <input
                       type="time"
                       value={state.makkahCheckInTime || '14:00'}
-                      onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                      onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                      }}
                       onChange={(e) => updateState({ makkahCheckInTime: e.target.value })}
                       className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                     />
@@ -1520,15 +1530,23 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                     />
                   </div>
                   <div
-                    onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                    onClick={(e) => {
+                      const target = e.target as HTMLElement;
+                      if (target.tagName.toLowerCase() !== 'input') {
+                        const el = e.currentTarget.querySelector('input');
+                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                      }
+                    }}
                     className="cursor-pointer"
                   >
                     <label className="text-[10px] text-gray-400 block mb-1 cursor-pointer">Time</label>
                     <input
                       type="time"
                       value={state.makkahCheckOutTime || '12:00'}
-                      onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                      onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                      }}
                       onChange={(e) => updateState({ makkahCheckOutTime: e.target.value })}
                       className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                     />
@@ -1660,15 +1678,23 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                         />
                       </div>
                       <div
-                        onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                        onClick={(e) => {
+                          const target = e.target as HTMLElement;
+                          if (target.tagName.toLowerCase() !== 'input') {
+                            const el = e.currentTarget.querySelector('input');
+                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                          }
+                        }}
                         className="cursor-pointer"
                       >
                         <label className="text-[10px] text-gray-400 block mb-1 cursor-pointer">Time</label>
                         <input
                           type="time"
                           value={state.madinahCheckInTime || '14:00'}
-                          onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                          onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                          }}
                           onChange={(e) => updateState({ madinahCheckInTime: e.target.value })}
                           className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                         />
@@ -1693,15 +1719,23 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                         />
                       </div>
                       <div
-                        onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                        onClick={(e) => {
+                          const target = e.target as HTMLElement;
+                          if (target.tagName.toLowerCase() !== 'input') {
+                            const el = e.currentTarget.querySelector('input');
+                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                          }
+                        }}
                         className="cursor-pointer"
                       >
                         <label className="text-[10px] text-gray-400 block mb-1 cursor-pointer">Time</label>
                         <input
                           type="time"
                           value={state.madinahCheckOutTime || '12:00'}
-                          onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                          onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                          }}
                           onChange={(e) => updateState({ madinahCheckOutTime: e.target.value })}
                           className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                         />
@@ -1967,14 +2001,22 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                                     />
                                   </div>
                                   <div
-                                    onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                                    onClick={(e) => {
+                                      const target = e.target as HTMLElement;
+                                      if (target.tagName.toLowerCase() !== 'input') {
+                                        const el = e.currentTarget.querySelector('input');
+                                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                                      }
+                                    }}
                                     className="w-28 cursor-pointer"
                                   >
                                     <input
                                       type="time"
                                       value={leg.time || '14:00'}
-                                      onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                                      onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                                      }}
                                       onChange={(e) => handleLegTimeChange(idx, e.target.value)}
                                       className="w-full bg-[#0c0d10] border border-white/15 rounded-lg px-2 py-2 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                                     />
@@ -2064,7 +2106,13 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                               />
                             </div>
                       <div
-                        onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                        onClick={(e) => {
+                          const target = e.target as HTMLElement;
+                          if (target.tagName.toLowerCase() !== 'input') {
+                            const el = e.currentTarget.querySelector('input');
+                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                          }
+                        }}
                         className="cursor-pointer min-w-0"
                       >
                               <label className="text-[11px] uppercase tracking-wider text-[#c5a059] font-bold mb-1.5 block cursor-pointer">
@@ -2073,8 +2121,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                               <input
                                 type="time"
                                 value={state.pointToPointPickupTime || '14:00'}
-                                onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                                onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  try { (e.currentTarget as any).showPicker?.(); } catch { }
+                                }}
                                 onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
                                 className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                               />
@@ -2382,7 +2432,13 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       </div>
 
                       <div
-                        onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                        onClick={(e) => {
+                          const target = e.target as HTMLElement;
+                          if (target.tagName.toLowerCase() !== 'input') {
+                            const el = e.currentTarget.querySelector('input');
+                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                          }
+                        }}
                         className="cursor-pointer min-w-0"
                       >
                         <label className="text-[10px] uppercase tracking-wider text-[#c5a059] block mb-1 font-semibold flex items-center gap-1.5 cursor-pointer">
@@ -2392,8 +2448,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                         <input
                           type="time"
                           value={leg.time || '12:00'}
-                          onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                          onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                          }}
                           onChange={(e) => handleLegTimeChange(index, e.target.value)}
                           className="w-full bg-[#12141a] border border-white/15 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                         />
@@ -2543,7 +2601,13 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               </div>
 
               <div
-                onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch { } }}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.tagName.toLowerCase() !== 'input') {
+                    const el = e.currentTarget.querySelector('input');
+                    try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                  }
+                }}
                 className="cursor-pointer"
               >
                 <label className="text-xs uppercase tracking-widest text-[#c5a059] font-bold mb-2 flex items-center gap-1.5 cursor-pointer">
@@ -2554,8 +2618,10 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   type="time"
                   required
                   value={state.pointToPointPickupTime || '14:00'}
-                  onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
-                  onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch { } }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    try { (e.currentTarget as any).showPicker?.(); } catch { }
+                  }}
                   onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
                   className="w-full bg-[#12141a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
                 />
@@ -2607,9 +2673,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)] gap-5 mb-5  items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.95fr)] gap-6 mb-6 items-start">
           {/* -------------------------------------------------------------
-              LEAD PASSENGER DETAILS
+              LEFT: LEAD PASSENGER DETAILS
           ------------------------------------------------------------- */}
           <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 space-y-6 shadow-xl">
             <div className="pb-3 border-b border-white/10">
@@ -2621,237 +2687,239 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                 Step {step} of {totalSteps} — we&rsquo;ll use these details to dispatch and confirm your booking.
               </p>
             </div>
-          <div>
-            <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
-              Full Name *
-            </label>
-            <input
-              required
-              type="text"
-              placeholder="e.g. Abdullah Khan"
-              value={state.leadDetails.fullName}
-              onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, fullName: e.target.value } })}
-              className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
-            />
-          </div>
-
-          {/* ── Nationality Searchable Dropdown ── */}
-          <div ref={nationalityRef} className="relative">
-            <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
-              Nationality *
-            </label>
-            <button
-              type="button"
-              onClick={() => {
-                setIsNationalityOpen(!isNationalityOpen);
-                setNationalitySearch('');
-              }}
-              className={`w-full flex items-center justify-between bg-[#0c0d10] border rounded-xl text-white p-4 outline-none transition-colors ${isNationalityOpen ? 'border-[#c5a059]/50' : 'border-white/5 hover:border-white/20'
-                }`}
-            >
-              <span className={state.leadDetails.nationality ? 'text-white' : 'text-gray-500'}>
-                {state.leadDetails.nationality
-                  ? (() => {
-                    const c = COUNTRIES.find(c => c.name === state.leadDetails.nationality);
-                    return c ? `${c.flag}  ${c.name}` : state.leadDetails.nationality;
-                  })()
-                  : 'Select your nationality'
-                }
-              </span>
-              <svg className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${isNationalityOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {isNationalityOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1c22] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-                {/* Search Input */}
-                <div className="p-3 border-b border-white/5">
-                  <div className="relative">
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input
-                      ref={nationalitySearchRef}
-                      type="text"
-                      placeholder="Search country..."
-                      value={nationalitySearch}
-                      onChange={(e) => setNationalitySearch(e.target.value)}
-                      className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-sm pl-9 pr-3 py-2.5 outline-none focus:border-[#c5a059]/50 transition-colors placeholder:text-gray-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Country List */}
-                <div className="max-h-56 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: 'thin', scrollbarColor: '#c5a059 #0c0d10' }}>
-                  {filteredNationalityCountries.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-gray-500">No countries found</div>
-                  ) : (
-                    filteredNationalityCountries.map(c => (
-                      <div
-                        key={c.code}
-                        onClick={() => {
-                          updateState({ leadDetails: { ...state.leadDetails, nationality: c.name } });
-                          setIsNationalityOpen(false);
-                          setNationalitySearch('');
-                        }}
-                        className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.nationality === c.name
-                          ? 'bg-[#c5a059]/15 text-[#c5a059]'
-                          : 'text-gray-200 hover:bg-white/5 hover:text-white'
-                          }`}
-                      >
-                        <span className="text-lg shrink-0">{c.flag}</span>
-                        <span className="font-medium">{c.name}</span>
-                        {state.leadDetails.nationality === c.name && (
-                          <Check className="w-4 h-4 text-[#c5a059] ml-auto shrink-0" />
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── Phone Code Searchable Dropdown with Flags ── */}
-          <div>
-            <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
-              Contact Number (WhatsApp Enabled) *
-            </label>
-            <div className="flex gap-2">
-              <div ref={phoneCodeRef} className="relative shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsPhoneCodeOpen(!isPhoneCodeOpen);
-                    setPhoneCodeSearch('');
-                  }}
-                  className={`flex items-center gap-1.5 bg-[#0c0d10] border rounded-xl text-white px-3 py-4 outline-none transition-colors min-w-[120px] justify-center ${isPhoneCodeOpen ? 'border-[#c5a059]/50' : 'border-white/5 hover:border-white/20'
-                    }`}
-                >
-                  <span className="text-lg">{selectedPhoneCountry?.flag}</span>
-                  <span className="font-medium text-sm">{state.leadDetails.phoneCode}</span>
-                  <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform shrink-0 ${isPhoneCodeOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                {isPhoneCodeOpen && (
-                  <div className="absolute top-full left-0 mt-2 bg-[#1a1c22] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 w-72">
-                    {/* Search Input */}
-                    <div className="p-3 border-b border-white/5">
-                      <div className="relative">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                          ref={phoneCodeSearchRef}
-                          type="text"
-                          placeholder="Search country or code..."
-                          value={phoneCodeSearch}
-                          onChange={(e) => setPhoneCodeSearch(e.target.value)}
-                          className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-sm pl-9 pr-3 py-2.5 outline-none focus:border-[#c5a059]/50 transition-colors placeholder:text-gray-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Country Code List */}
-                    <div className="max-h-56 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: 'thin', scrollbarColor: '#c5a059 #0c0d10' }}>
-                      {filteredPhoneCodeCountries.length === 0 ? (
-                        <div className="p-4 text-center text-xs text-gray-500">No countries found</div>
-                      ) : (
-                        filteredPhoneCodeCountries.map(c => (
-                          <div
-                            key={c.code}
-                            onClick={() => {
-                              updateState({ leadDetails: { ...state.leadDetails, phoneCode: c.dialCode } });
-                              setIsPhoneCodeOpen(false);
-                              setPhoneCodeSearch('');
-                            }}
-                            className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.phoneCode === c.dialCode
-                              ? 'bg-[#c5a059]/15 text-[#c5a059]'
-                              : 'text-gray-200 hover:bg-white/5 hover:text-white'
-                              }`}
-                          >
-                            <span className="text-lg shrink-0">{c.flag}</span>
-                            <span className="font-medium flex-1 truncate">{c.name}</span>
-                            <span className="text-xs text-gray-400 font-mono shrink-0">{c.dialCode}</span>
-                            {state.leadDetails.phoneCode === c.dialCode && (
-                              <Check className="w-4 h-4 text-[#c5a059] shrink-0" />
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+            <div>
+              <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
+                Full Name *
+              </label>
               <input
                 required
-                type="tel"
-                placeholder="e.g. 50 123 4567"
-                value={state.leadDetails.phone}
-                onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, phone: e.target.value } })}
-                className="flex-1 bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
+                type="text"
+                placeholder="e.g. Abdullah Khan"
+                value={state.leadDetails.fullName}
+                onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, fullName: e.target.value } })}
+                className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
+              />
+            </div>
+
+            {/* ── Nationality Searchable Dropdown ── */}
+            <div ref={nationalityRef} className="relative">
+              <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
+                Nationality *
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNationalityOpen(!isNationalityOpen);
+                  setNationalitySearch('');
+                }}
+                className={`w-full flex items-center justify-between bg-[#0c0d10] border rounded-xl text-white p-4 outline-none transition-colors ${isNationalityOpen ? 'border-[#c5a059]/50' : 'border-white/5 hover:border-white/20'
+                  }`}
+              >
+                <span className={state.leadDetails.nationality ? 'text-white' : 'text-gray-500'}>
+                  {state.leadDetails.nationality
+                    ? (() => {
+                      const c = COUNTRIES.find(c => c.name === state.leadDetails.nationality);
+                      return c ? `${c.flag}  ${c.name}` : state.leadDetails.nationality;
+                    })()
+                    : 'Select your nationality'
+                  }
+                </span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${isNationalityOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isNationalityOpen && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1c22] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
+                  {/* Search Input */}
+                  <div className="p-3 border-b border-white/5">
+                    <div className="relative">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        ref={nationalitySearchRef}
+                        type="text"
+                        placeholder="Search country..."
+                        value={nationalitySearch}
+                        onChange={(e) => setNationalitySearch(e.target.value)}
+                        className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-sm pl-9 pr-3 py-2.5 outline-none focus:border-[#c5a059]/50 transition-colors placeholder:text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Country List */}
+                  <div className="max-h-56 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: 'thin', scrollbarColor: '#c5a059 #0c0d10' }}>
+                    {filteredNationalityCountries.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-gray-500">No countries found</div>
+                    ) : (
+                      filteredNationalityCountries.map(c => (
+                        <div
+                          key={c.code}
+                          onClick={() => {
+                            updateState({ leadDetails: { ...state.leadDetails, nationality: c.name } });
+                            setIsNationalityOpen(false);
+                            setNationalitySearch('');
+                          }}
+                          className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.nationality === c.name
+                            ? 'bg-[#c5a059]/15 text-[#c5a059]'
+                            : 'text-gray-200 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                          <span className="text-lg shrink-0">{c.flag}</span>
+                          <span className="font-medium">{c.name}</span>
+                          {state.leadDetails.nationality === c.name && (
+                            <Check className="w-4 h-4 text-[#c5a059] ml-auto shrink-0" />
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── Phone Code Searchable Dropdown with Flags ── */}
+            <div>
+              <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
+                Contact Number (WhatsApp Enabled) *
+              </label>
+              <div className="flex gap-2">
+                <div ref={phoneCodeRef} className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPhoneCodeOpen(!isPhoneCodeOpen);
+                      setPhoneCodeSearch('');
+                    }}
+                    className={`flex items-center gap-1.5 bg-[#0c0d10] border rounded-xl text-white px-3 py-4 outline-none transition-colors min-w-[120px] justify-center ${isPhoneCodeOpen ? 'border-[#c5a059]/50' : 'border-white/5 hover:border-white/20'
+                      }`}
+                  >
+                    <span className="text-lg">{selectedPhoneCountry?.flag}</span>
+                    <span className="font-medium text-sm">{state.leadDetails.phoneCode}</span>
+                    <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform shrink-0 ${isPhoneCodeOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {isPhoneCodeOpen && (
+                    <div className="absolute top-full left-0 mt-2 bg-[#1a1c22] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 w-72">
+                      {/* Search Input */}
+                      <div className="p-3 border-b border-white/5">
+                        <div className="relative">
+                          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                          <input
+                            ref={phoneCodeSearchRef}
+                            type="text"
+                            placeholder="Search country or code..."
+                            value={phoneCodeSearch}
+                            onChange={(e) => setPhoneCodeSearch(e.target.value)}
+                            className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-sm pl-9 pr-3 py-2.5 outline-none focus:border-[#c5a059]/50 transition-colors placeholder:text-gray-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Country Code List */}
+                      <div className="max-h-56 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: 'thin', scrollbarColor: '#c5a059 #0c0d10' }}>
+                        {filteredPhoneCodeCountries.length === 0 ? (
+                          <div className="p-4 text-center text-xs text-gray-500">No countries found</div>
+                        ) : (
+                          filteredPhoneCodeCountries.map(c => (
+                            <div
+                              key={c.code}
+                              onClick={() => {
+                                updateState({ leadDetails: { ...state.leadDetails, phoneCode: c.dialCode } });
+                                setIsPhoneCodeOpen(false);
+                                setPhoneCodeSearch('');
+                              }}
+                              className={`px-4 py-3 flex items-center gap-3 cursor-pointer text-sm transition-colors ${state.leadDetails.phoneCode === c.dialCode
+                                ? 'bg-[#c5a059]/15 text-[#c5a059]'
+                                : 'text-gray-200 hover:bg-white/5 hover:text-white'
+                                }`}
+                            >
+                              <span className="text-lg shrink-0">{c.flag}</span>
+                              <span className="font-medium flex-1 truncate">{c.name}</span>
+                              <span className="text-xs text-gray-400 font-mono shrink-0">{c.dialCode}</span>
+                              {state.leadDetails.phoneCode === c.dialCode && (
+                                <Check className="w-4 h-4 text-[#c5a059] shrink-0" />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <input
+                  required
+                  type="tel"
+                  placeholder="e.g. 50 123 4567"
+                  value={state.leadDetails.phone}
+                  onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, phone: e.target.value } })}
+                  className="flex-1 bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
+                Email Address *
+              </label>
+              <input
+                required
+                type="email"
+                placeholder="e.g. name@example.com"
+                value={state.leadDetails.email}
+                onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, email: e.target.value } })}
+                className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
+                Special Requests or Notes (Optional)
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Any preferred pickup timing, hotel name for pickup, wheelchair assistance, or special requests..."
+                value={state.leadDetails.notes || ''}
+                onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, notes: e.target.value } })}
+                className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors resize-none text-sm font-light"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
-              Email Address *
-            </label>
-            <input
-              required
-              type="email"
-              placeholder="e.g. name@example.com"
-              value={state.leadDetails.email}
-              onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, email: e.target.value } })}
-              className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold tracking-widest text-[#c5a059] uppercase mb-2">
-              Special Requests or Notes (Optional)
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Any preferred pickup timing, hotel name for pickup, wheelchair assistance, or special requests..."
-              value={state.leadDetails.notes || ''}
-              onChange={(e) => updateState({ leadDetails: { ...state.leadDetails, notes: e.target.value } })}
-              className="w-full bg-[#0c0d10] border border-white/5 rounded-xl text-white p-4 outline-none focus:border-[#c5a059]/50 transition-colors resize-none text-sm font-light"
-            />
-          </div>
-        </div>
-
-        </div>
-        {/* -------------------------------------------------------------
-            RIGHT RAIL: WHATSAPP + FINAL CONFIRMATION
-        ------------------------------------------------------------- */}
-        <aside className="bg-[#0c0d10] border border-[#c5a059]/30 rounded-2xl p-5 space-y-4 shadow-[0_0_25px_rgba(197,160,89,0.1)] lg:sticky lg:top-4">
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+          {/* -------------------------------------------------------------
+              RIGHT: WHATSAPP + FINAL CONFIRMATION
+          ------------------------------------------------------------- */}
+          <aside className="bg-[#0c0d10] border border-[#c5a059]/35 rounded-2xl p-5 md:p-6 space-y-4 shadow-[0_0_25px_rgba(197,160,89,0.12)] lg:sticky lg:top-4">
+            <div className="flex items-center gap-2.5">
+              <span className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-400">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
               </span>
-              <h5 className="text-xs uppercase tracking-widest text-white font-bold">WhatsApp Updates</h5>
+              <div>
+                <h5 className="text-xs uppercase tracking-widest text-white font-bold">WhatsApp Updates</h5>
+                <span className="text-[10px] text-gray-400 font-light block">Instant coordination &amp; dispatch</span>
+              </div>
             </div>
 
             {whatsappOk ? (
-              <span className="text-[11px] font-bold bg-emerald-600/15 border border-emerald-500/40 text-emerald-300 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5" />
-                {state.leadDetails.phoneCode} {state.leadDetails.phone} — WhatsApp Verified
+              <span className="text-[11px] font-bold bg-emerald-600/15 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{state.leadDetails.phoneCode} {state.leadDetails.phone} — Verified</span>
               </span>
             ) : (
-              <span className="text-[11px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5" />
-                Enter a valid WhatsApp number
+              <span className="text-[11px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 shrink-0" />
+                <span>Enter a valid WhatsApp number</span>
               </span>
             )}
 
-            <label className="flex items-start gap-2.5 cursor-pointer group text-xs text-gray-300 font-light leading-relaxed">
+            <label className="flex items-start gap-2.5 cursor-pointer group text-xs text-gray-300 font-light leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
               <input
                 type="checkbox"
                 checked={state.whatsappOptIn !== false}
@@ -2860,21 +2928,21 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               />
               <span>
                 Send my trip updates &amp; driver dispatches on WhatsApp
-                <span className="block text-[10px] text-gray-500 mt-0.5">Recommended for real-time coordination.</span>
+                <span className="block text-[10px] text-gray-400 mt-0.5">Recommended for real-time live coordination.</span>
               </span>
             </label>
 
-            <div className="border-t border-white/10 pt-4">
-              <h5 className="text-sm font-playfair text-[#e6c987] mb-1">You&rsquo;re all set!</h5>
+            <div className="border-t border-white/10 pt-3 space-y-1.5">
+              <h5 className="text-xs uppercase tracking-wider font-bold text-[#c5a059]">You&rsquo;re all set!</h5>
               <p className="text-[11px] text-gray-400 font-light leading-relaxed">
-                Please review your contact details. Your itinerary reference and confirmation will be sent right after submission.
+                Please review your contact details. Your itinerary reference and booking dispatch confirmation will be sent right after submission.
               </p>
             </div>
 
             <label
               className={`flex items-start gap-2.5 cursor-pointer rounded-xl border p-3.5 transition-all ${
                 state.leadConfirmed
-                  ? 'border-[#c5a059] bg-[#c5a059]/10'
+                  ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_15px_rgba(197,160,89,0.15)]'
                   : 'border-white/10 bg-black/20 hover:border-[#c5a059]/50'
               }`}
             >
@@ -2892,9 +2960,12 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
             <div className="text-[10px] uppercase tracking-widest text-gray-400 border-t border-white/10 pt-3 flex items-center justify-between">
               <span>Est. Total</span>
-              <span className="text-[#f3d38a] font-bold">Shown in bar below</span>
+              <span className="text-[#f3d38a] font-bold text-xs">
+                {totals?.estTotalLabel || (state.calculatedTransportPrice ? `AED ${state.calculatedTransportPrice}` : 'Shown in bar below')}
+              </span>
             </div>
           </aside>
+        </div>
       </motion.div>
     );
   }

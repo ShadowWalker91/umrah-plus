@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Plane, MapPin, Star, Heart, Plus, Compass, Car, Sparkles } from 'lucide-react';
+import { Plane, MapPin, Star, Heart, Plus, Compass, Car, Sparkles, Pencil } from 'lucide-react';
 import type { BookingState } from '../BookingController';
 import { ZIYARAT_ROUTES, ZIYARAT_SITES, ZIYARAT_FLEET, ZIYARAT_CITIES_DATA, ZIYARAT_PRICES, getZiyaratRouteFare, getZiyaratAllocatedQuantity } from '@/data/ziyaratBuilderData';
 import type { CheckoutTotals } from './totals';
@@ -14,6 +14,7 @@ interface BlessedJourneyOverviewProps {
   totals: CheckoutTotals;
   onBack: () => void;
   onProceed: () => void;
+  onEditStep?: (step: number) => void;
 }
 
 function routeImage(routeId: string): string {
@@ -35,6 +36,7 @@ export default function BlessedJourneyOverview({
   totals,
   onBack,
   onProceed,
+  onEditStep,
 }: BlessedJourneyOverviewProps) {
   const routes = (state.selectedZiyaratRoutes || [])
     .map(id => ZIYARAT_ROUTES.find(r => r.id === id))
@@ -71,6 +73,16 @@ export default function BlessedJourneyOverview({
                 Sacred Ziyarats &amp; Historical Encounters
               </h3>
               <div className="flex items-center gap-2.5 text-[#c5a059]">
+                {onEditStep && (
+                  <button
+                    type="button"
+                    onClick={() => onEditStep(1)}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10 mr-1"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>Edit Routes</span>
+                  </button>
+                )}
                 <Star className="w-4 h-4 fill-[#c5a059]" />
                 <MapPin className="w-4 h-4" />
                 <Heart className="w-4 h-4 fill-rose-500 text-rose-500" />
@@ -152,7 +164,19 @@ export default function BlessedJourneyOverview({
                 <Car className="w-4 h-4" />
                 Transportation
               </h3>
-              <span className="text-[10px] uppercase tracking-wider text-gray-400">Transit &amp; Sacred Paths</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider text-gray-400">Transit &amp; Sacred Paths</span>
+                {onEditStep && (
+                  <button
+                    type="button"
+                    onClick={() => onEditStep(2)}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10 ml-1"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>Edit Fleet</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Transit line: Airport ➔ cities ➔ Airport */}
@@ -218,8 +242,9 @@ export default function BlessedJourneyOverview({
               "Pre-Journey Du'a List",
             ]}
             statusLabel="Live Dynamic Route Tracker"
-            statusText="Jeddah → Makkah → Madinah"
             mapStatus="Tracked"
+            onEditPilgrim={onEditStep ? () => onEditStep(1) : undefined}
+            onEditRoute={onEditStep ? () => onEditStep(1) : undefined}
           />
         </aside>
       </div>

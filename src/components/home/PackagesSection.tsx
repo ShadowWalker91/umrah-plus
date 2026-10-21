@@ -36,7 +36,7 @@ const TIERS: Tier[] = [
       'Umrah visa',
       'Airport transfers',
       'Group Ziyarat in Makkah and Madinah',
-      'WhatsApp support throughout',
+      '24/7 WhatsApp Support',
     ],
   },
   {
@@ -52,7 +52,7 @@ const TIERS: Tier[] = [
       'Private airport & inter-city transfers',
       'Guided Ziyarat',
       'Daily breakfast',
-      'WhatsApp support throughout',
+      '24/7 WhatsApp Support',
     ],
   },
   {
@@ -69,7 +69,7 @@ const TIERS: Tier[] = [
       'Private Ziyarat with a guide',
       'Half board',
       'Meet and assist at Jeddah',
-      'WhatsApp support throughout',
+      '24/7 WhatsApp Support',
     ],
   },
 ];

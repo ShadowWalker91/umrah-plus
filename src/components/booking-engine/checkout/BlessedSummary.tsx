@@ -3,7 +3,7 @@
 import { Users, ListChecks, Building2, Car, Pencil, Check } from 'lucide-react';
 import type { BookingState } from '../BookingController';
 import type { CheckoutTotals } from './totals';
-import RouteTrackerMap from './RouteTrackerMap';
+import RouteTrackerMap, { resolveRouteDetails } from './RouteTrackerMap';
 
 interface BlessedSummaryProps {
   state: BookingState;
@@ -17,6 +17,7 @@ interface BlessedSummaryProps {
   showMap?: boolean;
   mapStatus?: string;
   onEditPilgrim?: () => void;
+  onEditRoute?: () => void;
 }
 
 /**
@@ -34,12 +35,15 @@ export default function BlessedSummary({
   showMap = true,
   mapStatus,
   onEditPilgrim,
+  onEditRoute,
 }: BlessedSummaryProps) {
   const isZiyarat = type === 'Ziyarat';
   const isTransport = type === 'Transport';
   const routeCount = state.selectedZiyaratRoutes?.length || 0;
   const staysIncluded = !isZiyarat && !isTransport;
   const transportLabel = totals.hasTransport ? 'Included' : 'Self-arranged';
+  const routeInfo = resolveRouteDetails(state, type);
+  const activeStatusText = statusText || routeInfo.statusText;
 
   const rows: { icon: React.ReactNode; label: string; value?: string }[] = [
     {
@@ -124,16 +128,35 @@ export default function BlessedSummary({
         </div>
       )}
 
-      {statusLabel && statusText && (
+      {statusLabel && activeStatusText && (
         <div className="border-t border-white/10 pt-3">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-[#c5a059] block mb-1">
-            {statusLabel}
-          </span>
-          <span className="text-[11px] text-gray-300 font-light">{statusText}</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#c5a059] block">
+              {statusLabel}
+            </span>
+            {onEditRoute && (
+              <button
+                type="button"
+                onClick={onEditRoute}
+                className="flex items-center gap-1 text-[10px] text-[#c5a059] uppercase tracking-wider font-semibold hover:text-[#f3d38a] cursor-pointer"
+              >
+                <Pencil className="w-3 h-3" /> Edit
+              </button>
+            )}
+          </div>
+          <span className="text-[11px] text-gray-300 font-light">{activeStatusText}</span>
         </div>
       )}
 
-      {showMap && <RouteTrackerMap status={mapStatus} className="h-44 sm:h-52" />}
+      {showMap && (
+        <RouteTrackerMap
+          state={state}
+          type={type}
+          status={mapStatus}
+          destinationBadge={routeInfo.badgeText}
+          className="h-44 sm:h-52"
+        />
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import StepProgressBar from './StepProgressBar';
 import DynamicQuestionnaire from './DynamicQuestionnaire';
 import ItinerarySummary from './ItinerarySummary';
@@ -261,6 +261,7 @@ export default function BookingController({
   // a full-page Trip Summary, then the remaining steps as a checkout flow
   // with the inverted gold theme applied to the step panel.
   const [phase, setPhase] = useState<'booking' | 'summary' | 'checkout'>('booking');
+  const [isEditingFromSummary, setIsEditingFromSummary] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddonsDrawer, setShowAddonsDrawer] = useState(false);
   const [transportFleet, setTransportFleet] = useState<TransportVehicleConfig[]>([]);
@@ -591,7 +592,10 @@ export default function BookingController({
   // in the booking phase stops at the full-page Trip Summary instead.
   const goToStep = (n: number) => {
     setCurrentStep(n);
-    if (phase === 'booking' && n >= checkoutStartStep) setPhase('summary');
+    if (phase === 'booking' && n >= checkoutStartStep) {
+      setIsEditingFromSummary(false);
+      setPhase('summary');
+    }
   };
 
   const advanceStep = () => goToStep(currentStep + 1);
@@ -1319,6 +1323,17 @@ export default function BookingController({
     setCurrentStep(checkoutStartStep - 1);
   };
 
+  const handleEditStep = (targetStep: number) => {
+    setIsEditingFromSummary(true);
+    setPhase('booking');
+    setCurrentStep(targetStep);
+  };
+
+  const handleReturnToSummary = () => {
+    setIsEditingFromSummary(false);
+    setPhase('summary');
+  };
+
   return (
     <div className="w-full">
       <CheckoutBanner
@@ -1346,7 +1361,11 @@ export default function BookingController({
                 type={type}
                 totals={totals}
                 onBack={summaryBack}
-                onProceed={() => setPhase('checkout')}
+                onProceed={() => {
+                  setIsEditingFromSummary(false);
+                  setPhase('checkout');
+                }}
+                onEditStep={handleEditStep}
               />
             ) : (
               <TripSummaryScreen
@@ -1355,7 +1374,12 @@ export default function BookingController({
                 ziyaratPkgParams={ziyaratPkgParams}
                 totals={totals}
                 onBack={summaryBack}
-                onProceed={() => setPhase('checkout')}
+                onProceed={() => {
+                  setIsEditingFromSummary(false);
+                  setPhase('checkout');
+                }}
+                onEditStep={handleEditStep}
+                onBackToWidget={() => router.push('/#section-1')}
               />
             )}
           </div>
@@ -1366,7 +1390,9 @@ export default function BookingController({
         key={phase}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="booking-panel flex-1 min-w-0 bg-[#1a1c22] border border-white/5 p-5 sm:p-8 md:p-10 rounded-2xl shadow-xl relative"
+        className={`booking-panel min-w-0 bg-[#1a1c22] border border-white/5 p-5 sm:p-8 md:p-10 rounded-2xl shadow-xl relative ${
+          phase === 'checkout' ? 'w-full' : 'flex-1'
+        }`}
       >
         {phase === 'checkout' ? (
           <StepHeader
@@ -1376,7 +1402,21 @@ export default function BookingController({
             labelPrefix="Checkout"
           />
         ) : (
-          <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
+          <>
+            {isEditingFromSummary && (
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                <button
+                  type="button"
+                  onClick={handleReturnToSummary}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#f3d38a] hover:bg-[#c5a059] hover:text-black text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Return to Trip Summary
+                </button>
+                <span className="text-[11px] text-gray-400 font-light">Editing {getStepName()}</span>
+              </div>
+            )}
+            <StepProgressBar currentStep={currentStep} totalSteps={totalSteps} stepName={getStepName()} />
+          </>
         )}
 
         <form onSubmit={handleNext}>
@@ -1386,6 +1426,7 @@ export default function BookingController({
             updateState={updateState}
             type={type}
             onSkipTransport={handleSkipTransport}
+            totals={totals}
           />
 
           <BottomBar
@@ -1413,17 +1454,18 @@ export default function BookingController({
       </motion.div>
       )}
 
-      {/* Side rail — detailed trip summary while booking, Blessed Summary during checkout */}
+      {/* Side rail — detailed trip summary while booking, Blessed Summary during intermediate checkout steps */}
       {phase === 'booking' && (
         <div className="w-full xl:w-80 shrink-0 min-w-0">
           <ItinerarySummary
             state={bookingState}
             type={type}
             ziyaratPkgParams={ziyaratPkgParams}
+            onEditStep={handleEditStep}
           />
         </div>
       )}
-      {phase === 'checkout' && (
+      {phase === 'checkout' && currentStep < totalSteps && (
         <div className="w-full xl:w-80 shrink-0 min-w-0">
           <div className="xl:sticky xl:top-32">
             <BlessedSummary

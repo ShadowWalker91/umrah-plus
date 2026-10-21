@@ -48,16 +48,32 @@ export default function DateInputField({
 
   const handleContainerClick = () => {
     if (disabled) return;
+    const input = inputRef.current;
+    if (!input) return;
     try {
-      inputRef.current?.showPicker?.();
+      if (typeof input.showPicker === 'function') {
+        input.showPicker();
+      } else {
+        input.focus();
+      }
     } catch {
-      inputRef.current?.focus();
+      try {
+        input.focus();
+      } catch {}
     }
   };
 
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
       onClick={handleContainerClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleContainerClick();
+        }
+      }}
       className={`group relative flex items-center justify-between bg-[#0c0d10] border rounded-xl px-3.5 py-2.5 text-xs transition-all cursor-pointer select-none ${
         disabled
           ? 'opacity-50 cursor-not-allowed border-white/5'
@@ -82,7 +98,7 @@ export default function DateInputField({
         <Calendar className="w-3.5 h-3.5 text-[#c5a059] group-hover:scale-110 transition-transform shrink-0" />
       </div>
 
-      {/* Native invisible HTML5 Date Picker overlay for 100% full-box click & mobile support */}
+      {/* Native HTML5 Date Picker backing element */}
       <input
         ref={inputRef}
         id={id}
@@ -93,22 +109,12 @@ export default function DateInputField({
         max={isoMax}
         required={required}
         disabled={disabled}
-        onClick={(e) => {
-          try {
-            (e.currentTarget as any).showPicker?.();
-          } catch {}
-        }}
-        onFocus={(e) => {
-          try {
-            (e.currentTarget as any).showPicker?.();
-          } catch {}
-        }}
         onChange={(e) => {
           onChange(e.target.value);
         }}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
-        tabIndex={disabled ? -1 : 0}
-        aria-label={placeholder}
+        className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+        tabIndex={-1}
+        aria-hidden="true"
       />
     </div>
   );

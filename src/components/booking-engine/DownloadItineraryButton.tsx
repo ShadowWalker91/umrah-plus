@@ -21,6 +21,129 @@ const ROUTE_DETAILS_MAP: Record<string, string> = {
   'p4': 'JED Airport -> Makkah -> Madinah -> JED Airport',
 };
 
+/**
+ * Generates an ultra-crisp image of the top Dua header banner (Kaaba on left,
+ * Madinah on right, Arabic calligraphy Dua & Umrah Plus branding in center)
+ * to be embedded at the top of the PDF itinerary.
+ */
+async function createBannerImage(bookingRef: string, dateStr: string): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 240;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    const loadImage = (src: string): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Failed to load ' + src));
+        img.src = src;
+      });
+    };
+
+    // 1. Dark base background
+    ctx.fillStyle = '#0c0d10';
+    ctx.fillRect(0, 0, 1200, 240);
+
+    // 2. Left side: The Holy Kaaba with gradient overlay & gold arch
+    try {
+      const kaabaImg = await loadImage('/assets/images/makkah_kaaba.jpg');
+      ctx.save();
+      ctx.drawImage(kaabaImg, 0, 0, 320, 240);
+
+      const leftGrad = ctx.createLinearGradient(0, 0, 320, 0);
+      leftGrad.addColorStop(0, 'rgba(12, 13, 16, 0.4)');
+      leftGrad.addColorStop(0.7, 'rgba(12, 13, 16, 0.75)');
+      leftGrad.addColorStop(1, '#0c0d10');
+      ctx.fillStyle = leftGrad;
+      ctx.fillRect(0, 0, 320, 240);
+
+      // Decorative gold arch
+      ctx.strokeStyle = 'rgba(197, 160, 89, 0.65)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(140, 160, 115, Math.PI, 0, false);
+      ctx.stroke();
+      ctx.restore();
+    } catch (e) {
+      console.warn('Could not load Kaaba image for PDF:', e);
+    }
+
+    // 3. Right side: Madinah Prophet\'s Mosque with gradient overlay & gold arch
+    try {
+      const madinahImg = await loadImage('/assets/images/ziyarat/MadinahZiyaratCover.webp');
+      ctx.save();
+      ctx.drawImage(madinahImg, 1200 - 320, 0, 320, 240);
+
+      const rightGrad = ctx.createLinearGradient(1200 - 320, 0, 1200, 0);
+      rightGrad.addColorStop(0, '#0c0d10');
+      rightGrad.addColorStop(0.3, 'rgba(12, 13, 16, 0.75)');
+      rightGrad.addColorStop(1, 'rgba(12, 13, 16, 0.4)');
+      ctx.fillStyle = rightGrad;
+      ctx.fillRect(1200 - 320, 0, 320, 240);
+
+      // Decorative gold arch
+      ctx.strokeStyle = 'rgba(197, 160, 89, 0.65)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(1200 - 140, 160, 115, Math.PI, 0, false);
+      ctx.stroke();
+      ctx.restore();
+    } catch (e) {
+      console.warn('Could not load Madinah image for PDF:', e);
+    }
+
+    // 4. Outer Gold Border & Accents
+    ctx.strokeStyle = '#c5a059';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(0, 0, 1200, 240);
+
+    ctx.fillStyle = '#c5a059';
+    ctx.fillRect(0, 234, 1200, 6);
+
+    // 5. Center content
+    ctx.textAlign = 'center';
+
+    // Top logo title
+    ctx.fillStyle = '#f3d38a';
+    ctx.font = 'bold 24px "Times New Roman", serif';
+    ctx.fillText('U M R A H   P L U S', 600, 48);
+
+    // Arabic calligraphy Dua: لَتَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ
+    ctx.fillStyle = '#e6c987';
+    ctx.font = 'bold 42px "Traditional Arabic", "Amiri", "Scheherazade", "Playfair Display", serif';
+    ctx.fillText('لَتَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ', 600, 108);
+
+    // English subtitle
+    ctx.fillStyle = '#c5a059';
+    ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('M A Y   A L L A H   A C C E P T   Y O U R   B L E S S E D   J O U R N E Y', 600, 142);
+
+    // Thin separator line
+    ctx.strokeStyle = 'rgba(197, 160, 89, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(400, 164);
+    ctx.lineTo(800, 164);
+    ctx.stroke();
+
+    // Bottom reference & date info
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText(`CUSTOM RESERVATION ITINERARY  •  REF: ${bookingRef}  •  DATE: ${dateStr}`, 600, 192);
+
+    return canvas.toDataURL('image/jpeg', 0.95);
+  } catch (err) {
+    console.error('Failed to create banner canvas:', err);
+    return null;
+  }
+}
+
 export default function DownloadItineraryButton({ bookingId }: { bookingId: string }) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -48,33 +171,46 @@ export default function DownloadItineraryButton({ bookingId }: { bookingId: stri
       const dark: [number, number, number] = [17, 18, 21];
       const cardBorder: [number, number, number] = [226, 232, 240];
 
-      // 1. Header Banner
-      doc.setFillColor(...dark);
-      doc.roundedRect(15, 15, 180, 26, 3, 3, 'F');
-      doc.setFillColor(...gold);
-      doc.rect(15, 39, 180, 2, 'F');
+      // 1. Header Banner — Render with Kaaba & Madinah Dua arched imagery
+      const bannerDataUrl = await createBannerImage(
+        booking.reference || booking.id,
+        formatDateDDMMYYYY(new Date())
+      );
 
-      doc.setTextColor(...gold);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.text('UMRAH PLUS', 22, 26);
+      let y = 54;
 
-      doc.setFontSize(9);
-      doc.setTextColor(200, 200, 200);
-      doc.setFont('helvetica', 'normal');
-      doc.text('CUSTOM RESERVATION ITINERARY', 22, 33);
+      if (bannerDataUrl) {
+        doc.addImage(bannerDataUrl, 'JPEG', 15, 12, 180, 36);
+        doc.setFillColor(...gold);
+        doc.rect(15, 48, 180, 1.2, 'F');
+      } else {
+        // Fallback text banner if canvas cannot render
+        doc.setFillColor(...dark);
+        doc.roundedRect(15, 15, 180, 26, 3, 3, 'F');
+        doc.setFillColor(...gold);
+        doc.rect(15, 39, 180, 2, 'F');
 
-      doc.setTextColor(...gold);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text(booking.reference || booking.id, 140, 26);
+        doc.setTextColor(...gold);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.text('UMRAH PLUS', 22, 26);
 
-      doc.setTextColor(180, 180, 180);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Date: ' + formatDateDDMMYYYY(new Date()), 140, 32);
+        doc.setFontSize(9);
+        doc.setTextColor(200, 200, 200);
+        doc.setFont('helvetica', 'normal');
+        doc.text('CUSTOM RESERVATION ITINERARY', 22, 33);
 
-      let y = 47;
+        doc.setTextColor(...gold);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(booking.reference || booking.id, 140, 26);
+
+        doc.setTextColor(180, 180, 180);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Date: ' + formatDateDDMMYYYY(new Date()), 140, 32);
+        y = 47;
+      }
 
       function checkPageBreak(neededHeight: number) {
         if (y + neededHeight > 260) {

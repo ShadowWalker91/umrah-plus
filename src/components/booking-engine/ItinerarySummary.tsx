@@ -11,7 +11,7 @@ import {
   FIXED_CIRCUITS 
 } from './BookingController';
 import { ZIYARAT_ROUTES, ZIYARAT_FLEET, ZIYARAT_PRICES, getZiyaratRouteFare, getZiyaratAllocatedQuantity } from '@/data/ziyaratBuilderData';
-import { Building2, Car, Users, Sparkles, CheckCircle, Compass, Calendar, Plane } from 'lucide-react';
+import { Building2, Car, Users, Sparkles, CheckCircle, Compass, Calendar, Plane, Pencil } from 'lucide-react';
 import { formatDateDDMMYYYY } from '@/lib/utils';
 
 interface Props {
@@ -20,9 +20,10 @@ interface Props {
   ziyaratPkgParams?: any;
   /** 'sidebar' (default) keeps the sticky rail; 'page' renders the full-width report layout */
   variant?: 'sidebar' | 'page';
+  onEditStep?: (step: number) => void;
 }
 
-export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar' }: Props) {
+export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar', onEditStep }: Props) {
   const rootClass = variant === 'page'
     // 'page' sits inside the checkout-phase gold panel, which already supplies
     // the background, border and padding — only the content block is rendered here.
@@ -31,6 +32,15 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
   const isTransport = type === 'Transport';
   const isZiyarat = type === 'Ziyarat';
   const isUmrahPlus = type === 'Umrah Plus';
+  const isRegularUmrah = type === 'Umrah' || (!isTransport && !isZiyarat && !isUmrahPlus);
+
+  // Step resolution for editing sections across flows
+  const guestsStep = 1;
+  const accommodationStep = 1;
+  const transportRouteStep = isTransport ? 2 : (isUmrahPlus ? 2 : 2);
+  const ziyaratRoutesStep = isZiyarat ? 1 : 4;
+  const vehicleStep = isTransport ? 3 : (isZiyarat ? 2 : 3);
+
   const currentPath = state.travelPath || 'p1';
   const travelPackage = PACKAGES.find(p => p.id === currentPath);
   
@@ -84,9 +94,21 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
         <div className="space-y-4 text-sm">
           {/* 1. Guests & Luggage */}
           <div className="border-b border-white/5 pb-3">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-              <Users className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>Passengers & Luggage</span>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                <Users className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Passengers & Luggage</span>
+              </div>
+              {onEditStep && (
+                <button
+                  type="button"
+                  onClick={() => onEditStep(1)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Edit</span>
+                </button>
+              )}
             </div>
             <div className="text-white font-medium text-sm">
               {state.adultsCount} Adult{state.adultsCount > 1 ? 's' : ''}
@@ -99,9 +121,21 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
 
           {/* 2. Route & Stops Schedule */}
           <div className="border-b border-white/5 pb-3 space-y-2">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-              <Compass className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>{isFixed ? 'Selected Itinerary & Schedule Review' : 'Transfer Details'}</span>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                <Compass className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>{isFixed ? 'Selected Itinerary & Schedule Review' : 'Transfer Details'}</span>
+              </div>
+              {onEditStep && (
+                <button
+                  type="button"
+                  onClick={() => onEditStep(2)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Edit Route</span>
+                </button>
+              )}
             </div>
 
             {isFixed ? (
@@ -185,9 +219,21 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
 
           {/* 3. Vehicle & Multiplier */}
           <div className="border-b border-white/5 pb-3 space-y-1.5">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-              <Car className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>Chauffeur & Fleet</span>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                <Car className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Chauffeur & Fleet</span>
+              </div>
+              {onEditStep && (
+                <button
+                  type="button"
+                  onClick={() => onEditStep(3)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Edit Fleet</span>
+                </button>
+              )}
             </div>
 
             <div className="bg-[#1a1c22] p-3 rounded-xl border border-white/5">
@@ -254,9 +300,21 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
       <div className="space-y-4 text-sm">
         {/* 1. Guests */}
         <div className="border-b border-white/5 pb-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-            <Users className="w-3.5 h-3.5 text-[#c5a059]" />
-            <span>{isZiyarat ? 'Pilgrims' : 'Guests'}</span>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+              <Users className="w-3.5 h-3.5 text-[#c5a059]" />
+              <span>{isZiyarat ? 'Pilgrims' : 'Guests'}</span>
+            </div>
+            {onEditStep && (
+              <button
+                type="button"
+                onClick={() => onEditStep(guestsStep)}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+              >
+                <Pencil className="w-3 h-3" />
+                <span>Edit</span>
+              </button>
+            )}
           </div>
           <div className="text-white font-medium text-sm">
             {state.adultsCount} {state.adultsCount > 1 ? 'Pilgrims' : 'Pilgrim'}
@@ -271,14 +329,26 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
                 <Compass className="w-3.5 h-3.5 text-[#c5a059]" />
                 <span>Selected Ziyarat Routes</span>
               </div>
-              {state.selectedZiyaratRoutes && state.selectedZiyaratRoutes.length > 0 && (
-                <span className="text-[10px] text-[#f9e8a2] bg-[#c5a059]/20 px-2 py-0.5 rounded-full border border-[#c5a059]/30 font-bold">
-                  {state.selectedZiyaratRoutes.reduce((sum, rId) => {
-                    const r = ZIYARAT_ROUTES.find(route => route.id === rId);
-                    return sum + (r?.siteIds.length || 0);
-                  }, 0)} Ziyarats
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {state.selectedZiyaratRoutes && state.selectedZiyaratRoutes.length > 0 && (
+                  <span className="text-[10px] text-[#f9e8a2] bg-[#c5a059]/20 px-2 py-0.5 rounded-full border border-[#c5a059]/30 font-bold">
+                    {state.selectedZiyaratRoutes.reduce((sum, rId) => {
+                      const r = ZIYARAT_ROUTES.find(route => route.id === rId);
+                      return sum + (r?.siteIds.length || 0);
+                    }, 0)} Ziyarats
+                  </span>
+                )}
+                {onEditStep && (
+                  <button
+                    type="button"
+                    onClick={() => onEditStep(ziyaratRoutesStep)}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>Edit</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {state.selectedZiyaratRoutes && state.selectedZiyaratRoutes.length > 0 ? (
@@ -334,9 +404,21 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
         {/* 3. Accommodation (Makkah & Madinah for Umrah) */}
         {!isZiyarat && !isTransport && (
           <div className="border-b border-white/5 pb-3 space-y-2">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-              <Building2 className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>Accommodation</span>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                <Building2 className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Accommodation</span>
+              </div>
+              {onEditStep && (
+                <button
+                  type="button"
+                  onClick={() => onEditStep(accommodationStep)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Edit</span>
+                </button>
+              )}
             </div>
 
             {/* Makkah */}
@@ -392,9 +474,35 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
         {/* 4. Transportation / Fleet (Shown for Transport, Ziyarat, Umrah Plus, or when transport upsell selected) */}
         {(isTransport || isZiyarat || (isUmrahPlus && !state.skipTransport) || (!isZiyarat && !isUmrahPlus && state.selectedUpsells.includes('transport'))) && (
           <div className="border-b border-white/5 pb-3 space-y-2">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">
-              <Car className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>{isZiyarat ? 'Private Fleet' : 'Transportation'}</span>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+                <Car className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>{isZiyarat ? 'Private Fleet' : 'Transportation'}</span>
+              </div>
+              {onEditStep && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => onEditStep(transportRouteStep)}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded border border-white/10"
+                    title={isZiyarat ? 'Edit Private Fleet' : 'Edit Transportation Route'}
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>{isZiyarat ? 'Edit Fleet' : 'Edit Route'}</span>
+                  </button>
+                  {!isZiyarat && (
+                    <button
+                      type="button"
+                      onClick={() => onEditStep(vehicleStep)}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c5a059] hover:text-[#f3d38a] transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded border border-white/10"
+                      title="Edit Vehicle"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      <span>Edit Fleet</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {vehicle ? (

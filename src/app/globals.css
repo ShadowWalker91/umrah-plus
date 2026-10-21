@@ -1208,9 +1208,9 @@ body.overflow-hidden {
 .package-row {
     position: relative;
     display: grid;
-    grid-template-columns: 200px 250px minmax(0, 1fr) 160px;
+    grid-template-columns: 190px 240px minmax(0, 1fr) 205px;
     grid-template-areas: "intro hotels incl btn";
-    column-gap: 28px;
+    column-gap: 24px;
     row-gap: 18px;
     align-items: center;
     min-height: 176px;
@@ -1418,12 +1418,12 @@ body.overflow-hidden {
     grid-area: btn;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 10px;
-    justify-self: center;
+    justify-self: end;
     width: 100%;
-    max-width: 190px;
+    max-width: 205px;
 }
 
 .quote-button {
@@ -1432,12 +1432,11 @@ body.overflow-hidden {
     border: 0;
     border-radius: 16px;
     width: 100%;
-    max-width: 200px;
-    min-height: 50px;
-    padding: 9px 14px;
-    font-size: 14px;
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 13.5px;
     font-weight: 700;
-    line-height: 17px;
+    line-height: 1;
     box-shadow: 0 4px 7px var(--pkg-shadow-ink);
     text-align: center;
     text-decoration: none;
@@ -1445,14 +1444,23 @@ body.overflow-hidden {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: filter 0.2s ease;
+    white-space: nowrap;
+    transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+.quote-button span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 .quote-button svg {
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    vertical-align: -2px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
 }
 
 .quote-button:hover {
@@ -1483,11 +1491,13 @@ body.overflow-hidden {
 
     .quote-actions {
         width: 100%;
-        max-width: 100%;
+        max-width: 260px;
+        margin: 0 auto;
     }
 
     .quote-button {
-        padding: 40px 60px;
+        padding: 12px 20px;
+        white-space: nowrap;
     }
 }
 

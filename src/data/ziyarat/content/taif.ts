@@ -1,100 +1,344 @@
 import { ZiyaratContent } from "./index";
 
 export const taifContent: Record<string, ZiyaratContent> = {
-  // 1
-  "masjid-abdullah-ibn-abbas": {
-    title: "Masjid Abdullah ibn Abbas (r.a.)",
-    urduTitle: "مسجد عبد الله بن عباس",
-    bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18.png",
-    description: "The historic mosque named after the Prophet's (PBUH) cousin and renowned scholar, located in the heart of Taif.",
-    history: `<p>This significant mosque is built near the resting place of Abdullah ibn Abbas (r.a.), the paternal cousin of Prophet Muhammad (PBUH) and a revered <i>mufassir</i> (exegete) of the Quran. He moved to Taif in his later years, turning the city into a center of Islamic learning. The original structure dates back to 630 CE (approx.), with the current building constructed in 1958. It remains a spiritual hub for visitors paying respects to one of the most knowledgeable companions in Islamic history.</p>`,
-    videoUrl: "https://www.youtube.com/watch?v=KjK3Rk4i9i0",
-    gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18.png"],
-    location: "Central Taif",
-    timings: "Prayer Times"
-  },
-  // 2
   "cemetery-martyred-companions": {
     title: "Cemetery of Martyred Companions",
     urduTitle: "مقبرة شهداء الطائف",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-17-1.png",
-    description: "The sacred resting place of the Sahaba who were martyred during the Siege of Taif.",
-    history: `<p>Located adjacent to Masjid Abdullah ibn Abbas, this cemetery contains the graves of the noble companions (Sahaba) who were martyred during the Siege of Taif, which followed the Battle of Hunayn in 8 AH. It stands as a solemn reminder of the sacrifices made by the early Muslims to spread the message of Islam in the region.</p>`,
+    description: "The Cemetery of Martyred Companions is a place that naturally draws the heart toward silence, respect, and remembrance. It is one of those Taif Ziyarat places where the visitor does not come for noise or grandeur, but for a quiet moment with history. The site...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Cemetery of Martyred Companions is a place that naturally draws the heart toward silence, respect, and remembrance. It is one of those Taif Ziyarat places where the visitor does not come for noise or grandeur, but for a quiet moment with history. The site is remembered as part of the early Islamic story, and that memory gives it a lasting place in Taif’s sacred landscape. Its setting near Masjid Abdullah ibn Abbas places it within a part of Taif already rich in religious meaning. For visitors exploring historical places in Taif, the cemetery stands as a gentle reminder that Islamic history lives not only in books, but also in places where sacrifice, patience, and loyalty are quietly preserved. It is this sense of memory that gives the site its depth. For many pilgrims, a visit here becomes a reflective pause. The cemetery reminds the visitor that the story of Islam was built through real struggle and sincere devotion. It is not a place that asks for attention. It asks for respect. And in that respect, its meaning becomes even greater. Historical Significance The Memory of the Martyred Companions This cemetery is closely associated with the Companions (RA) who are remembered in connection with sacrifice in the early Islamic period. Even when the site is approached through historical remembrance, its meaning remains powerful. It preserves the honour of those whose lives became part of the first chapters of Islam.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is remembered as a place connected with martyred Companions (RA).</li>
+  <li style="margin-bottom: 8px;">It reflects the hardship faced by the early Muslim community.</li>
+  <li style="margin-bottom: 8px;">It keeps alive a serious chapter in Islamic memory.</li>
+  <li style="margin-bottom: 8px;">Its importance comes from remembrance, not from display.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Taif in the Seerah Landscape Taif holds an important place in the Seerah landscape, where the life of Prophet Muhammad ﷺ and the early Muslim community touched many places. This cemetery adds another layer to that story and helps visitors understand why Taif continues to matter in Islamic heritage. The city is remembered not only for its location, but for the history it carries.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Taif has a respected place in Islamic historical memory.</li>
+  <li style="margin-bottom: 8px;">The city appears in discussions of Taif historical sites and pilgrimage routes.</li>
+  <li style="margin-bottom: 8px;">The cemetery adds depth to Taif’s religious and historical identity.</li>
+  <li style="margin-bottom: 8px;">It helps visitors see that Taif’s story is larger than one site alone.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Near Masjid Abdullah ibn Abbas The cemetery’s location near Masjid Abdullah ibn Abbas gives it a clear and familiar reference point. This helps visitors place the site within a wider area of devotion, memory, and historical respect. The nearby mosque adds to the sense that this part of Taif is shaped by faith and remembrance.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is near Masjid Abdullah ibn Abbas.</li>
+  <li style="margin-bottom: 8px;">The area is known to many visitors in Taif.</li>
+  <li style="margin-bottom: 8px;">It fits naturally into a Taif Ziyarat route.</li>
+  <li style="margin-bottom: 8px;">The setting strengthens its place in Taif’s living heritage.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A Place That Speaks Through Silence Not every important place needs a large structure to make its meaning felt. Some places become deeply moving because of what they represent. The Cemetery of Martyred Companions is one of those places. Its quietness is part of its message, and that message is dignity.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is remembered for meaning, not architecture.</li>
+  <li style="margin-bottom: 8px;">It invites reflection rather than movement.</li>
+  <li style="margin-bottom: 8px;">It adds emotional depth to ziyarat in Taif.</li>
+  <li style="margin-bottom: 8px;">It helps visitors remember the sacrifice of the early Muslims.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Site Today Physical Appearance Today Today, the cemetery is understood as a modest and solemn place of remembrance. It does not present itself as a major tourist attraction, and that is part of its dignity. Its value lies in the memory attached to it, not in decoration or modern display. Historical Remains and Structures Visitors should not expect a preserved ancient structure from the earliest Islamic period. The site is remembered more through its association and historical meaning than through surviving original construction. That association is what gives the place its lasting importance. Modern Development and Surroundings The area around the cemetery belongs to present day Taif, where modern life and historical memory exist side by side. Even so, the site keeps its quiet identity. It remains one of the more reflective places to visit in Taif for those drawn to Islamic heritage and remembrance. Access for Visitors Access is best understood in practical terms rather than through fixed public timings. Visitors can usually approach the area as part of the normal mosque and cemetery surroundings, but the exact situation may vary. Because of that, the site should be approached with patience, humility, and care. What Visitors Should Expect A visitor should come here with a calm heart and realistic expectations. This is not a place for entertainment or casual sightseeing. It is a place for remembrance, reflection, and honouring an important chapter of Islamic history with dignity. Why It Still Matters The Cemetery of Martyred Companions still matters because the memory it carries still matters. In a city like Taif, where history and faith remain closely connected, such a place reminds visitors that Islamic heritage is preserved not only in major landmarks, but also in quiet places of remembrance. These are the places that often leave the deepest mark, because they do not try to impress the visitor. They invite the visitor to feel, remember, and reflect. For pilgrims and families following a Taif Ziyarat itinerary, the cemetery offers something gentle yet lasting. It invites the visitor to remember sacrifice without exaggeration, and to appreciate the sincerity of those whose faith helped shape the early Muslim story. It also helps a visitor understand that history is not only about famous events. It is also about the people whose lives became part of those events and whose memory still deserves honour. This is why the site continues to matter today. It gives visitors a chance to pause in the middle of a journey and think about devotion, patience, and loyalty in a more personal way. In that quiet moment, the cemetery becomes more than a place on a map. It becomes a reminder that the early Muslim story was built with sacrifice, and that remembering such places helps keep that story alive with dignity and gratitude. Frequently Asked Questions Where is the Cemetery of Martyred Companions located? It is near Masjid Abdullah ibn Abbas in Taif, Saudi Arabia. Why is this site important? It is remembered as a place associated with the martyred Companions (RA) and the early history of Islam in Taif. Can visitors go there today? Yes, visitors can usually approach the area, but fixed public timings are not reliably established.</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-17-1.png"],
-    location: "Near Masjid Abdullah ibn Abbas",
-    timings: "Open Site"
+    location: "Near Masjid Abdullah ibn Abbas, Taif, Saudi Arabia.",
+    timings: "No consistently verified fixed visiting hours are publicly established. Access usually follows the local conditions of the mosque and cemetery area.",
   },
-  // 3
+
   "masjid-addas": {
     title: "Masjid Addas (r.a.)",
     urduTitle: "مسجد عداس",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-3.png",
-    description: "Built on the orchard site where the Christian slave Addas (r.a.) served grapes to the Prophet (PBUH).",
-    history: `<p>This mosque marks the historic orchard where Prophet Muhammad (PBUH) took refuge after being stoned and driven out of Taif by the Banu Thaqif tribe. It was here that Addas, a Christian slave from Nineveh, offered Him grapes. Moved by the Prophet's recitation of 'Bismillah', Addas kissed His hands and feet, becoming the first person from Taif to accept Islam. The site symbolizes hope and the universal reach of the Prophet's message.</p>`,
+    description: "Masjid Addas is one of the most well known Islamic historical sites in Taif, remembered for a moment of kindness during one of the hardest days in the life of Prophet Muhammad ﷺThe mosque is associated with Addas, the Christian servant who is remembered in...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Masjid Addas is one of the most well known Islamic historical sites in Taif, remembered for a moment of kindness during one of the hardest days in the life of Prophet Muhammad ﷺThe mosque is associated with Addas, the Christian servant who is remembered in the Seerah for offering grapes to the Prophet ﷺ after his painful journey out of Taif. This is not just a mosque with a story attached to it. For many visitors, Masjid Addas represents mercy, dignity, and the human side of the Prophet’s ﷺ life. It stands in Taif as a reminder that even in hardship, noble character can open hearts. That is why it holds a special place among Taif Ziyarat places and historical places in Taif. A visitor approaching this site is usually thinking less about architecture and more about meaning. The mosque belongs to the wider memory of Taif, where faith, pain, patience, and kindness are remembered together. It is one of those places that helps the Seerah feel closer, more personal, and deeply moving. Historical Significance The painful return from Taif Masjid Addas is traditionally linked with the Prophet Muhammad ﷺs return from Taif after the people rejected his message and caused him great hurt. In Islamic memory, this was one of the most difficult moments in the Seerah, yet it also revealed the Prophet’s ﷺ patience and mercy. The mosque is remembered in connection with that emotional chapter.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is associated with the Prophet Muhammad ﷺs difficult departure from</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Taif.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The event is part of the "Year of Sorrow" in the broader Seerah memory.</li>
+  <li style="margin-bottom: 8px;">The site reflects patience during hardship.</li>
+  <li style="margin-bottom: 8px;">It reminds visitors that Taif was part of a painful but important moment in</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Islamic history. The kindness of Addas The strongest memory connected to the site is the kindness of Addas, who offered grapes to the Prophet ﷺ when others had turned away from him. That simple act has stayed in Muslim memory because it shows how one moment of compassion can carry lasting meaning. In many ways, it is this human kindness that gives the mosque its heart.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Addas is remembered as the one who offered grapes to the Prophet ﷺ.</li>
+  <li style="margin-bottom: 8px;">He is traditionally described as a Christian servant of Utbah ibn Rabi‘ah.</li>
+  <li style="margin-bottom: 8px;">The encounter is one of the most moving stories connected with Taif.</li>
+  <li style="margin-bottom: 8px;">The site is often visited because of this memory of mercy.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A place tied to the Seerah of mercy Masjid Addas belongs to the wider Seerah of mercy, where the Prophet Muhammad ﷺ responded to pain with dignity and prayer rather than anger. The site is meaningful because it helps visitors remember not only what happened, but how the Prophet ﷺ carried himself through it. That lesson remains powerful for anyone studying Islamic heritage in Taif.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is linked with prophetic patience and mercy.</li>
+  <li style="margin-bottom: 8px;">It is remembered as part of the Seerah, not just local history.</li>
+  <li style="margin-bottom: 8px;">The story gives depth to ziyarat in Taif.</li>
+  <li style="margin-bottom: 8px;">It encourages reflection on character, faith, and forgiveness.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A remembered place, not just a building The mosque matters because memory matters. Even if visitors come for a few minutes, they are standing near a place that carries one of the most touching scenes in Taif’s Islamic history. That is why Masjid Addas remains important among Taif historical sites.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is remembered for meaning rather than size.</li>
+  <li style="margin-bottom: 8px;">It is part of Taif’s Islamic heritage.</li>
+  <li style="margin-bottom: 8px;">The story helps visitors connect with the Prophet’s ﷺ journey.</li>
+  <li style="margin-bottom: 8px;">It remains a meaningful stop for pilgrims and families.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Site Today Physical appearance today Today, Masjid Addas is a modest historical mosque rather than a large landmark. It is known more for the story attached to it than for elaborate design. Visitors usually find a simple place of prayer and remembrance, which suits the quiet dignity of the site. Historical remains and structure The current mosque is a later structure connected with the traditionally identified location of the Addas story. Visitors should understand it as a commemorative site, not as a surviving building from the Prophet’s ﷺ time. Its value lies in remembrance and historical association. Modern surroundings and visitor access The area around the mosque has become part of modern Taif, yet the site is still treated as a meaningful stop on a Taif Ziyarat route. Access may vary with local conditions, so visitors should expect a normal mosque setting rather than a heavily developed tourist attraction. What visitors should expect Visitors should come with respect, calmness, and an awareness of the site’s Seerah connection. There are no special rituals attached to the mosque. Its power is in the story it preserves, and in the quiet reminder that mercy can appear in the most difficult moments. Why It Still Matters Masjid Addas still matters because it preserves one of the most tender moments in the Seerah. When the world had turned harsh, a simple act of kindness became unforgettable. That is why the mosque speaks to visitors even today. It does not speak loudly, but it speaks clearly about mercy, faith, and the dignity of the Prophet Muhammad ﷺ. For people following Taif Ziyarat, this site adds an important emotional layer to the journey. It helps visitors understand that Islamic history is not only about major events and great victories. It is also about small moments that reveal the nobility of character. The grapes offered by Addas are remembered not because they were grand, but because they happened at a time when compassion mattered deeply. The mosque also reminds modern visitors that Taif is not only a place on a map. It is a city tied to some of the most moving chapters in Islamic memory. Standing near a place like Masjid Addas can make the Seerah feel closer and more human. It invites gratitude for the Prophet’s ﷺ patience, admiration for kindness, and reflection on how even a small act can become part of a lasting legacy. Frequently Asked Questions 1. Where is Masjid Addas located in Taif? Masjid Addas is in the Al Mathnah area of Taif, near Wadi Waj Road. 2. Why is Masjid Addas important? It is traditionally linked with the story of Addas offering grapes to Prophet Muhammad ﷺ after his difficult departure from Taif. 3. Can visitors go to Masjid Addas today? Yes, visitors can usually approach the mosque, but visiting hours are not officially fixed and access may depend on local arrangements</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-3.png"],
-    location: "Al Mathnah, Taif",
-    timings: "Open Site"
+    location: "Masjid Addas is in Taif, near Al Mathnah and around the area of Wadi Waj Road, with the site often described as close to the gardens and orchards linked to the Taif ziyarat route.",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
   },
-  // 4
+
   "masjid-al-kou": {
     title: "Masjid al-Kou",
     urduTitle: "مسجد الكوع",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-4.png",
-    description: "Also known as the 'Mosque of the Elbow', marking a spot of rest for the Prophet (PBUH).",
-    history: `<p>Located in the Al-Mathnah district, this mosque is also known as 'Masjid al-Mawqif' (The Stop). Tradition holds that the Prophet (PBUH) leaned on a stone here while resting during his difficult journey to Taif. The impression of his elbow was reportedly left on the rock, giving the mosque its name ('Al-Kou' means 'The Elbow'). It stands as a testament to the physical hardships the Prophet endured for the sake of Islam.</p>`,
+    description: "Masjid al-Kou is one of the better known Islamic historical sites in Taif, and it carries a memory that is both quiet and powerful. The mosque is traditionally linked with the visit of Prophet Muhammad ﷺ to Taif, when he came to دعوت الناس to Islam and faced...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Masjid al-Kou is one of the better known Islamic historical sites in Taif, and it carries a memory that is both quiet and powerful. The mosque is traditionally linked with the visit of Prophet Muhammad ﷺ to Taif, when he came to دعوت الناس to Islam and faced rejection and hardship. For many visitors, the site is meaningful because it helps the Seerah feel close, real, and deeply human. The mosque is also known by another name, "Masjid al-Mawqif," meaning the mosque of the stop. That name itself reflects the way people remember the place: as a spot where the Prophet ﷺ is said to have paused during his journey. In Taif Ziyarat, this gives the mosque a special place, because it connects the city’s landscape with one of the most emotional chapters of early Islamic history. A visitor should understand Masjid al-Kou as a commemorative site rooted in historical remembrance. It is not a place of spectacle. Its value lies in its link to the Prophet ﷺthe memory of his patience, and the way the site keeps that memory alive for later generations. Historical Significance The Prophet’s Pause in Taif Masjid al-Kou is traditionally identified with the place where Prophet Muhammad ﷺ paused during his journey in Taif. Some historical accounts connect the site with the stone or resting place on which he leaned, which is why the mosque became known by this name. Because of that association, it remains one of the most discussed Taif pilgrimage sites.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is linked to the Prophet Muhammad ﷺs visit to Taif.</li>
+  <li style="margin-bottom: 8px;">It is traditionally remembered as a stop or resting place.</li>
+  <li style="margin-bottom: 8px;">The mosque’s name reflects this historical memory.</li>
+  <li style="margin-bottom: 8px;">The identification is based on later remembrance, not a surviving early structure.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Meaning of "Al-Kou" The name "Al-Kou" is commonly explained in connection with the elbow or a resting support, and the site is also called "Masjid al-Mawqif." These names show how deeply the memory of the Prophet’s ﷺ journey shaped the way people spoke about the place. Even the name carries a quiet reverence.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">"Masjid al-Kou" is tied to the idea of a resting point.</li>
+  <li style="margin-bottom: 8px;">"Masjid al-Mawqif" is another name used for the mosque.</li>
+  <li style="margin-bottom: 8px;">The naming reflects prophetic memory in the local landscape.</li>
+  <li style="margin-bottom: 8px;">The site’s identity comes from remembrance, not decoration.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Taif and the Seerah of Patience Taif holds an important place in the Seerah because of the hardship the Prophet Muhammad ﷺ faced there. The visit to Taif is remembered as a time of pain, rejection, and prayer, but also of patience and mercy. Masjid al-Kou stands within that story and helps visitors reflect on the noble way the Prophet ﷺ responded to difficulty.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site belongs to the broader Seerah of Taif.</li>
+  <li style="margin-bottom: 8px;">It reminds visitors of hardship in the early Muslim story.</li>
+  <li style="margin-bottom: 8px;">The Prophet’s ﷺ patience is part of the site’s meaning.</li>
+  <li style="margin-bottom: 8px;">It gives Taif historical sites a deeper emotional dimension.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">A Marker in Taif’s Historical Memory Over time, the mosque became part of Taif’s historical memory and ziyarat route. Its importance comes not from size, but from the meaning people attach to it. For visitors interested in Islamic heritage in Taif, it is one of those places where a small site carries a large memory.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The mosque is part of Taif’s remembered sacred geography.</li>
+  <li style="margin-bottom: 8px;">It is often listed among historical places in Taif.</li>
+  <li style="margin-bottom: 8px;">The site reflects the city’s Islamic heritage.</li>
+  <li style="margin-bottom: 8px;">It remains important because of its association with the Prophet ﷺ.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Site Today Physical Appearance Today Today, Masjid al-Kou is a small historical mosque. It is modest in size and remembered more for its story than for any grand architectural style. Visitors should expect a simple place that reflects respect for its past. Historical Remains and Structure The current structure is not an original first-century Islamic building. It is a later mosque built to preserve the memory of the site. Reports describe it as having a compact prayer area and a small open courtyard, with the historical association being its main value. Modern Surroundings The mosque sits within a developed part of Taif, near modern roads and local movement, yet it still holds its own identity. The surrounding area has changed over time, but the site remains a recognized stop for those following a Taif Ziyarat route. Visitor Access Access is generally possible, but reliable official visitor hours are not clearly established. Visitors should treat it as an active historical mosque and come with normal mosque etiquette, quiet respect, and realistic expectations. Why It Still Matters Masjid al-Kou still matters because it keeps a painful and noble chapter of the Seerah in living memory. Places like this help Muslims remember that the life of Prophet Muhammad ﷺ was not only filled with guidance and victory, but also with endurance, rejection, and mercy. When a visitor stands near this mosque, the story of Taif feels less distant and more personal. It also matters because Taif Ziyarat is not only about seeing places. It is about understanding the moral weight behind them. Masjid al-Kou helps visitors reflect on patience in hardship, dignity in suffering, and the quiet strength that shaped the Prophet’s ﷺ mission. That kind of reflection can stay with a person long after the visit ends. For many pilgrims, the mosque is a reminder that Islamic history is preserved in humble places too. It shows how memory can survive through names, stories, and shared respect. In that way, Masjid al-Kou continues to serve as a small but meaningful doorway into the heart of Taif’s Islamic heritage. Frequently Asked Questions 1. Where is Masjid al-Kou located? It is in Taif’s Al-Mathnah area, near Wadi al-What and Jabal Abu Zubaydah. 2. Why is Masjid al-Kou important? It is traditionally linked with the Prophet Muhammad ﷺs stop during his journey to Taif and is remembered as part of that Seerah. 3. Can visitors visit Masjid al-Kou today? Yes, visitors can usually approach it, but visiting hours are not officially fixed and may depend on local arrangements</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-4.png"],
-    location: "Al Mathnah, Taif",
-    timings: "Open Site"
+    location: "Masjid al-Kou is in Taif, in the Al-Mathnah area near Wadi al-What and the foothills of Jabal Abu Zubaydah, a known landmark in the city’s historical route.s",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
   },
-  // 5
+
   "muawiyah-dam": {
     title: "Muawiyah Dam",
     urduTitle: "سد معاوية",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-5.png",
-    description: "An ancient engineering marvel dating back to the Umayyad Caliphate (58 AH).",
-    history: `<p>Also known as the Saiysad Dam, this structure was built during the reign of Caliph Muawiyah bin Abu Sufyan (r.a.) in 58 AH (677 CE), as evidenced by an ancient inscription found on a rock at the site. Located in the Saiysad National Park, it is a rare surviving example of early Islamic infrastructure designed to manage water resources in the Arabian Peninsula.</p>`,
+    description: "Muawiyah Dam is one of the quieter but deeply meaningful Islamic historical sites in Taif. It is a place where the past is not told through words alone, but through stone, water, and the care of an early Muslim community that understood the value of...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Muawiyah Dam is one of the quieter but deeply meaningful Islamic historical sites in Taif. It is a place where the past is not told through words alone, but through stone, water, and the care of an early Muslim community that understood the value of life-giving resources. For many visitors, it offers a different kind of ziyarat experience, one that connects faith with service and memory with survival. The dam is traditionally linked with Caliph Muawiyah ibn Abi Sufyan (RA) and the Umayyad period. That connection gives the site a strong place in Islamic heritage, because it shows how early Muslim leadership did not only preserve power, but also invested in public works that served people. In Taif Ziyarat, this makes the dam important in a way that is quiet, practical, and lasting. A visitor should come to Muawiyah Dam with a sense of respect for the land and for the people who shaped it. This is not a place of spectacle. Its dignity lies in endurance. It reminds us that Islamic civilization was built not only by worship and learning, but also by works that helped communities live, grow, and remain connected to their environment. Historical Significance An early Umayyad work Muawiyah Dam belongs to the early Islamic centuries and is traditionally dated to 58 AH / 677 CE. That makes it one of the older surviving structures connected with Taif. Its age matters because it helps visitors feel how early the Muslim world began building lasting public works in the Hijaz.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The dam is associated with the Umayyad period.</li>
+  <li style="margin-bottom: 8px;">It is traditionally dated to 58 AH / 677 CE.</li>
+  <li style="margin-bottom: 8px;">It shows early Muslim attention to public benefit.</li>
+  <li style="margin-bottom: 8px;">Its survival gives Taif a direct link to early Islamic history.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Muawiyah ibn Abi Sufyan (RA) and public service The dam carries the name of Caliph Muawiyah ibn Abi Sufyan (RA), and that name preserves the memory of leadership expressed through service. In Islamic history, public works were often a sign of responsibility toward people, land, and water. This dam reflects that spirit in a simple but lasting way.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is named after Muawiyah ibn Abi Sufyan (RA).</li>
+  <li style="margin-bottom: 8px;">It is linked with his caliphate and authority.</li>
+  <li style="margin-bottom: 8px;">The name reminds visitors of early state-supported construction.</li>
+  <li style="margin-bottom: 8px;">It reflects the role of leadership in serving communities.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The value of the inscription One of the most important features of Muawiyah Dam is its six-line inscription. Inscriptions are precious in Islamic heritage because they keep a record of names, dates, and purpose. Here, the writing on the stone helps protect the memory of the dam from being lost to time.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The dam has a six-line inscription.</li>
+  <li style="margin-bottom: 8px;">The inscription strengthens the historical identity of the site.</li>
+  <li style="margin-bottom: 8px;">It helps confirm the dam’s early Islamic origin.</li>
+  <li style="margin-bottom: 8px;">It turns the structure into a readable piece of heritage.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Water, valley, and human need The dam was built in Saiysad Valley to control water flowing from the surrounding mountains. This practical purpose gives the site a special kind of beauty. It shows how early Muslim builders worked with the land to meet real human needs, especially in a place where water mattered deeply.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The dam is located in Saiysad Valley.</li>
+  <li style="margin-bottom: 8px;">It was built to control rainwater flow.</li>
+  <li style="margin-bottom: 8px;">The surrounding mountains shaped its design and use.</li>
+  <li style="margin-bottom: 8px;">The structure reflects the practical wisdom of early Islamic society.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Site Today Physical appearance today Today, Muawiyah Dam still stands as a stone structure with a calm and dignified presence. It is not large or elaborate, but its simplicity is part of its strength. Visitors see a heritage site that carries age, memory, and quiet resilience. Preservation and condition The dam is regarded as a preserved archaeological structure, though time has naturally affected it. Even so, enough remains to show its historic character. For visitors interested in Islamic heritage, this makes the site especially valuable because the past can still be felt in its shape. Surrounding landscape The dam sits within a rocky valley setting east of Taif, where the natural landscape is part of the story. The mountains, valley floor, and water channels help explain why the dam was built here. The scenery gives the site a sense of purpose and belonging. Visitor access Access is not officially fixed, and practical conditions may change. Visitors should expect an outdoor heritage site rather than a developed tourist attraction. A respectful visit here is usually quiet, reflective, and focused on observation. Why It Still Matters Muawiyah Dam still matters because it reminds visitors that Islamic history is not only found in mosques, battles, or famous journeys. It is also found in the works that quietly served people every day. A dam may seem simple at first glance, but in a dry landscape it meant protection, stability, and care. That practical mercy is part of its beauty. The site also matters because it preserves one of the early Islamic inscriptions in Taif. For students of history, that makes it a rare and valuable witness to the Umayyad period. For ordinary visitors, it offers something just as important: the chance to see that the Muslim past was built with thought, responsibility, and concern for the common good. That is a lesson worth remembering. For anyone following a Taif Ziyarat route, Muawiyah Dam adds depth to the journey. It broadens the meaning of Islamic heritage and shows that service, engineering, and public benefit also belong to the sacred memory of the region. In that sense, the dam is not only an old structure. It is a reminder that faith can be expressed through care for people and through the lasting good that remains after generations have passed. Frequently Asked Questions 1. Where is Muawiyah Dam located? It is in Taif, in the Saiysad Valley area about 8 to 12 kilometers southeast of the city. 2. Why is Muawiyah Dam important? It is an early Islamic dam from the Umayyad period, linked with Muawiyah ibn Abi Sufyan (RA) and an important inscription. 3. Can visitors go there today? Yes, but visiting hours are not officially fixed, so access may depend on local arrangemen</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-5.png"],
-    location: "Saiysad National Park",
-    timings: "Open Site"
+    location: "Muawiyah Dam is in Taif, in the Saiysad Valley area about 8 to 12 kilometers southeast of the city, near the rocky landscape that shaped its original purpose.",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
   },
-  // 6
+
   "okaz-market": {
     title: "Okaz Market",
     urduTitle: "سوق عكاظ",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18-5.png",
-    description: "The most famous ancient open-air market and cultural hub of pre-Islamic Arabia.",
-    history: `<p>Souq Okaz was historically more than just a marketplace; it was a center for poetry competitions (where the famous Mu'allaqat were judged), tribal arbitration, and social gatherings. Active from 542 to 726 CE, it has been revived in modern times as a major annual cultural festival, showcasing Saudi heritage, poetry, and arts on the very grounds where ancient Arabs once gathered.</p>`,
+    description: "Okaz Market, or \"Souq Okaz,\" is one of the best-known heritage places connected with the cultural memory of the Arabian Peninsula. It is remembered as a seasonal gathering place where trade, poetry, and public life came together long before Islam, and its...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Okaz Market, or "Souq Okaz," is one of the best-known heritage places connected with the cultural memory of the Arabian Peninsula. It is remembered as a seasonal gathering place where trade, poetry, and public life came together long before Islam, and its name still carries weight in Saudi Arabia’s Islamic heritage. The site belongs to the wider story of Taif, a city that holds many important memories for visitors exploring Ziyarat in Makkah Province. What makes Okaz meaningful is not only that it was a market, but that it was also a meeting place for speech, identity, and tribal culture. Here, people came not just to sell goods, but to listen, recite, and compete in words. For Muslims, that history matters because it helps explain the world in which early Islam came, the language it addressed, and the society that the Qur'an spoke to with clarity and power. Today, visitors should understand Okaz Market as a heritage site shaped by memory and revival. It is no longer simply an old market in the old sense. Its value lies in what it once was, how it is remembered, and how modern Saudi cultural efforts have kept its story visible for a new generation. Historical Significance A seasonal market in Arabia Historical accounts describe Okaz as a major seasonal market in pre-Islamic Arabia, held before the Hajj season. It was a meeting place for tribes, merchants, and travelers, and it played a part in the wider life of the Hijaz. Its long memory helps show that the region had a rich social world before and after the rise of Islam.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It was known as a yearly gathering before Hajj.</li>
+  <li style="margin-bottom: 8px;">Traders came from across the Arabian Peninsula.</li>
+  <li style="margin-bottom: 8px;">The market helped connect different tribes and regions.</li>
+  <li style="margin-bottom: 8px;">Its setting near Taif gave it lasting importance in the Hijaz.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Poetry and public speech Okaz is especially remembered for poetry and eloquence. In Arab society, spoken language carried honor, identity, and record, and the market became a place where poets could present their work before listeners. That is one reason the site is still so closely tied to Arabic literary memory.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Poets and lovers of literature attended the market.</li>
+  <li style="margin-bottom: 8px;">Public poetry helped preserve Arabic expression.</li>
+  <li style="margin-bottom: 8px;">The site became part of the region’s literary identity.</li>
+  <li style="margin-bottom: 8px;">Modern cultural programs still draw on that heritage.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Trade and movement The market also had a practical role. Seasonal markets allowed merchants to buy, sell, and travel at a time when pilgrimage routes brought people through the region. This made Okaz more than a local market. It became part of the wider movement of people and goods across Arabia.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The market brought traders together from many places.</li>
+  <li style="margin-bottom: 8px;">It was linked to seasonal movement in the Hijaz.</li>
+  <li style="margin-bottom: 8px;">Trade helped make the site widely known.</li>
+  <li style="margin-bottom: 8px;">Its importance was both economic and cultural.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Revival in the modern era In recent decades, Okaz has been revived as a cultural and tourism landmark under official supervision. This modern revival is important because it keeps the site alive in public memory without pretending that the old market has simply remained unchanged. The revival gives visitors a way to approach the site as heritage, not only as ruins.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Saudi cultural authorities have supervised annual Okaz events.</li>
+  <li style="margin-bottom: 8px;">The site now works as a heritage destination.</li>
+  <li style="margin-bottom: 8px;">Cultural and literary programs are part of its revival.</li>
+  <li style="margin-bottom: 8px;">The modern use of the site preserves its memory.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Site Today Present character Today, Okaz Market is known more as a heritage and festival site than as a daily working market. Visitors usually encounter a place shaped by cultural display, memory, and official presentation. That makes it different from a normal bazaar and closer to a living historical landmark. Cultural events The site has hosted annual cultural events, seminars, and heritage activities. Writers, calligraphers, and intellectuals have taken part in these gatherings, which gives the place a strong cultural life in the present day. It remains a place where heritage is actively remembered. Surrounding area Okaz lies in the Taif region, outside the city center, near the historic site associated with the old market area. This location matters because the landscape helps explain why the place developed as a seasonal meeting point in the first place. The surrounding area still gives the site a sense of openness and space. Visitor access Public access and event schedules can change depending on the season and official programming. Since fixed visitor hours are not clearly published, visitors should expect arrangements to vary. A respectful visit usually depends on the time of year and the kind of activity taking place. Why It Still Matters Okaz Market still matters because it helps visitors understand the wider world of early Islamic history. It reminds us that the Arabian Peninsula had a strong cultural and social life before Islam, and that life shaped the language, customs, and public speech that the Qur'an addressed. That makes the site important for understanding the background of Islamic history, not just one part of it. It also matters because places like Okaz broaden the meaning of Ziyarat in Makkah Province. Not every meaningful site is tied directly to a mosque or a battle. Some places preserve the social memory of the region itself. Okaz does that with quiet strength, showing how trade, poetry, and gathering helped shape Arab identity and later Islamic heritage. For many visitors, the site remains valuable because memory itself is part of heritage. Okaz has survived in name, in scholarship, in cultural revival, and in public interest. That gives it a lasting role in the story of Taif, and in the wider understanding of Saudi history as a living continuity rather than a forgotten past. Frequently Asked Questions 1. Where is Okaz Market located? It is in the Taif area of Makkah Province, near the historic Okaz site between Taif and Nakhla. 2. What is Okaz Market known for? It is known as a major pre-Islamic seasonal market, especially for trade, poetry, and public gatherings. 3. Is Okaz Market still active today? Yes, but mainly as a heritage and cultural site with official events rather than as a daily traditional market</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18-5.png"],
-    location: "North East Taif",
-    timings: "Seasonal / Ticketed"
+    location: "Okaz Market is in the Taif area of Makkah Province, near the historic Okaz site between Taif and Nakhla in western Saudi Arabia.",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
   },
-  // 7
+
   "masjid-sidra": {
     title: "Masjid Sidra",
     urduTitle: "مسجد سدرة",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/08/Dar-E-Seyada-Khadija.webp",
-    description: "A historical mosque marking the Miqat point at Qarn al-Manazil.",
-    history: `<p>Situated in the Qarn al-Manazil area (modern-day Al-Sayl Al-Kabir), this site marks the Miqat for pilgrims coming from Najd and the East. It is narrated that the Prophet (PBUH) entered into the state of Ihram near a Sidra (Lote) tree at this location when returning from the siege of Taif to perform Umrah at Al-Ji'ranah. The mosque commemorates this Prophetic tradition.</p>`,
+    description: "Masjid al-Sidra is a historic mosque in Taif that belongs to the wider Islamic heritage of the Hijaz. It is remembered among the older mosques of the governorate and is linked in local memory with the sacred history of the region. What gives the mosque its...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Masjid al-Sidra is a historic mosque in Taif that belongs to the wider Islamic heritage of the Hijaz. It is remembered among the older mosques of the governorate and is linked in local memory with the sacred history of the region. What gives the mosque its special place is not size or ornament. It is the feeling of continuity it carries. A quiet mosque, an old name, and a remembered route are enough to keep a place alive in Muslim memory when the community continues to honour it. Visitors should understand Masjid al-Sidra as part of Taif’s religious landscape. It is best approached with respect and simplicity, as a heritage site connected to Islamic memory, not as a place for exaggeration or unsupported claims. Historical Significance Taif’s Old Mosque Memory Masjid al-Sidra belongs to the long religious memory of Taif, a city that has preserved many traces of its Islamic past. Its presence among the historic mosques of the governorate shows how local communities remembered sacred places through naming, narration, and continued respect. In Islamic heritage, such mosques matter because they connect the present city to its earlier religious life. This memory is especially meaningful because it keeps history close to ordinary life. A mosque does not need to be grand to matter. If people continue to associate it with the Prophet Muhammad ﷺ and with old regional memory, it becomes part of the living map of Islam in the Hijaz.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It is remembered as one of Taif’s historic mosques.</li>
+  <li style="margin-bottom: 8px;">Its identity survives through local Islamic memory.</li>
+  <li style="margin-bottom: 8px;">It reflects the religious life of the city across generations.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Meaning of the Name The name Sidra carries the feel of an older place name, one that has remained attached to the mosque through time. The alternate names Masjid al-Sadara and Masjid al-Sadira show that memory has been preserved in more than one form. That is common in old Islamic sites, where spoken usage, written references, and local heritage do not always use exactly the same wording. For a visitor, this matters because names are often the first bridge to history. When a mosque keeps an older name, it tells us that people did not let the place disappear from memory. The name itself becomes a sign of continuity, even when the exact physical form of the mosque has changed over the years.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site is known by more than one name.</li>
+  <li style="margin-bottom: 8px;">Old names often preserve early historical associations.</li>
+  <li style="margin-bottom: 8px;">The mosque’s identity is tied to heritage, not only structure.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Prophet’s Route Toward Taif Masjid al-Sidra is linked in historical memory with the route toward Taif, a journey associated with the Prophet Muhammad ﷺThat larger path matters because sacred geography in Islam is often shaped by movement: roads, stops, valleys, and remembered places become part of the story of faith. A mosque on such a route is not just a building; it is a marker of remembrance. This does not mean every detail of the site must be forced into certainty. Rather, it means the mosque stands within a meaningful historical setting. The route toward Taif helps explain why the name survived and why the place still attracts attention from those interested in Makkah and Taif ziyarat.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The site belongs to the historical landscape of the Taif route.</li>
+  <li style="margin-bottom: 8px;">It is remembered in connection with the Prophet ﷺ.</li>
+  <li style="margin-bottom: 8px;">Sacred routes often preserve old place names.</li>
+  <li style="margin-bottom: 8px;">It should not be confused with the separate miqat of Qarn al-Manazil.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">What the Site Represents Today Today, Masjid al-Sidra represents more than an old mosque name. It stands for the way Muslims preserve memory through place. A site like this teaches that Islamic heritage is not limited to famous shrines. It also lives in smaller, quieter places where the past is still honoured with care. That is why the mosque remains meaningful even without fanfare. Its value lies in continuity, respect, and the calm dignity of a place remembered through generations. For Taif, it is part of the city’s older spiritual identity and its wider connection to the history of the Hijaz.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">It reflects how memory survives through local heritage.</li>
+  <li style="margin-bottom: 8px;">It shows the place of Taif in Islamic history.</li>
+  <li style="margin-bottom: 8px;">It belongs to the cultural map of ziyarat in western Saudi Arabia.</li>
+  <li style="margin-bottom: 8px;">Its quiet presence gives it lasting value.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Site Today A Quiet Heritage Place Masjid al-Sidra is best understood today as a modest heritage mosque rather than a major public landmark. That gives it a special kind of dignity. Places like this often feel smaller than the stories attached to them, yet they remain powerful because they carry memory in a restrained and honest way. Access and Visit Experience Because there is no widely publicized visitor system for the mosque, the visit is likely to feel local and simple. This suits the character of the site. Visitors should come with respect, keep expectations realistic, and remember that the worth of the place lies in its history rather than in tourist facilities. The Setting in Taif The mosque belongs to Taif’s broader historical atmosphere. Taif itself holds a strong place in Islamic memory, and Masjid al-Sidra adds to that landscape. It helps visitors see the city not only as a modern destination, but also as a place where old names and sacred memory remain alive. Preservation and Respect The most important way to preserve a site like this is to speak about it carefully. Respectful naming, honest history, and quiet appreciation are part of its preservation. Even when a mosque is not widely documented in travel material, it can still remain important in the hearts of those who know its place in Islamic heritage. Why It Still Matters Masjid al-Sidra still matters because it reminds Muslims that Islamic history is carried not only by great monuments, but also by smaller places that the community continues to remember. These places help keep the past human, local, and close. They show how faith is lived through memory as much as through stone. It also matters because it connects Taif to the wider sacred geography of the Hijaz. A mosque remembered in relation to the Prophet Muhammad ﷺ gives visitors a sense of how deeply history is woven into the region. That connection is part of why ziyarat in Makkah and nearby areas remains so meaningful. Most of all, Masjid al-Sidra teaches restraint and reverence. It invites people to value what is real, what is remembered, and what has been preserved with care. That is a quiet kind of beauty, but a lasting one. Frequently Asked Questions 1. Where is Masjid al-Sidra located? It is in Taif Governorate, Makkah Region, Saudi Arabia. 2. What is Masjid al-Sidra known for? It is known as a historic mosque of Taif and is also called Masjid al-Sadara or Masjid al-Sadira. 3. Are the visiting hours officially fixed? No. Official visiting hours are not fixed, so access may depend on local arrangements.</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/08/Dar-E-Seyada-Khadija.webp"],
-    location: "Qarn al-Manazil (Al-Sayl Al-Kabir)",
-    timings: "Open Site"
+    location: "Taif Governorate, Makkah Region, Saudi Arabia. It is known locally as Masjid al-Sidra, and also by the name Masjid al-Sadara or Masjid al-Sadira.",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
   },
-  // 8
+
   "ruins-halima-saadia-home": {
     title: "Ruins of Halima Saadia’s Home",
     urduTitle: "ديار حليمة السعدية",
     bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-7.png",
-    description: "The childhood home of Prophet Muhammad (PBUH) in the Bani Saad valley.",
-    history: `<p>Located in the serene valley of Bani Saad, south of Taif, lie the ruins believed to be the home of Halima al-Saadia, the Prophet's (PBUH) wet nurse. The Prophet spent his early childhood years here, away from the city air of Makkah. It is also the site of the miraculous event of <i>Shaqq al-Sadr</i> (the splitting of the chest), where angels cleansed the Prophet's heart.</p>`,
+    description: "Halima al-Saadia رضي الله عنها is remembered in Islamic history as the noble woman who cared for the young Prophet Muhammad ﷺ during part of his early childhood. Her name remains deeply loved because it belongs to the quiet, formative years of the Prophet’s...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Halima al-Saadia رضي الله عنها is remembered in Islamic history as the noble woman who cared for the young Prophet Muhammad ﷺ during part of his early childhood. Her name remains deeply loved because it belongs to the quiet, formative years of the Prophet’s life, when he was raised in the care of a desert family among Banu Saad. The ruins traditionally linked with her home are visited for that reason. People come not because the site has been proven beyond doubt as her original house, but because local memory has long connected this place with that sacred chapter of the Prophet’s childhood. For many visitors, the site offers a chance to think about the simple world in which that early life unfolded. Today, the place is best understood as a traditional heritage site rather than a fully authenticated archaeological one. That distinction matters. It allows visitors to respect the memory of Halima al-Saadia رضي الله عنها and the early life of Prophet Muhammad ﷺ without claiming more than the evidence can support. Historical Significance Halima al-Saadia رضي الله عنها and the Early Years Halima al-Saadia رضي الله عنها holds a honored place in Muslim memory because she nursed and cared for Prophet Muhammad ﷺ in his childhood. The classical biographical tradition describes how infants of noble lineages were often given to desert families, and the Prophet ﷺ spent part of his early years in that environment. Her role is remembered with affection because it belongs to the earliest human care he received.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">She is known in the sīrah tradition as the Prophet’s foster mother.</li>
+  <li style="margin-bottom: 8px;">Her name is linked to mercy, patience, and care.</li>
+  <li style="margin-bottom: 8px;">The Prophet’s childhood among Banu Saad is part of the standard early biography.</li>
+  <li style="margin-bottom: 8px;">This memory shapes why the site still draws interest today.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Banu Saad and the Desert Setting Banu Saad was a tribal community associated with the desert life of western Arabia. Historical writing places the early childhood of Prophet Muhammad ﷺ in a tribal setting outside the city, where children were raised in a hard but healthy environment. That wider geography is important because it explains why Taif and the surrounding region became attached to later memory about Halima al-Saadia رضي الله عنها.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Banu Saad is part of the Prophet’s early-life background.</li>
+  <li style="margin-bottom: 8px;">The area is linked in memory with open desert life, not urban settlement.</li>
+  <li style="margin-bottom: 8px;">Some historians place the broader tribal territory differently.</li>
+  <li style="margin-bottom: 8px;">The region around Taif remains central to later local tradition.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Ruins and Local Memory Visitors usually come to see the ruins, stones, and modest remains that local tradition associates with Halima al-Saadia’s home or village. The site is presented in tourism language as a place connected with her memory, but the physical remains themselves are not enough to prove a direct historical link. That is why the site should be read as a traditional memorial landscape.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The ruins are locally associated with Halima al-Saadia رضي الله عنها.</li>
+  <li style="margin-bottom: 8px;">Tourism language preserves the memory, not absolute proof.</li>
+  <li style="margin-bottom: 8px;">The remains are modest and should be treated respectfully.</li>
+  <li style="margin-bottom: 8px;">Local tradition gives the site its emotional and cultural value.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Historical Debate The identification of this place has been debated by historians and heritage researchers. Some local residents and writers support the traditional link with Halima al-Saadia رضي الله عنهاwhile Saudi heritage researchers have questioned whether the ruins can really be authenticated as her home. Other historical interpretations place the wider Banu Saad territory farther north, toward areas such as Qarn al-Manazil and Aqiq Ashira.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The traditional identification remains part of local heritage.</li>
+  <li style="margin-bottom: 8px;">Archaeological proof has not settled the matter.</li>
+  <li style="margin-bottom: 8px;">Different historical maps of Banu Saad exist.</li>
+  <li style="margin-bottom: 8px;">Responsible writing should preserve the tradition without overstating certainty.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Site Today What Visitors Can See The site today is understood as a modest heritage location rather than a large developed monument. Visitors normally come to see the remains that have been linked with Halima al-Saadia رضي الله عنها in local memory. The value of the visit lies in the story attached to the place, not in grand structures or museum- style displays. Official Heritage Presentation The current tourism framing uses the name "Halima Al-Saadia Village," which helps visitors identify the site in modern travel material. This official presentation gives the place visibility, even though the archaeological identification itself remains debated. For a visitor, that means the site belongs to both living tourism and older historical memory. Preservation and Condition The surviving ruins appear simple and limited. That modest condition is part of the site’s character, but it also means visitors should not expect a fully reconstructed house or a formally restored historic building. The site should be approached as a remembered place, preserved mainly through recognition rather than major physical reconstruction. Visiting with Respect Because the site carries religious and historical memory, visitors should keep their visit quiet and respectful. It is better to come with learning than with certainty, and with gratitude rather than exaggeration. A careful visitor can appreciate both the memory of Halima al-Saadia رضي الله عنها and the limits of what the landscape can prove. Why It Still Matters This site still matters because it keeps alive a tender part of the Prophet Muhammad ﷺs early life. The childhood of the Prophet ﷺ is not a minor detail in Islamic history. It shows how ordinary human care, desert life, and family duty formed part of the story of a future Messenger of Allah ﷺ. It also matters because Halima al-Saadia رضي الله عنها represents a form of love that is quiet but lasting. Her place in Muslim memory is not built on politics or power. It rests on care, trust, and the dignity of a woman who became linked forever with the earliest years of the Prophet’s life. That is why her name is still remembered with respect. For visitors, the site offers a useful lesson. Loving Islamic history does not mean claiming certainty where the evidence is weak. It means honoring the tradition, listening carefully to the historians, and preserving what can be preserved. That balance gives the place its real value in Ziyarat in Taif and in the wider Islamic heritage of Saudi Arabia. Frequently Asked Questions 1. Who was Halima al-Saadia رضي الله عنها? She was the woman traditionally remembered for caring for and nursing the young Prophet Muhammad ﷺ during part of his early childhood. 2. Where is the site traditionally associated with Halima al-Saadia located? It is traditionally associated with the Banu Saad area near Taif, and modern tourism material often refers to it as "Halima Al-Saadia Village." 3. Are the ruins officially proven to be Halima al-Saadia’s original home? No. The ruins are traditionally associated with her, but the archaeological identification is not conclusively proven</p>
+    `,
     videoUrl: "",
     gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-16-7.png"],
-    location: "Bani Saad",
-    timings: "Open Site"
-  }
+    location: "The site is traditionally identified in the Banu Saad area near Taif, Saudi Arabia, with the current tourism presentation commonly associated with \"Halima Al- Saadia Village.\" The exact archaeological spot is not conclusively verified in the sources available here.",
+    timings: "Open historical site",
+  },
+
+  "masjid-abdullah-ibn-abbas": {
+    title: "Masjid Abdullah ibn Abbas (r.a.)",
+    urduTitle: "مسجد عبد الله بن عباس",
+    bannerImage: "https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18.png",
+    description: "Masjid Abdullah ibn Abbas رضي الله عنه is one of the best-known Islamic heritage sites in Taif. It is named after Abdullah ibn Abbas رضي الله عنهthe cousin of Prophet Muhammad ﷺ and one of the most respected scholars among the Companions رضي الله عنهمFor many...",
+    history: `
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Masjid Abdullah ibn Abbas رضي الله عنه is one of the best-known Islamic heritage sites in Taif. It is named after Abdullah ibn Abbas رضي الله عنهthe cousin of Prophet Muhammad ﷺ and one of the most respected scholars among the Companions رضي الله عنهمFor many visitors, the mosque is linked not only to prayer, but also to memory, learning, and the deep love Muslims hold for the early generations of Islam. The mosque is commonly visited as part of Taif Ziyarat, especially by people who want to understand the city’s Islamic history. Its setting near the grave traditionally associated with Abdullah ibn Abbas رضي الله عنه gives the place special emotional value. At the same time, visitors should remember that a mosque named after a Companion does not automatically mean every surrounding detail is historically proven in the same way. In Islamic heritage travel, this site matters because it connects worship, scholarship, and remembrance in one place. Taif is already important in the broader story of early Islam, and this mosque adds another layer to that history through the memory of a Companion known for knowledge, devotion, and closeness to the Prophet ﷺ. Historical Significance Abdullah ibn Abbas رضي الله عنه and His Rank Abdullah ibn Abbas رضي الله عنه was a young Companion who became one of the greatest scholars of Islam. He is remembered for his deep understanding of the Qur'an, his knowledge of the Sunnah, and his close family connection to Prophet Muhammad ﷺBecause of this, a mosque associated with his name naturally carries strong historical and spiritual meaning.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">He was the paternal cousin of the Prophet ﷺ.</li>
+  <li style="margin-bottom: 8px;">He became known for tafsir, meaning Qur'anic explanation.</li>
+  <li style="margin-bottom: 8px;">Classical Islamic tradition honors him as a major authority in learning.</li>
+  <li style="margin-bottom: 8px;">His name gives the mosque a strong place in Islamic memory.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Taif in Early Islamic Memory Taif holds an important place in the early history of Islam. It was a known city in the Hijaz region, and later Muslim memory preserved several linked sites there. When visitors come to Masjid Abdullah ibn Abbas رضي الله عنهthey are also entering the wider landscape of Taif’s Islamic heritage, not just a single building.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Taif is part of the sacred historical geography of western Arabia.</li>
+  <li style="margin-bottom: 8px;">The city is often visited alongside other Taif Ziyarat sites.</li>
+  <li style="margin-bottom: 8px;">Its heritage is tied to both local memory and Islamic biography.</li>
+  <li style="margin-bottom: 8px;">The mosque sits inside this larger historical landscape.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">The Mosque and the Grave Tradition The mosque is traditionally described as being near the grave of Abdullah ibn Abbas رضي الله عنهThat association is the main reason for its importance today. Even so, careful writing should separate the respected traditional memory from detailed archaeological certainty unless strong evidence is available.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">The mosque is commonly linked with the burial tradition of Ibn Abbas</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">رضي الله عنه.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Visitors see it as a place of remembrance and respect.</li>
+  <li style="margin-bottom: 8px;">The site belongs to living religious memory in Taif.</li>
+  <li style="margin-bottom: 8px;">The historical value comes from association, not from grand architecture alone.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Scholarship, Memory, and Local Reverence This site shows how Muslim communities preserve memory through mosques, graves, and local tradition. A place like Masjid Abdullah ibn Abbas رضي الله عنه is not only a marker on a map. It is also a sign of how later generations remembered a Companion whose life reflected knowledge, humility, and service to Islam.</p>
+<ul style="list-style-type: disc; margin-left: 20px; color: #d1d5db; margin-bottom: 16px;">
+  <li style="margin-bottom: 8px;">Local reverence helps keep the memory alive.</li>
+  <li style="margin-bottom: 8px;">The mosque connects worship with historical reflection.</li>
+  <li style="margin-bottom: 8px;">It reminds visitors of the early scholarly tradition in Islam.</li>
+  <li style="margin-bottom: 8px;">Respectful ziyarat requires both love and accuracy.</li>
+</ul>
+<p style="text-align: justify; margin-bottom: 12px; line-height: 1.7;">Site Today Present Condition Masjid Abdullah ibn Abbas رضي الله عنه remains a known ziyarat point in Taif. The site is used and visited as a religious and historical place, though public descriptions do not always give full detail about the exact modern condition of every surrounding feature. Surrounding Heritage Area The mosque is usually approached as part of Taif’s broader Islamic heritage landscape. Visitors often come with interest in the Companion’s grave tradition and the city’s older religious memory. This makes the site meaningful even when the focus is simple and local rather than highly developed for tourism. Visitor Experience Visitors should expect a religious heritage site, not a museum. The main value lies in prayer, respect, and remembrance. Because official visitor arrangements may vary, it is better to approach the visit with flexibility and a calm sense of adab, which means proper Islamic etiquette. Respectful Visitation As with other sites linked to the Companions رضي الله عنهمvisitors should keep their words and behavior respectful. The purpose of ziyarat here is not to exaggerate or invent details, but to remember a great Companion and reflect on the heritage of early Islam in Taif. Why It Still Matters Masjid Abdullah ibn Abbas رضي الله عنه still matters because it connects modern visitors with one of the most learned Companions رضي الله عنهمIn a time when many places lose their story, this mosque helps preserve the memory of a man whose understanding of the Qur'an shaped Islamic scholarship for generations. It also matters because Taif itself remains part of the emotional map of early Islam. When Muslims visit such places, they are not only seeing a physical location. They are remembering people, knowledge, sacrifice, and the long chain of memory that kept Islamic history alive. That is especially important at a site connected with Abdullah ibn Abbas رضي الله عنهwhose name continues to inspire students of Islam. For many visitors, the lesson is simple: love the people of the early Muslim community, remember them with humility, and do not claim more certainty than the evidence allows. That balance keeps ziyarat sincere and protects Islamic heritage from exaggeration. It is this mix of respect and truth that gives the mosque lasting value. Frequently Asked Questions 1. Who was Abdullah ibn Abbas رضي الله عنه? He was a cousin of Prophet Muhammad ﷺ and a great Companion known for Qur'anic interpretation and Islamic knowledge. 2. Where is Masjid Abdullah ibn Abbas located? It is in Taif, Saudi Arabia, in the area traditionally linked with the grave of Abdullah ibn Abbas رضي الله عنه. 3. Is the mosque a major ziyarat site? Yes. It is one of the well-known Islamic heritage places in Taif and is often visited for remembrance and respect</p>
+    `,
+    videoUrl: "https://www.youtube.com/watch?v=KjK3Rk4i9i0",
+    gallery: ["https://www.cosmic.beesocialpk.com/wp-content/uploads/2025/10/Background-18.png"],
+    location: "Masjid Abdullah ibn Abbas رضي الله عنه is in Taif, Saudi Arabia, in the historic area connected with the burial place of Abdullah ibn Abbas رضي الله عنه.",
+    timings: "Visiting hours are not officially fixed; access may depend on local arrangements.",
+  },
+
 };

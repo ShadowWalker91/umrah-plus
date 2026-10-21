@@ -228,14 +228,15 @@ export default function TransportSection() {
                   />
                 </div>
                 <div 
-                  onClick={(e) => { const el = e.currentTarget.querySelector('input'); try { (el as any)?.showPicker?.(); } catch {} }}
                   className="space-y-1.5 cursor-pointer"
                 >
                   <label className="text-xs uppercase text-gray-400 flex items-center gap-2 font-bold tracking-wider cursor-pointer"><Clock size={12} className="text-[#F9C344]"/> Time</label>
                   <input 
                     type="time" 
-                    onClick={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch {} }}
-                    onFocus={(e) => { try { (e.currentTarget as any).showPicker?.(); } catch {} }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      try { (e.currentTarget as any).showPicker?.(); } catch {}
+                    }}
                     className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#F9C344] outline-none transition text-sm cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]" 
                   />
                 </div>
