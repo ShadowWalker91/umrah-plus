@@ -146,17 +146,17 @@ function ThankYouContent() {
             <VerifiedRow icon={<Car className="w-4 h-4" />} label="Transit Route" />
           </div>
 
-          {total && (
+          {/* {total && (
             <div className="py-3 border-t border-white/10 mb-3">
               <p className="text-sm text-gray-300">
                 Estimated Total: <strong className="text-[#f9e8a2]">{total}</strong>
               </p>
               <p className="text-[11px] text-gray-500 font-light mt-0.5">(Pending Confirmation)</p>
             </div>
-          )}
+          )} */}
 
           {/* Barcode + Inquiry ID */}
-          <div className="bg-white rounded-lg px-3 py-3 mb-0 border border-white/20">
+          <div className="bg-white rounded-lg px-3 py-3 mt-15 mb-0 border border-white/20">
             <div className="flex items-end justify-center gap-[2px] h-12" aria-hidden>
               {bars.map((b, i) => (
                 <span

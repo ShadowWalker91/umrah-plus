@@ -220,6 +220,8 @@ export interface BookingState {
   routeTimeOfDay?: Record<string, 'morning' | 'afternoon'>;
   whatsappOptIn?: boolean;
   leadConfirmed?: boolean;
+  /** Set when a submit attempt is blocked by an unchecked confirmation box. */
+  leadConfirmError?: boolean;
 
   // Lead Details
   leadDetails: {
@@ -1012,7 +1014,12 @@ export default function BookingController({
 
   const handleSubmitInquiry = async () => {
     if (!bookingState.leadConfirmed) {
-      alert('Please confirm that your lead passenger details are correct before submitting.');
+      // Highlight the confirmation row and surface the inline error instead
+      // of a blocking browser alert.
+      updateState({ leadConfirmError: true });
+      requestAnimationFrame(() => {
+        document.getElementById('lead-confirm-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
     try {
@@ -1462,6 +1469,7 @@ export default function BookingController({
             type={type}
             ziyaratPkgParams={ziyaratPkgParams}
             onEditStep={handleEditStep}
+            currentStep={currentStep}
           />
         </div>
       )}

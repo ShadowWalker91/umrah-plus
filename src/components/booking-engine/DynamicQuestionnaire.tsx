@@ -2673,9 +2673,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
 
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.95fr)] gap-6 mb-6 items-start">
+        <div className="flex flex-col gap-6 mb-6">
           {/* -------------------------------------------------------------
-              LEFT: LEAD PASSENGER DETAILS
+              LEAD PASSENGER DETAILS
           ------------------------------------------------------------- */}
           <div className="bg-[#12141a] border border-white/10 rounded-2xl p-5 md:p-6 space-y-6 shadow-xl">
             <div className="pb-3 border-b border-white/10">
@@ -2892,9 +2892,9 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
           </div>
 
           {/* -------------------------------------------------------------
-              RIGHT: WHATSAPP + FINAL CONFIRMATION
+              WHATSAPP + FINAL CONFIRMATION (stacked below the details card)
           ------------------------------------------------------------- */}
-          <aside className="bg-[#0c0d10] border border-[#c5a059]/35 rounded-2xl p-5 md:p-6 space-y-4 shadow-[0_0_25px_rgba(197,160,89,0.12)] lg:sticky lg:top-4">
+          <aside className="bg-[#0c0d10] border border-[#c5a059]/35 rounded-2xl p-5 md:p-6 space-y-4 shadow-[0_0_25px_rgba(197,160,89,0.12)]">
             <div className="flex items-center gap-2.5">
               <span className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-400">
@@ -2939,24 +2939,36 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
               </p>
             </div>
 
-            <label
-              className={`flex items-start gap-2.5 cursor-pointer rounded-xl border p-3.5 transition-all ${
-                state.leadConfirmed
-                  ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_15px_rgba(197,160,89,0.15)]'
-                  : 'border-white/10 bg-black/20 hover:border-[#c5a059]/50'
-              }`}
-            >
-              <input
-                type="checkbox"
-                required
-                checked={state.leadConfirmed}
-                onChange={(e) => updateState({ leadConfirmed: e.target.checked })}
-                className="w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
-              />
-              <span className="text-xs font-semibold text-white leading-snug">
-                I confirm these above details are correct
-              </span>
-            </label>
+            <div id="lead-confirm-row" className="space-y-2">
+              <label
+                aria-describedby={state.leadConfirmError && !state.leadConfirmed ? 'lead-confirm-error' : undefined}
+                className={`flex items-start gap-2.5 cursor-pointer rounded-xl border p-3.5 transition-all ${
+                  state.leadConfirmed
+                    ? 'border-[#c5a059] bg-[#c5a059]/10 shadow-[0_0_15px_rgba(197,160,89,0.15)]'
+                    : state.leadConfirmError
+                      ? 'border-red-500/70 bg-red-500/10 shadow-[0_0_18px_rgba(239,68,68,0.25)] ring-1 ring-red-500/50'
+                      : 'border-white/10 bg-black/20 hover:border-[#c5a059]/50'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  required
+                  checked={state.leadConfirmed}
+                  onChange={(e) => updateState({ leadConfirmed: e.target.checked, leadConfirmError: false })}
+                  className="w-4 h-4 accent-[#c5a059] cursor-pointer shrink-0"
+                />
+                <span className="text-xs font-semibold text-white leading-snug">
+                  I confirm these above details are correct
+                </span>
+              </label>
+
+              {state.leadConfirmError && !state.leadConfirmed && (
+                <p id="lead-confirm-error" className="flex items-center gap-1.5 text-[11px] font-bold text-red-400">
+                  <Info className="w-3.5 h-3.5 shrink-0" />
+                  Please confirm these above details are correct before submitting.
+                </p>
+              )}
+            </div>
 
             <div className="text-[10px] uppercase tracking-widest text-gray-400 border-t border-white/10 pt-3 flex items-center justify-between">
               <span>Est. Total</span>

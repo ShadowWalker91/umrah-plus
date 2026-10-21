@@ -180,7 +180,7 @@ export default function BlessedJourneyOverview({
             </div>
 
             {/* Transit line: Airport ➔ cities ➔ Airport */}
-            <div className="flex items-center justify-between gap-1 mb-4">
+            {/* <div className="flex items-center justify-between gap-1 mb-4">
               <span className="w-9 h-9 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 flex items-center justify-center text-[#c5a059] shrink-0">
                 <Plane className="w-4 h-4" />
               </span>
@@ -199,7 +199,7 @@ export default function BlessedJourneyOverview({
               <span className="w-9 h-9 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 flex items-center justify-center text-[#c5a059] shrink-0">
                 <Plane className="w-4 h-4 rotate-90" />
               </span>
-            </div>
+            </div> */}
 
             <p className="text-xs text-gray-300 font-light">
               Jeddah Airport{' '}

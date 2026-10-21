@@ -1,7 +1,56 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Search, Check, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { MapPin } from 'lucide-react';
+
+// Session-wide flag: an expired/invalid API key degrades every Places
+// Autocomplete on the page, so one instance detecting the failure switches
+// all instances (present and future) over to the local suggestion list.
+let placesApiFailed = false;
+let authFailureHookInstalled = false;
+
+const PLACES_ERROR_TEXT = "This page can't load Google Maps correctly";
+
+const notifyPlacesFailed = () => {
+  if (placesApiFailed) return;
+  placesApiFailed = true;
+  window.dispatchEvent(new Event('google-places-degraded'));
+};
+
+const isDegradedPacContainer = (node: Element) =>
+  Boolean(node.querySelector('.dismissButton')) ||
+  (node.textContent || '').includes(PLACES_ERROR_TEXT);
+
+interface PlacesAutocompleteInstance {
+  addListener(event: string, handler: () => void): void;
+  getPlace(): { formatted_address?: string; name?: string };
+  unbindAll?: () => void;
+}
+
+interface GoogleGlobal {
+  maps: {
+    places?: {
+      Autocomplete: new (
+        input: HTMLInputElement,
+        options?: {
+          componentRestrictions?: { country: string };
+          fields?: string[];
+          types?: string[];
+        }
+      ) => PlacesAutocompleteInstance;
+    };
+    event?: {
+      clearInstanceListeners?: (target: object) => void;
+    };
+  };
+}
+
+type GoogleWindow = Window & {
+  google?: GoogleGlobal;
+  gm_authFailure?: () => void;
+};
+
+const googleWindow = () => window as GoogleWindow;
 
 interface GooglePlacesInputProps {
   id?: string;
@@ -36,6 +85,14 @@ const POPULAR_SAUDI_LOCATIONS = [
   'Al Hada Mountain, Taif',
 ];
 
+const filterLocations = (query: string, limit?: number): string[] => {
+  const normalized = query.trim().toLowerCase();
+  const matches = normalized
+    ? POPULAR_SAUDI_LOCATIONS.filter(item => item.toLowerCase().includes(normalized))
+    : POPULAR_SAUDI_LOCATIONS;
+  return limit ? matches.slice(0, limit) : matches;
+};
+
 export default function GooglePlacesInput({
   id,
   label,
@@ -49,7 +106,8 @@ export default function GooglePlacesInput({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
-  const autocompleteRef = useRef<any>(null);
+  const [googleDegraded, setGoogleDegraded] = useState(placesApiFailed);
+  const autocompleteRef = useRef<PlacesAutocompleteInstance | null>(null);
 
   // Keep a reference to the latest onChange callback to prevent stale closures in Google Maps listener
   const onChangeRef = useRef(onChange);
@@ -57,22 +115,107 @@ export default function GooglePlacesInput({
     onChangeRef.current = onChange;
   }, [onChange]);
 
+  // Tear down the Google Autocomplete and switch this field to the local
+  // suggestion list. Called whenever Google reports a key/billing failure.
+  const deactivateGoogle = useCallback(() => {
+    const autocomplete = autocompleteRef.current;
+    if (autocomplete) {
+      try { autocomplete.unbindAll?.(); } catch { }
+      try {
+        googleWindow().google?.maps.event?.clearInstanceListeners?.(autocomplete);
+      } catch { }
+      autocompleteRef.current = null;
+    }
+    document.querySelectorAll('.pac-container').forEach((el) => el.remove());
+    setIsGoogleLoaded(false);
+    setGoogleDegraded(true);
+
+    // Hand over to the local list seamlessly if this field still has focus.
+    if (document.activeElement === inputRef.current) {
+      const filtered = filterLocations(inputRef.current?.value || '', 6);
+      setSuggestions(filtered.length > 0 ? filtered : POPULAR_SAUDI_LOCATIONS.slice(0, 6));
+      setIsOpen(true);
+    }
+  }, []);
+
+  const initAutocomplete = useCallback(() => {
+    if (placesApiFailed) return;
+    const AutocompleteCtor = googleWindow().google?.maps.places?.Autocomplete;
+    if (!inputRef.current || !AutocompleteCtor) return;
+    if (autocompleteRef.current) return;
+
+    try {
+      const autocomplete = new AutocompleteCtor(inputRef.current, {
+        componentRestrictions: { country: 'sa' },
+        fields: ['formatted_address', 'name', 'geometry'],
+        types: ['establishment', 'geocode']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        const address = place.formatted_address || place.name || '';
+        if (address) {
+          onChangeRef.current(address);
+          setIsOpen(false);
+        }
+      });
+      autocompleteRef.current = autocomplete;
+      setIsGoogleLoaded(true);
+    } catch (e) {
+      console.warn('Google Places Autocomplete initialization fallback to custom list', e);
+    }
+  }, []);
+
   // Attempt to load Google Maps Places Autocomplete if API key is provided
   useEffect(() => {
+    if (placesApiFailed) return;
+
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     if (!apiKey) return;
 
     let isMounted = true;
 
+    // Google renders the "can't load Google Maps correctly" notice (dismiss
+    // button + message) inside .pac-container when the key is expired or
+    // billing is broken. Treat it as a hard failure for every instance.
+    const detectDegradedState = () => {
+      document.querySelectorAll('.pac-container').forEach((node) => {
+        if (isDegradedPacContainer(node)) notifyPlacesFailed();
+      });
+    };
+
+    const observer = new MutationObserver(detectDegradedState);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Auth failures (invalid key / missing billing) also surface here.
+    if (!authFailureHookInstalled) {
+      authFailureHookInstalled = true;
+      const w = googleWindow();
+      const previous = w.gm_authFailure;
+      w.gm_authFailure = () => {
+        notifyPlacesFailed();
+        if (typeof previous === 'function') previous();
+      };
+    }
+
+    const onDegraded = () => {
+      if (isMounted) deactivateGoogle();
+    };
+    window.addEventListener('google-places-degraded', onDegraded);
+
     const setupAutocomplete = () => {
-      if (!isMounted) return;
+      if (!isMounted || placesApiFailed) return;
       initAutocomplete();
     };
 
     // If script is already loaded and ready
-    if ((window as any).google?.maps?.places) {
+    if (googleWindow().google?.maps.places) {
       setupAutocomplete();
-      return;
+      return () => {
+        isMounted = false;
+        observer.disconnect();
+        window.removeEventListener('google-places-degraded', onDegraded);
+      };
     }
 
     const scriptId = 'google-maps-places-script';
@@ -92,7 +235,7 @@ export default function GooglePlacesInput({
 
     // Polling backup in case the script finishes right between check and listener
     const pollInterval = setInterval(() => {
-      if ((window as any).google?.maps?.places) {
+      if (googleWindow().google?.maps.places || placesApiFailed) {
         clearInterval(pollInterval);
         setupAutocomplete();
       }
@@ -104,56 +247,25 @@ export default function GooglePlacesInput({
         script.removeEventListener('load', setupAutocomplete);
       }
       clearInterval(pollInterval);
+      observer.disconnect();
+      window.removeEventListener('google-places-degraded', onDegraded);
     };
-  }, []);
-
-  const initAutocomplete = () => {
-    if (!inputRef.current || !(window as any).google?.maps?.places) return;
-    if (autocompleteRef.current) return;
-
-    try {
-      const autocomplete = new (window as any).google.maps.places.Autocomplete(inputRef.current, {
-        componentRestrictions: { country: 'sa' },
-        fields: ['formatted_address', 'name', 'geometry'],
-        types: ['establishment', 'geocode']
-      });
-
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        const address = place.formatted_address || place.name || '';
-        if (address) {
-          onChangeRef.current(address);
-          setIsOpen(false);
-        }
-      });
-      autocompleteRef.current = autocomplete;
-      setIsGoogleLoaded(true);
-    } catch (e) {
-      console.warn('Google Places Autocomplete initialization fallback to custom list', e);
-    }
-  };
+  }, [deactivateGoogle, initAutocomplete]);
 
   // Filter internal suggestions when user types and Google is not active
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     onChangeRef.current(text);
 
-    // Only show fallback suggestions if Google Places is not loaded
-    if (!isGoogleLoaded) {
-      if (text.trim().length > 1) {
-        const query = text.toLowerCase();
-        const filtered = POPULAR_SAUDI_LOCATIONS.filter(item =>
-          item.toLowerCase().includes(query)
-        );
-        setSuggestions(filtered);
-        setIsOpen(filtered.length > 0);
-      } else {
-        setSuggestions(POPULAR_SAUDI_LOCATIONS.slice(0, 6));
-        setIsOpen(text.length === 0);
-      }
-    } else {
+    // Google's own dropdown handles suggestions while it is active.
+    if (isGoogleLoaded) {
       setIsOpen(false);
+      return;
     }
+
+    const filtered = filterLocations(text);
+    setSuggestions(filtered);
+    setIsOpen(filtered.length > 0);
   };
 
   // Close dropdown on outside click
@@ -184,10 +296,10 @@ export default function GooglePlacesInput({
           value={value}
           onChange={handleInputChange}
           onFocus={() => {
-            if (!isGoogleLoaded && !value) {
-              setSuggestions(POPULAR_SAUDI_LOCATIONS.slice(0, 6));
-              setIsOpen(true);
-            }
+            if (isGoogleLoaded) return;
+            const filtered = filterLocations(value, 6);
+            setSuggestions(filtered.length > 0 ? filtered : POPULAR_SAUDI_LOCATIONS.slice(0, 6));
+            setIsOpen(true);
           }}
           placeholder={placeholder}
           required={required}
@@ -202,6 +314,8 @@ export default function GooglePlacesInput({
             <span>Suggested Saudi Locations</span>
             {isGoogleLoaded ? (
               <span className="text-[#00d084] text-[9px] font-normal">Google Places Active</span>
+            ) : googleDegraded ? (
+              <span className="text-[#f3d38a] text-[9px] font-normal">Local Suggestions</span>
             ) : (
               <span className="text-[#c5a059] text-[9px] font-normal">Fast Lookup</span>
             )}

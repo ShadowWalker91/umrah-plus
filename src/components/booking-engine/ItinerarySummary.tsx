@@ -21,9 +21,15 @@ interface Props {
   /** 'sidebar' (default) keeps the sticky rail; 'page' renders the full-width report layout */
   variant?: 'sidebar' | 'page';
   onEditStep?: (step: number) => void;
+  /**
+   * Live booking step — route and fleet sections are revealed progressively so
+   * they only join the itinerary once their own screen is reached. Defaults
+   * past every flow's last step so full-page summaries render everything.
+   */
+  currentStep?: number;
 }
 
-export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar', onEditStep }: Props) {
+export default function ItinerarySummary({ state, type, ziyaratPkgParams, variant = 'sidebar', onEditStep, currentStep = 99 }: Props) {
   const rootClass = variant === 'page'
     // 'page' sits inside the checkout-phase gold panel, which already supplies
     // the background, border and padding — only the content block is rendered here.
@@ -119,7 +125,8 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
             </div>
           </div>
 
-          {/* 2. Route & Stops Schedule */}
+          {/* 2. Route & Stops Schedule — appears once the route screen (step 2) is reached */}
+          {currentStep >= 2 && (
           <div className="border-b border-white/5 pb-3 space-y-2">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
@@ -216,8 +223,10 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
               </div>
             )}
           </div>
+          )}
 
-          {/* 3. Vehicle & Multiplier */}
+          {/* 3. Vehicle & Multiplier — appears once the fleet screen (step 3) is reached */}
+          {currentStep >= 3 && (
           <div className="border-b border-white/5 pb-3 space-y-1.5">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
@@ -252,6 +261,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
               </div>
             </div>
           </div>
+          )}
 
           {/* 4. Estimated Fare */}
           {state.calculatedTransportPrice > 0 && (
@@ -321,8 +331,8 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
           </div>
         </div>
 
-        {/* 2. Ziyarat Routes (When type is Ziyarat or Umrah Plus) */}
-        {(isZiyarat || isUmrahPlus) && (
+        {/* 2. Ziyarat Routes — joins the itinerary only once the ziyarat screen is reached */}
+        {(isZiyarat || (isUmrahPlus && !state.skipZiyarat)) && currentStep >= ziyaratRoutesStep && (
           <div className="border-b border-white/5 pb-3 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
@@ -338,7 +348,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
                     }, 0)} Ziyarats
                   </span>
                 )}
-                {onEditStep && (
+                {onEditStep && state.selectedZiyaratRoutes && state.selectedZiyaratRoutes.length > 0 && (
                   <button
                     type="button"
                     onClick={() => onEditStep(ziyaratRoutesStep)}
@@ -471,8 +481,8 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
           </div>
         )}
 
-        {/* 4. Transportation / Fleet (Shown for Transport, Ziyarat, Umrah Plus, or when transport upsell selected) */}
-        {(isTransport || isZiyarat || (isUmrahPlus && !state.skipTransport) || (!isZiyarat && !isUmrahPlus && state.selectedUpsells.includes('transport'))) && (
+        {/* 4. Transportation / Fleet — route appears from its screen (step 2), vehicle only once picked on the fleet screen */}
+        {(isTransport || isZiyarat || (isUmrahPlus && !state.skipTransport) || (!isZiyarat && !isUmrahPlus && state.selectedUpsells.includes('transport'))) && currentStep >= 2 && (
           <div className="border-b border-white/5 pb-3 space-y-2">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-semibold">
@@ -490,7 +500,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
                     <Pencil className="w-3 h-3" />
                     <span>{isZiyarat ? 'Edit Fleet' : 'Edit Route'}</span>
                   </button>
-                  {!isZiyarat && (
+                  {!isZiyarat && currentStep >= vehicleStep && (
                     <button
                       type="button"
                       onClick={() => onEditStep(vehicleStep)}
@@ -505,7 +515,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
               )}
             </div>
 
-            {vehicle ? (
+            {currentStep >= vehicleStep && (vehicle ? (
               <div className="text-white text-xs font-medium">
                 Vehicle: <span className="text-[#c5a059]">{vehicle.name}</span>
                 <span className="text-gray-400 text-[11px] block font-light">Capacity: Up to {vehicle.capacity} pax</span>
@@ -521,7 +531,7 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
                 <span className="text-white text-xs font-medium block mt-0.5">VIP Chauffeur & Transfers</span>
                 <span className="text-gray-400 text-[11px] font-light block">Configured in Step 2</span>
               </div>
-            )}
+            ))}
 
             {!isZiyarat && (
               <div className="bg-[#1a1c22] p-2.5 rounded-xl border border-white/5 space-y-2 mt-1.5">
@@ -639,37 +649,6 @@ export default function ItinerarySummary({ state, type, ziyaratPkgParams, varian
                 ) : null;
               })}
             </ul>
-          </div>
-        )}
-
-        {/* 6. Ziyarat Routes (Umrah Plus) */}
-        {isUmrahPlus && !state.skipZiyarat && state.selectedZiyaratRoutes && state.selectedZiyaratRoutes.length > 0 && (
-          <div className="border-b border-white/5 pb-3">
-            <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-2 font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>Sacred Ziyarat Itineraries ({state.selectedZiyaratRoutes.length})</span>
-            </div>
-            <div className="space-y-1.5">
-              {state.selectedZiyaratRoutes.map(rId => {
-                const r = ZIYARAT_ROUTES.find(route => route.id === rId);
-                if (!r) return null;
-                const rDate = state.selectedZiyaratRouteDates?.[rId];
-                return (
-                  <div key={rId} className="bg-[#1a1c22] p-2 rounded-lg border border-white/5 text-xs">
-                    <div className="flex justify-between items-center text-[10px] text-[#c5a059] font-bold uppercase">
-                      <span>{r.cityName}</span>
-                      <span className="text-gray-400 font-normal">{r.duration}</span>
-                    </div>
-                    <div className="text-white font-medium text-xs mt-0.5">{r.name}</div>
-                    {rDate && (
-                      <div className="text-[10px] text-[#f9e8a2] mt-0.5">
-                        📅 {formatDateDDMMYYYY(rDate)}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
           </div>
         )}
 

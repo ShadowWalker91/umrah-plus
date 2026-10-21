@@ -270,6 +270,15 @@ body.overflow-hidden {
     opacity: 0.85 !important;
 }
 
+/* A broken/expired key leaves behind either the Google error notice or an
+   empty .pac-container after it is dismissed. With the dark theme applied
+   above, both would render as a ghost outlined line — only ever show the
+   container when it holds real suggestion rows. */
+.pac-container:empty,
+.pac-container:not(:has(.pac-item)) {
+    display: none !important;
+}
+
 /* ==================================================== */
 /* SIGNATURE ZIYARAT JOURNEY BUILDER (EXACT HTML DUPLICATE) */
 /* ==================================================== */
