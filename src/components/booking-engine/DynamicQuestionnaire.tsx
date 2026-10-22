@@ -30,6 +30,7 @@ import GooglePlacesInput from './GooglePlacesInput';
 import DateInputField from './DateInputField';
 import ScheduleItineraryDates from './ScheduleItineraryDates';
 import { formatDateDDMMYYYY } from '@/lib/utils';
+import { openNativePicker } from '@/lib/nativePicker';
 import { getTransportData, TransportStoreData } from '@/app/actions/transportActions';
 import {
   BookingState,
@@ -1493,7 +1494,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       const target = e.target as HTMLElement;
                       if (target.tagName.toLowerCase() !== 'input') {
                         const el = e.currentTarget.querySelector('input');
-                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                        openNativePicker(el, e.currentTarget)
                       }
                     }}
                     className="cursor-pointer"
@@ -1504,7 +1505,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       value={state.makkahCheckInTime || '14:00'}
                       onClick={(e) => {
                         e.stopPropagation();
-                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                        openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                       }}
                       onChange={(e) => updateState({ makkahCheckInTime: e.target.value })}
                       className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -1534,7 +1535,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       const target = e.target as HTMLElement;
                       if (target.tagName.toLowerCase() !== 'input') {
                         const el = e.currentTarget.querySelector('input');
-                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                        openNativePicker(el, e.currentTarget)
                       }
                     }}
                     className="cursor-pointer"
@@ -1545,7 +1546,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                       value={state.makkahCheckOutTime || '12:00'}
                       onClick={(e) => {
                         e.stopPropagation();
-                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                        openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                       }}
                       onChange={(e) => updateState({ makkahCheckOutTime: e.target.value })}
                       className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -1682,7 +1683,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           const target = e.target as HTMLElement;
                           if (target.tagName.toLowerCase() !== 'input') {
                             const el = e.currentTarget.querySelector('input');
-                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                            openNativePicker(el, e.currentTarget)
                           }
                         }}
                         className="cursor-pointer"
@@ -1693,7 +1694,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           value={state.madinahCheckInTime || '14:00'}
                           onClick={(e) => {
                             e.stopPropagation();
-                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                            openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                           }}
                           onChange={(e) => updateState({ madinahCheckInTime: e.target.value })}
                           className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -1723,7 +1724,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           const target = e.target as HTMLElement;
                           if (target.tagName.toLowerCase() !== 'input') {
                             const el = e.currentTarget.querySelector('input');
-                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                            openNativePicker(el, e.currentTarget)
                           }
                         }}
                         className="cursor-pointer"
@@ -1734,7 +1735,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           value={state.madinahCheckOutTime || '12:00'}
                           onClick={(e) => {
                             e.stopPropagation();
-                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                            openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                           }}
                           onChange={(e) => updateState({ madinahCheckOutTime: e.target.value })}
                           className="w-full bg-[#0c0d10] border border-white/10 rounded-lg text-white text-xs px-2.5 py-2 outline-none focus:border-[#c5a059]/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -2005,7 +2006,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                                       const target = e.target as HTMLElement;
                                       if (target.tagName.toLowerCase() !== 'input') {
                                         const el = e.currentTarget.querySelector('input');
-                                        try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                                        openNativePicker(el, e.currentTarget)
                                       }
                                     }}
                                     className="w-28 cursor-pointer"
@@ -2015,7 +2016,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                                       value={leg.time || '14:00'}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        try { (e.currentTarget as any).showPicker?.(); } catch { }
+                                        openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                                       }}
                                       onChange={(e) => handleLegTimeChange(idx, e.target.value)}
                                       className="w-full bg-[#0c0d10] border border-white/15 rounded-lg px-2 py-2 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -2110,7 +2111,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           const target = e.target as HTMLElement;
                           if (target.tagName.toLowerCase() !== 'input') {
                             const el = e.currentTarget.querySelector('input');
-                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                            openNativePicker(el, e.currentTarget)
                           }
                         }}
                         className="cursor-pointer min-w-0"
@@ -2123,7 +2124,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                                 value={state.pointToPointPickupTime || '14:00'}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  try { (e.currentTarget as any).showPicker?.(); } catch { }
+                                  openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                                 }}
                                 onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
                                 className="w-full bg-[#12141a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -2436,7 +2437,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           const target = e.target as HTMLElement;
                           if (target.tagName.toLowerCase() !== 'input') {
                             const el = e.currentTarget.querySelector('input');
-                            try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                            openNativePicker(el, e.currentTarget)
                           }
                         }}
                         className="cursor-pointer min-w-0"
@@ -2450,7 +2451,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                           value={leg.time || '12:00'}
                           onClick={(e) => {
                             e.stopPropagation();
-                            try { (e.currentTarget as any).showPicker?.(); } catch { }
+                            openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                           }}
                           onChange={(e) => handleLegTimeChange(index, e.target.value)}
                           className="w-full bg-[#12141a] border border-white/15 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"
@@ -2605,7 +2606,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   const target = e.target as HTMLElement;
                   if (target.tagName.toLowerCase() !== 'input') {
                     const el = e.currentTarget.querySelector('input');
-                    try { (el as any)?.showPicker?.(); } catch { el?.focus(); }
+                    openNativePicker(el, e.currentTarget)
                   }
                 }}
                 className="cursor-pointer"
@@ -2620,7 +2621,7 @@ export default function DynamicQuestionnaire({ step, state, updateState, type, o
                   value={state.pointToPointPickupTime || '14:00'}
                   onClick={(e) => {
                     e.stopPropagation();
-                    try { (e.currentTarget as any).showPicker?.(); } catch { }
+                    openNativePicker(e.currentTarget, e.currentTarget.parentElement)
                   }}
                   onChange={(e) => updateState({ pointToPointPickupTime: e.target.value })}
                   className="w-full bg-[#12141a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#c5a059] cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[85%] [&::-webkit-calendar-picker-indicator]:sepia-[100%] [&::-webkit-calendar-picker-indicator]:saturate-[1000%] [&::-webkit-calendar-picker-indicator]:hue-rotate-[5deg]"

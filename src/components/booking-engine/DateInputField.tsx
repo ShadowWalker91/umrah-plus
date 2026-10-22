@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { Calendar } from 'lucide-react';
 import { formatDateDDMMYYYY, toIsoDate } from '@/lib/utils';
+import { openNativePicker, closeNativePicker, dismissOtherNativePickers } from '@/lib/nativePicker';
 
 interface DateInputFieldProps {
   id?: string;
@@ -40,6 +41,7 @@ export default function DateInputField({
   isValid = false,
 }: DateInputFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const displayDate = value ? formatDateDDMMYYYY(value) : '';
   const isoValue = value ? toIsoDate(value) : '';
@@ -48,26 +50,19 @@ export default function DateInputField({
 
   const handleContainerClick = () => {
     if (disabled) return;
-    const input = inputRef.current;
-    if (!input) return;
-    try {
-      if (typeof input.showPicker === 'function') {
-        input.showPicker();
-      } else {
-        input.focus();
-      }
-    } catch {
-      try {
-        input.focus();
-      } catch {}
-    }
+    openNativePicker(inputRef.current, containerRef.current);
   };
 
   return (
     <div
+      ref={containerRef}
       role="button"
       tabIndex={disabled ? -1 : 0}
       onClick={handleContainerClick}
+      onMouseEnter={() => {
+        if (disabled) return;
+        dismissOtherNativePickers(inputRef.current);
+      }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -111,6 +106,8 @@ export default function DateInputField({
         disabled={disabled}
         onChange={(e) => {
           onChange(e.target.value);
+          // macOS can leave the picker floating after a selection — dismiss it.
+          closeNativePicker(e.currentTarget);
         }}
         className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
         tabIndex={-1}
